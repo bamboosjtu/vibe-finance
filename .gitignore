@@ -1,0 +1,93 @@
+# 环境变量文件 - 绝对不允许跟踪
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+backend/.env
+frontend/.env
+
+# 数据库文件
+*.db
+*.sqlite
+*.sqlite3
+db/construction.db
+backend/construction.db
+
+# Python (backend)
+backend/__pycache__/
+backend/*.py[cod]
+backend/*$py.class
+backend/*.so
+backend/.Python
+backend/build/
+backend/develop-eggs/
+backend/dist/
+backend/downloads/
+backend/eggs/
+backend/.eggs/
+backend/lib/
+backend/lib64/
+backend/parts/
+backend/sdist/
+backend/var/
+backend/wheels/
+backend/*.egg-info/
+backend/.installed.cfg
+backend/*.egg
+backend/MANIFEST
+
+# Python 虚拟环境
+backend/venv/
+backend/env/
+backend/ENV/
+backend/.venv/
+backend/.ENV/
+
+# Node.js (frontend)
+frontend/node_modules/
+frontend/npm-debug.log*
+frontend/yarn-debug.log*
+frontend/yarn-error.log*
+frontend/lerna-debug.log*
+
+# 前端构建产物
+frontend/dist/
+frontend/build/
+frontend/.umi/
+frontend/.umi-production/
+frontend/.umi-test/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# 日志文件
+*.log
+logs/
+
+# 临时文件
+*.tmp
+*.temp
+.cache/
+
+# 测试覆盖率
+coverage/
+.nyc_output/
+
+# 依赖锁定文件（可选，根据团队偏好）
+# package-lock.json
+# yarn.lock
+# uv.lock

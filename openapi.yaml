@@ -1,0 +1,1308 @@
+openapi: 3.0.3
+info:
+  title: Personal Investment Management API
+  version: 0.1.0
+  description: MVP API for personal investment management tool (snapshot-authoritative).
+servers:
+- url: '{{baseUrl}}'
+  description: Variable base URL
+components:
+  schemas:
+    Institution:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+      required:
+      - id
+      - name
+    Account:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        institution_id:
+          type: integer
+          nullable: true
+        type:
+          type: string
+          enum:
+          - cash
+          - debit
+          - credit
+          - investment_cash
+          - other
+        currency:
+          type: string
+          default: CNY
+        is_liquid:
+          type: boolean
+      required:
+      - id
+      - name
+      - type
+      - currency
+      - is_liquid
+    SnapshotItem:
+      type: object
+      properties:
+        date:
+          type: string
+          format: date
+        account_id:
+          type: integer
+        balance:
+          type: number
+      required:
+      - date
+      - account_id
+      - balance
+    Product:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        institution_id:
+          type: integer
+          nullable: true
+        product_code:
+          type: string
+          nullable: true
+        product_type:
+          type: string
+          enum:
+          - bank_wmp
+          - money_market
+          - term_deposit
+          - fund
+          - stock
+          - other
+        risk_level:
+          type: string
+          nullable: true
+          description: External label, e.g. R1-R5
+        term_days:
+          type: integer
+          nullable: true
+        liquidity_rule:
+          type: string
+          enum:
+          - open
+          - closed
+          - periodic_open
+        settle_days:
+          type: integer
+        note:
+          type: string
+          nullable: true
+      required:
+      - id
+      - name
+      - product_type
+      - liquidity_rule
+      - settle_days
+    Lot:
+      type: object
+      properties:
+        id:
+          type: integer
+        product_id:
+          type: integer
+        open_date:
+          type: string
+          format: date
+        principal:
+          type: number
+        shares:
+          type: number
+          nullable: true
+        status:
+          type: string
+          enum:
+          - holding
+          - redeeming
+          - settled
+        redeem_date:
+          type: string
+          format: date
+          nullable: true
+        settle_date:
+          type: string
+          format: date
+          nullable: true
+        note:
+          type: string
+          nullable: true
+      required:
+      - id
+      - product_id
+      - open_date
+      - principal
+      - status
+    ValuationPoint:
+      type: object
+      properties:
+        product_id:
+          type: integer
+        date:
+          type: string
+          format: date
+        market_value:
+          type: number
+      required:
+      - product_id
+      - date
+      - market_value
+    Transaction:
+      type: object
+      properties:
+        id:
+          type: integer
+        date:
+          type: string
+          format: date
+        category:
+          type: string
+          enum:
+          - subscribe
+          - redeem
+          - settle
+          - dividend
+          - fee
+          - transfer
+        amount:
+          type: number
+          description: 'Cashflow: outflow negative, inflow positive'
+        account_id:
+          type: integer
+          nullable: true
+        to_account_id:
+          type: integer
+          nullable: true
+        product_id:
+          type: integer
+          nullable: true
+        lot_id:
+          type: integer
+          nullable: true
+        note:
+          type: string
+          nullable: true
+      required:
+      - id
+      - date
+      - category
+      - amount
+    Warning:
+      type: object
+      properties:
+        date:
+          type: string
+          format: date
+        account_id:
+          type: integer
+        snapshot_balance:
+          type: number
+        derived_balance:
+          type: number
+        diff:
+          type: number
+        severity:
+          type: string
+          enum:
+          - warning
+        hint:
+          type: string
+      required:
+      - date
+      - account_id
+      - snapshot_balance
+      - derived_balance
+      - diff
+      - severity
+      - hint
+  parameters:
+    FromDate:
+      name: from
+      in: query
+      schema:
+        type: string
+        format: date
+      required: true
+    ToDate:
+      name: to
+      in: query
+      schema:
+        type: string
+        format: date
+      required: true
+    Date:
+      name: date
+      in: query
+      schema:
+        type: string
+        format: date
+      required: true
+paths:
+  /api/institutions:
+    get:
+      summary: List institutions
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  items:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Institution'
+                required:
+                - items
+              example:
+                items:
+                - id: 1
+                  name: 长沙银行
+    post:
+      summary: Create institution
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Institution'
+              example:
+                id: 1
+                name: 长沙银行
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+              required:
+              - name
+            example:
+              name: 长沙银行
+  /api/accounts:
+    get:
+      summary: List accounts
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  items:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Account'
+                required:
+                - items
+              example:
+                items:
+                - id: 10
+                  name: 长沙银行-借记卡
+                  institution_id: 1
+                  type: debit
+                  currency: CNY
+                  is_liquid: true
+    post:
+      summary: Create account
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                required:
+                - id
+              example:
+                id: 11
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                institution_id:
+                  type: integer
+                  nullable: true
+                type:
+                  type: string
+                  enum:
+                  - cash
+                  - debit
+                  - credit
+                  - investment_cash
+                  - other
+                currency:
+                  type: string
+                  default: CNY
+                is_liquid:
+                  type: boolean
+                  default: true
+              required:
+              - name
+              - type
+            example:
+              name: 花呗
+              institution_id: 2
+              type: credit
+              is_liquid: false
+  /api/accounts/{id}:
+    patch:
+      summary: Update account
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  ok:
+                    type: boolean
+                required:
+                - ok
+              example:
+                ok: true
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                is_liquid:
+                  type: boolean
+                type:
+                  type: string
+                  enum:
+                  - cash
+                  - debit
+                  - credit
+                  - investment_cash
+                  - other
+                institution_id:
+                  type: integer
+                  nullable: true
+            example:
+              is_liquid: true
+  /api/snapshots/batch_upsert:
+    post:
+      summary: Batch upsert snapshots (authoritative)
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  inserted:
+                    type: integer
+                  updated:
+                    type: integer
+                  warnings:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Warning'
+                required:
+                - inserted
+                - updated
+                - warnings
+              example:
+                inserted: 2
+                updated: 0
+                warnings: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                source:
+                  type: string
+                  enum:
+                  - manual
+                  - import_excel
+                rows:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/SnapshotItem'
+              required:
+              - rows
+            example:
+              source: import_excel
+              rows:
+              - date: '2025-01-05'
+                account_id: 10
+                balance: 6156.16
+              - date: '2025-01-05'
+                account_id: 11
+                balance: -4048.06
+  /api/snapshots:
+    get:
+      summary: Get snapshots by date
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  date:
+                    type: string
+                    format: date
+                  items:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        account_id:
+                          type: integer
+                        balance:
+                          type: number
+                      required:
+                      - account_id
+                      - balance
+                required:
+                - date
+                - items
+              example:
+                date: '2025-01-05'
+                items:
+                - account_id: 10
+                  balance: 6156.16
+                - account_id: 11
+                  balance: -4048.06
+      parameters:
+      - $ref: '#/components/parameters/Date'
+  /api/products:
+    get:
+      summary: List products
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  items:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Product'
+                required:
+                - items
+    post:
+      summary: Create product
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                required:
+                - id
+              example:
+                id: 201
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                institution_id:
+                  type: integer
+                  nullable: true
+                product_code:
+                  type: string
+                  nullable: true
+                product_type:
+                  type: string
+                  enum:
+                  - bank_wmp
+                  - money_market
+                  - term_deposit
+                  - fund
+                  - stock
+                  - other
+                risk_level:
+                  type: string
+                  nullable: true
+                term_days:
+                  type: integer
+                  nullable: true
+                liquidity_rule:
+                  type: string
+                  enum:
+                  - open
+                  - closed
+                  - periodic_open
+                settle_days:
+                  type: integer
+                note:
+                  type: string
+                  nullable: true
+              required:
+              - name
+            example:
+              name: 日日金
+              institution_id: 1
+              product_type: money_market
+              risk_level: R1
+              term_days: 0
+              liquidity_rule: open
+              settle_days: 0
+              note: 随时申赎
+  /api/valuations/batch_upsert:
+    post:
+      summary: Batch upsert product valuations
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  inserted:
+                    type: integer
+                  updated:
+                    type: integer
+                  warnings:
+                    type: array
+                    items:
+                      type: string
+                required:
+                - inserted
+                - updated
+                - warnings
+              example:
+                inserted: 2
+                updated: 0
+                warnings: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                source:
+                  type: string
+                  enum:
+                  - manual
+                  - import_excel
+                rows:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/ValuationPoint'
+              required:
+              - rows
+            example:
+              source: import_excel
+              rows:
+              - product_id: 200
+                date: '2025-01-05'
+                market_value: 100059.46
+              - product_id: 201
+                date: '2025-01-05'
+                market_value: 67747.76
+  /api/products/{id}/valuations:
+    get:
+      summary: Get product valuations in range
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  product_id:
+                    type: integer
+                  points:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        date:
+                          type: string
+                          format: date
+                        market_value:
+                          type: number
+                      required:
+                      - date
+                      - market_value
+                required:
+                - product_id
+                - points
+              example:
+                product_id: 200
+                points:
+                - date: '2024-12-30'
+                  market_value: 100000.0
+                - date: '2025-01-05'
+                  market_value: 100059.46
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+      - $ref: '#/components/parameters/FromDate'
+      - $ref: '#/components/parameters/ToDate'
+  /api/lots:
+    post:
+      summary: Create lot (purchase batch)
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                  status:
+                    type: string
+                required:
+                - id
+                - status
+              example:
+                id: 9001
+                status: holding
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                product_id:
+                  type: integer
+                open_date:
+                  type: string
+                  format: date
+                principal:
+                  type: number
+                shares:
+                  type: number
+                  nullable: true
+                note:
+                  type: string
+                  nullable: true
+              required:
+              - product_id
+              - open_date
+              - principal
+            example:
+              product_id: 200
+              open_date: '2025-01-05'
+              principal: 100000
+              shares: null
+              note: 第1批
+  /api/products/{id}/lots:
+    get:
+      summary: List lots of a product
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  product_id:
+                    type: integer
+                  items:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Lot'
+                required:
+                - product_id
+                - items
+              example:
+                product_id: 200
+                items:
+                - id: 9001
+                  product_id: 200
+                  open_date: '2025-01-05'
+                  principal: 100000
+                  shares: null
+                  status: holding
+                  redeem_date: null
+                  settle_date: null
+                  note: 第1批
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+  /api/lots/{lotId}/redeem:
+    post:
+      summary: Redeem a specific lot (holding -> redeeming)
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  lot_id:
+                    type: integer
+                  from:
+                    type: string
+                  to:
+                    type: string
+                  created_transactions:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: integer
+                        category:
+                          type: string
+                        amount:
+                          type: number
+                      required:
+                      - id
+                      - category
+                      - amount
+                required:
+                - lot_id
+                - from
+                - to
+                - created_transactions
+              example:
+                lot_id: 9001
+                from: holding
+                to: redeeming
+                created_transactions:
+                - id: 50010
+                  category: redeem
+                  amount: 0
+      parameters:
+      - name: lotId
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                redeem_date:
+                  type: string
+                  format: date
+                note:
+                  type: string
+                  nullable: true
+              required:
+              - redeem_date
+            example:
+              redeem_date: '2025-02-02'
+              note: 到期赎回
+  /api/lots/{lotId}/settle:
+    post:
+      summary: Settle a redeemed lot (redeeming -> settled) with cash inflow
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  lot_id:
+                    type: integer
+                  from:
+                    type: string
+                  to:
+                    type: string
+                  created_transactions:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: integer
+                        category:
+                          type: string
+                        amount:
+                          type: number
+                      required:
+                      - id
+                      - category
+                      - amount
+                required:
+                - lot_id
+                - from
+                - to
+                - created_transactions
+              example:
+                lot_id: 9001
+                from: redeeming
+                to: settled
+                created_transactions:
+                - id: 50011
+                  category: settle
+                  amount: 100650.11
+      parameters:
+      - name: lotId
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                settle_date:
+                  type: string
+                  format: date
+                amount:
+                  type: number
+                account_id:
+                  type: integer
+                note:
+                  type: string
+                  nullable: true
+              required:
+              - settle_date
+              - amount
+              - account_id
+            example:
+              settle_date: '2025-02-03'
+              amount: 100650.11
+              account_id: 10
+              note: 赎回到账
+  /api/transactions:
+    post:
+      summary: Create transaction
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                required:
+                - id
+              example:
+                id: 50001
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                date:
+                  type: string
+                  format: date
+                category:
+                  type: string
+                  enum:
+                  - subscribe
+                  - redeem
+                  - settle
+                  - dividend
+                  - fee
+                  - transfer
+                amount:
+                  type: number
+                account_id:
+                  type: integer
+                  nullable: true
+                to_account_id:
+                  type: integer
+                  nullable: true
+                product_id:
+                  type: integer
+                  nullable: true
+                lot_id:
+                  type: integer
+                  nullable: true
+                note:
+                  type: string
+                  nullable: true
+              required:
+              - date
+              - category
+              - amount
+            example:
+              date: '2025-01-05'
+              category: subscribe
+              amount: -100000
+              account_id: 10
+              product_id: 200
+              lot_id: 9001
+              note: 申购28D
+    get:
+      summary: List transactions in range
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  items:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Transaction'
+                required:
+                - items
+      parameters:
+      - $ref: '#/components/parameters/FromDate'
+      - $ref: '#/components/parameters/ToDate'
+  /api/products/{id}/metrics:
+    get:
+      summary: Get product metrics (TWR/annualized/volatility/drawdown)
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  product_id:
+                    type: integer
+                  window:
+                    type: string
+                  status:
+                    type: string
+                    enum:
+                    - ok
+                    - insufficient_data
+                  metrics:
+                    type: object
+                    nullable: true
+                required:
+                - product_id
+                - window
+                - status
+                - metrics
+              example:
+                product_id: 200
+                window: 8w
+                status: ok
+                metrics:
+                  twr: 0.0005946
+                  annualized: 0.00388
+                  volatility: 0.0012
+                  max_drawdown: 0.0003
+                  drawdown_recovery_days: 7
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+      - name: window
+        in: query
+        required: true
+        schema:
+          type: string
+          example: 8w
+  /api/products/{id}/xirr:
+    get:
+      summary: Compute XIRR for a product as of date
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  product_id:
+                    type: integer
+                  as_of:
+                    type: string
+                    format: date
+                  status:
+                    type: string
+                    enum:
+                    - ok
+                    - insufficient_data
+                  xirr:
+                    type: number
+                    nullable: true
+                  cashflows:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        date:
+                          type: string
+                          format: date
+                        amount:
+                          type: number
+                        type:
+                          type: string
+                          nullable: true
+                      required:
+                      - date
+                      - amount
+                  warnings:
+                    type: array
+                    items:
+                      type: string
+                required:
+                - product_id
+                - as_of
+                - status
+                - xirr
+                - cashflows
+                - warnings
+              example:
+                product_id: 200
+                as_of: '2025-01-05'
+                status: ok
+                xirr: 0.0412
+                cashflows:
+                - date: '2025-01-05'
+                  amount: -100000.0
+                - date: '2025-01-05'
+                  amount: 100059.46
+                  type: terminal_value
+                warnings: []
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+      - name: as_of
+        in: query
+        required: true
+        schema:
+          type: string
+          format: date
+  /api/cash/today:
+    get:
+      summary: Compute Today Available cash
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  date:
+                    type: string
+                    format: date
+                  inputs:
+                    type: object
+                  today_available:
+                    type: number
+                  excluded:
+                    type: object
+                required:
+                - date
+                - inputs
+                - today_available
+                - excluded
+              example:
+                date: '2025-01-05'
+                inputs:
+                  liquid_sum: 230000.0
+                  reserve: 20000.0
+                  due_within_n_days: 0.0
+                today_available: 210000.0
+                excluded:
+                  redeeming_lots_value: 50000.0
+      parameters:
+      - $ref: '#/components/parameters/Date'
+  /api/cash/forecast:
+    get:
+      summary: Forecast Available cash for future days
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  from:
+                    type: string
+                    format: date
+                  days:
+                    type: integer
+                  events:
+                    type: array
+                    items:
+                      type: object
+                  series:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        date:
+                          type: string
+                          format: date
+                        available:
+                          type: number
+                      required:
+                      - date
+                      - available
+                required:
+                - from
+                - days
+                - events
+                - series
+              example:
+                from: '2025-01-05'
+                days: 90
+                events:
+                - date: '2025-02-03'
+                  type: settle
+                  amount: 100650.11
+                  lot_id: 9001
+                series:
+                - date: '2025-01-05'
+                  available: 210000.0
+                - date: '2025-02-03'
+                  available: 310650.11
+      parameters:
+      - name: from
+        in: query
+        required: true
+        schema:
+          type: string
+          format: date
+      - name: days
+        in: query
+        required: true
+        schema:
+          type: integer
+          example: 90
+  /api/reconciliation/warnings:
+    get:
+      summary: List reconciliation warnings (Snapshot vs derived from transactions)
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  items:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Warning'
+                required:
+                - items
+              example:
+                items:
+                - date: '2025-01-05'
+                  account_id: 10
+                  snapshot_balance: 6156.16
+                  derived_balance: 7000.0
+                  diff: -843.84
+                  severity: warning
+                  hint: 流水不完整或有未建模的变动（如银行自动计息/调账）
+      parameters:
+      - $ref: '#/components/parameters/FromDate'
+      - $ref: '#/components/parameters/ToDate'
+  /api/settings:
+    get:
+      summary: Get settings
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+              example:
+                reserve_amount: 20000
+                repayment_days: 7
+                repayment_amount: 0
+    patch:
+      summary: Update settings
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  ok:
+                    type: boolean
+                required:
+                - ok
+              example:
+                ok: true
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+            example:
+              reserve_amount: 20000
+              repayment_days: 7
+              repayment_amount: 0
