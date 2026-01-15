@@ -17,7 +17,7 @@ import Logo from './Logo';
 import Exception from './Exception';
 import { getRightRenderContent } from './rightRender';
 import { useModel } from '@@/plugin-model';
-import { useAccessMarkedRoutes } from '@@/plugin-access';
+const useAccessMarkedRoutes = (r) => r;
 
 
 // 过滤出需要显示的路由, 这里的filterFn 指 不希望显示的层级

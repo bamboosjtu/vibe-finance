@@ -9,7 +9,8 @@ class AccountType(str, Enum):
     CASH = "cash"          # 现金
     DEBIT = "debit"        # 借记卡
     CREDIT = "credit"      # 信用卡
-    INVESTMENT = "investment"  # 投资账户
+    INVESTMENT_CASH = "investment_cash"  # 投资账户（现金类）
+    OTHER = "other"        # 其他
 
 
 class Account(BaseModel, table=True):
@@ -17,8 +18,9 @@ class Account(BaseModel, table=True):
     __tablename__ = "accounts"
     
     name: str = Field(description="账户名称")
-    institution_id: int = Field(foreign_key="institutions.id", description="所属机构ID")
+    institution_id: Optional[int] = Field(default=None, foreign_key="institutions.id", description="所属机构ID")
     type: AccountType = Field(description="账户类型")
+    currency: str = Field(default="CNY", description="币种")
     is_liquid: bool = Field(default=True, description="是否计入可用现金")
     
     # 关系
@@ -31,6 +33,7 @@ class Account(BaseModel, table=True):
                 "name": "长沙银行-借记卡",
                 "institution_id": 1,
                 "type": "debit",
+                "currency": "CNY",
                 "is_liquid": True
             }
         }

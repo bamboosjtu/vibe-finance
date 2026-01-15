@@ -13,6 +13,6 @@ def create_app(config_class=Config):
     
     # 注册蓝图
     from api.v1 import bp as v1_bp
-    app.register_blueprint(v1_bp, url_prefix='/api/v1')
+    app.register_blueprint(v1_bp, url_prefix='/api')
     
     return app

@@ -261,16 +261,30 @@ paths:
               schema:
                 type: object
                 properties:
-                  items:
-                    type: array
-                    items:
-                      $ref: '#/components/schemas/Institution'
+                  code:
+                    type: integer
+                  data:
+                    type: object
+                    properties:
+                      items:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/Institution'
+                    required:
+                    - items
+                  message:
+                    type: string
                 required:
-                - items
+                - code
+                - data
+                - message
               example:
-                items:
-                - id: 1
-                  name: 长沙银行
+                code: 200
+                data:
+                  items:
+                  - id: 1
+                    name: 长沙银行
+                message: ok
     post:
       summary: Create institution
       responses:
@@ -279,10 +293,24 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Institution'
+                type: object
+                properties:
+                  code:
+                    type: integer
+                  data:
+                    $ref: '#/components/schemas/Institution'
+                  message:
+                    type: string
+                required:
+                - code
+                - data
+                - message
               example:
-                id: 1
-                name: 长沙银行
+                code: 200
+                data:
+                  id: 1
+                  name: 长沙银行
+                message: ok
       requestBody:
         required: true
         content:
@@ -307,20 +335,34 @@ paths:
               schema:
                 type: object
                 properties:
-                  items:
-                    type: array
-                    items:
-                      $ref: '#/components/schemas/Account'
+                  code:
+                    type: integer
+                  data:
+                    type: object
+                    properties:
+                      items:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/Account'
+                    required:
+                    - items
+                  message:
+                    type: string
                 required:
-                - items
+                - code
+                - data
+                - message
               example:
-                items:
-                - id: 10
-                  name: 长沙银行-借记卡
-                  institution_id: 1
-                  type: debit
-                  currency: CNY
-                  is_liquid: true
+                code: 200
+                data:
+                  items:
+                  - id: 10
+                    name: 长沙银行-借记卡
+                    institution_id: 1
+                    type: debit
+                    currency: CNY
+                    is_liquid: true
+                message: ok
     post:
       summary: Create account
       responses:
@@ -331,12 +373,26 @@ paths:
               schema:
                 type: object
                 properties:
-                  id:
+                  code:
                     type: integer
+                  data:
+                    $ref: '#/components/schemas/Account'
+                  message:
+                    type: string
                 required:
-                - id
+                - code
+                - data
+                - message
               example:
-                id: 11
+                code: 200
+                data:
+                  id: 11
+                  name: 花呗
+                  institution_id: 2
+                  type: credit
+                  currency: CNY
+                  is_liquid: false
+                message: ok
       requestBody:
         required: true
         content:
@@ -382,12 +438,26 @@ paths:
               schema:
                 type: object
                 properties:
-                  ok:
-                    type: boolean
+                  code:
+                    type: integer
+                  data:
+                    $ref: '#/components/schemas/Account'
+                  message:
+                    type: string
                 required:
-                - ok
+                - code
+                - data
+                - message
               example:
-                ok: true
+                code: 200
+                data:
+                  id: 11
+                  name: 花呗
+                  institution_id: 2
+                  type: credit
+                  currency: CNY
+                  is_liquid: true
+                message: ok
       parameters:
       - name: id
         in: path
@@ -521,12 +591,23 @@ paths:
               schema:
                 type: object
                 properties:
-                  items:
-                    type: array
-                    items:
-                      $ref: '#/components/schemas/Product'
+                  code:
+                    type: integer
+                  data:
+                    type: object
+                    properties:
+                      items:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/Product'
+                    required:
+                    - items
+                  message:
+                    type: string
                 required:
-                - items
+                - code
+                - data
+                - message
     post:
       summary: Create product
       responses:
@@ -537,12 +618,30 @@ paths:
               schema:
                 type: object
                 properties:
-                  id:
+                  code:
                     type: integer
+                  data:
+                    $ref: '#/components/schemas/Product'
+                  message:
+                    type: string
                 required:
-                - id
+                - code
+                - data
+                - message
               example:
-                id: 201
+                code: 200
+                data:
+                  id: 201
+                  name: 日日金
+                  institution_id: 1
+                  product_code: null
+                  product_type: money_market
+                  risk_level: R1
+                  term_days: 0
+                  liquidity_rule: open
+                  settle_days: 0
+                  note: 随时申赎
+                message: ok
       requestBody:
         required: true
         content:
@@ -595,6 +694,90 @@ paths:
               liquidity_rule: open
               settle_days: 0
               note: 随时申赎
+  /api/products/{id}:
+    patch:
+      summary: Update product
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                  data:
+                    $ref: '#/components/schemas/Product'
+                  message:
+                    type: string
+                required:
+                - code
+                - data
+                - message
+              example:
+                code: 200
+                data:
+                  id: 201
+                  name: 日日金
+                  institution_id: 1
+                  product_code: null
+                  product_type: money_market
+                  risk_level: R1
+                  term_days: 0
+                  liquidity_rule: open
+                  settle_days: 0
+                  note: 随时申赎
+                message: ok
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                institution_id:
+                  type: integer
+                  nullable: true
+                product_code:
+                  type: string
+                  nullable: true
+                product_type:
+                  type: string
+                  enum:
+                  - bank_wmp
+                  - money_market
+                  - term_deposit
+                  - fund
+                  - stock
+                  - other
+                risk_level:
+                  type: string
+                  nullable: true
+                term_days:
+                  type: integer
+                  nullable: true
+                liquidity_rule:
+                  type: string
+                  enum:
+                  - open
+                  - closed
+                  - periodic_open
+                settle_days:
+                  type: integer
+                note:
+                  type: string
+                  nullable: true
+            example:
+              note: 更新备注
   /api/valuations/batch_upsert:
     post:
       summary: Batch upsert product valuations

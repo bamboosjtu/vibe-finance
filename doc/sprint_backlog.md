@@ -18,9 +18,9 @@
 
 #### T0-1 项目初始化
 
-* [ ] 初始化前端项目（Next.js / React）
-* [ ] 初始化后端（API Routes / 独立 API）
-* [ ] SQLite 连接 + migrations 机制
+* [x] 初始化前端项目（Next.js / React）
+* [x] 初始化后端（API Routes / 独立 API）
+* [x] SQLite 连接 + migrations 机制
 
 **验收标准**
 
@@ -31,8 +31,8 @@
 
 #### T0-2 基础 Layout
 
-* [ ] 顶部或侧边导航
-* [ ] 路由占位页：
+* [x] 侧边导航
+* [x] 路由占位页：
 
   * Dashboard
   * 账户
@@ -57,8 +57,8 @@
 
 #### T1-1 Institution 管理
 
-* [ ] POST /api/institutions
-* [ ] GET /api/institutions
+* [x] POST /api/institutions
+* [x] GET /api/institutions
 
 **验收标准**
 
@@ -69,14 +69,14 @@
 
 #### T1-2 Account CRUD
 
-* [ ] POST /api/accounts
-* [ ] GET /api/accounts
-* [ ] PATCH /api/accounts/{id}
+* [x] POST /api/accounts
+* [x] GET /api/accounts
+* [x] PATCH /api/accounts/{id}
 
 **前端**
 
-* [ ] 账户列表
-* [ ] 新建 / 编辑账户表单
+* [x] 账户列表
+* [x] 新建 / 编辑账户表单
 
 **验收标准**
 
@@ -88,13 +88,13 @@
 
 #### T1-3 Product CRUD
 
-* [ ] POST /api/products
-* [ ] GET /api/products
+* [x] POST /api/products
+* [x] GET /api/products
 
 **前端**
 
-* [ ] 产品列表
-* [ ] 新建产品表单
+* [x] 产品列表
+* [x] 新建产品表单
 
 **验收标准**
 

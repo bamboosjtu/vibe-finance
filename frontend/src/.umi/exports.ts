@@ -5,11 +5,9 @@
 export { defineApp } from './core/defineApp'
 export type { RuntimeConfig } from './core/defineApp'
 // plugins
-export { Access, useAccess, useAccessMarkedRoutes } from 'C:/Users/bambo/Documents/Projects/vibe-test/frontend/src/.umi/plugin-access';
 export { Provider, useModel } from 'C:/Users/bambo/Documents/Projects/vibe-test/frontend/src/.umi/plugin-model';
 export { useRequest, UseRequestProvider, request, getRequestInstance } from 'C:/Users/bambo/Documents/Projects/vibe-test/frontend/src/.umi/plugin-request';
 // plugins types.d.ts
-export * from 'C:/Users/bambo/Documents/Projects/vibe-test/frontend/src/.umi/plugin-access/types.d';
 export * from 'C:/Users/bambo/Documents/Projects/vibe-test/frontend/src/.umi/plugin-antd/types.d';
 export * from 'C:/Users/bambo/Documents/Projects/vibe-test/frontend/src/.umi/plugin-layout/types.d';
 export * from 'C:/Users/bambo/Documents/Projects/vibe-test/frontend/src/.umi/plugin-request/types.d';
