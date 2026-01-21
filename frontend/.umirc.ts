@@ -12,7 +12,9 @@ export default defineConfig({
     },
   },
   layout: {
-    title: '@umijs/max',
+    title: 'Vibe Investment',
+    locale: false,
+    layout: 'side',
   },
   routes: [
     {
@@ -22,22 +24,54 @@ export default defineConfig({
     {
       name: 'Dashboard',
       path: '/dashboard',
-      component: './Home',
-    },
-    {
-      name: '首页',
-      path: '/home',
-      component: './Home',
+      component: './Dashboard',
+      icon: 'dashboard',
     },
     {
       name: '账户',
       path: '/accounts',
-      component: './Accounts',
+      icon: 'accountBook',
+      routes: [
+        {
+          path: '/accounts',
+          redirect: '/accounts/list',
+        },
+        {
+          name: '账户列表',
+          path: '/accounts/list',
+          component: './Accounts',
+        },
+        {
+          name: '资产快照',
+          path: '/accounts/snapshots',
+          component: './Snapshots/Entry',
+        },
+      ],
     },
     {
       name: '产品',
       path: '/products',
-      component: './Products',
+      icon: 'barChart',
+      routes: [
+        {
+          path: '/products',
+          redirect: '/products/list',
+        },
+        {
+          name: '产品列表',
+          path: '/products/list',
+          component: './Products',
+        },
+        {
+          name: '产品估值',
+          path: '/products/valuations',
+          component: './ProductValuations',
+        },
+      ],
+    },
+    {
+      path: '/products/:id',
+      component: './Products/Detail',
     },
   ],
   npmClient: 'npm',

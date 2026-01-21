@@ -1,8 +1,8 @@
 from typing import List, Optional
 
-from sqlmodel import Session, select
-
+from sqlmodel import Session, select, delete
 from models.product import Product, ProductType, LiquidityRule
+from models.valuation import ProductValuation
 
 
 def create_product(
@@ -32,6 +32,20 @@ def create_product(
     session.commit()
     session.refresh(product)
     return product
+
+
+def delete_product(session: Session, product_id: int) -> None:
+    product = session.get(Product, product_id)
+    if not product:
+        raise ValueError("product not found")
+    
+    # 手动删除关联的估值记录
+    statement = delete(ProductValuation).where(ProductValuation.product_id == product_id)
+    session.exec(statement)
+    
+    session.delete(product)
+    session.commit()
+
 
 
 def list_products(session: Session) -> List[Product]:

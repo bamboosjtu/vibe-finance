@@ -1,4 +1,4 @@
-import { apiGet, apiPatch, apiPost } from './api';
+import { apiGet, apiPatch, apiPost, apiDelete } from './api';
 
 export type ProductType =
   | 'bank_wmp'
@@ -23,8 +23,12 @@ export interface Product {
   note: string | null;
 }
 
+export interface ProductWithMetrics extends Product {
+  metrics?: ProductMetrics | null;
+}
+
 export interface ListProductsResp {
-  items: Product[];
+  items: ProductWithMetrics[];
 }
 
 export interface CreateProductReq {
@@ -51,8 +55,23 @@ export interface PatchProductReq {
   note?: string | null;
 }
 
-export async function listProducts() {
-  return apiGet<ListProductsResp>('/api/products');
+export interface ProductMetrics {
+  twr: number;
+  annualized: number;
+  volatility: number;
+  max_drawdown: number;
+  drawdown_recovery_days: number;
+}
+
+export interface GetMetricsResp {
+  product_id: number;
+  window: string;
+  status: 'ok' | 'insufficient_data';
+  metrics: ProductMetrics | null;
+}
+
+export async function listProducts(includeMetrics: boolean = false, window: string = '8w') {
+  return apiGet<ListProductsResp>('/api/products', { include_metrics: includeMetrics, window });
 }
 
 export async function createProduct(body: CreateProductReq) {
@@ -61,4 +80,12 @@ export async function createProduct(body: CreateProductReq) {
 
 export async function patchProduct(id: number, body: PatchProductReq) {
   return apiPatch<Product>(`/api/products/${id}`, body);
+}
+
+export async function getProductMetrics(productId: number, window: string = '8w') {
+  return apiGet<GetMetricsResp>(`/api/products/${productId}/metrics`, { window });
+}
+
+export async function deleteProduct(id: number) {
+  return apiDelete<{ message: string }>(`/api/products/${id}`);
 }

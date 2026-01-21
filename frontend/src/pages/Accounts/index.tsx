@@ -8,11 +8,11 @@ import {
   ProFormText,
   ProTable,
 } from '@ant-design/pro-components';
-import { Button, Form, message } from 'antd';
+import { Button, Form, message, Popconfirm } from 'antd';
 import React, { useMemo, useRef, useState } from 'react';
 
 import type { Account, AccountType, CreateAccountReq, PatchAccountReq } from '@/services/accounts';
-import { createAccount, listAccounts, patchAccount } from '@/services/accounts';
+import { createAccount, listAccounts, patchAccount, deleteAccount } from '@/services/accounts';
 import type { Institution } from '@/services/institutions';
 import { createInstitution, listInstitutions } from '@/services/institutions';
 
@@ -28,6 +28,14 @@ type AccountFormValues = {
 
 type InstitutionFormValues = {
   name: string;
+};
+
+export const accountTypeEnum: Record<AccountType, { text: string }> = {
+  cash: { text: '现金' },
+  debit: { text: '银行卡' },
+  credit: { text: '信用卡' },
+  investment_cash: { text: '投资账户' },
+  other: { text: '其他' },
 };
 
 const Accounts: React.FC = () => {
@@ -56,13 +64,7 @@ const Accounts: React.FC = () => {
     }
   };
 
-  const accountTypeEnum: Record<AccountType, { text: string }> = {
-    cash: { text: '现金' },
-    debit: { text: '银行卡' },
-    credit: { text: '信用卡' },
-    investment_cash: { text: '投资账户' },
-    other: { text: '其他' },
-  };
+
 
   return (
     <PageContainer
@@ -99,6 +101,11 @@ const Accounts: React.FC = () => {
         }}
         columns={[
           {
+            title: '序号',
+            valueType: 'index',
+            width: 48,
+          },
+          {
             title: '账户名',
             dataIndex: 'name',
           },
@@ -106,10 +113,12 @@ const Accounts: React.FC = () => {
             title: '类型',
             dataIndex: 'type',
             valueEnum: accountTypeEnum,
+            width: 120,
           },
           {
             title: '机构',
             dataIndex: 'institution_id',
+            width: 180,
             render: (_, record) => {
               if (!record.institution_id) return '-';
               return institutionNameById.get(record.institution_id) || String(record.institution_id);
@@ -118,11 +127,26 @@ const Accounts: React.FC = () => {
           {
             title: '计入可用现金',
             dataIndex: 'is_liquid',
+            width: 120,
+            align: 'center',
             render: (_, record) => (record.is_liquid ? '✓' : '×'),
+          },
+          {
+            title: '资产快照',
+            dataIndex: 'latest_balance',
+            width: 150,
+            align: 'right',
+            valueType: 'money',
+            render: (dom, record) => {
+              return record.latest_balance !== undefined && record.latest_balance !== null 
+                ? dom 
+                : '-';
+            },
           },
           {
             title: '操作',
             valueType: 'option',
+            width: 120,
             render: (_, record) => [
               <a
                 key="edit"
@@ -141,6 +165,23 @@ const Accounts: React.FC = () => {
               >
                 编辑
               </a>,
+              <Popconfirm
+                key="delete"
+                title="确定删除此账户吗？"
+                description="删除后，相关的资产快照数据也将被删除，且不可恢复。"
+                onConfirm={async () => {
+                  try {
+                    await deleteAccount(record.id);
+                    message.success('删除成功');
+                    actionRef.current?.reload();
+                  } catch (e) {
+                    console.error('Delete failed:', e);
+                    message.error('删除失败');
+                  }
+                }}
+              >
+                <a style={{ color: 'red', marginLeft: 8 }}>删除</a>
+              </Popconfirm>,
             ],
           },
         ]}
@@ -159,7 +200,7 @@ const Accounts: React.FC = () => {
               institution_id: values.institution_id ?? null,
               type: values.type,
               currency: values.currency || 'CNY',
-              is_liquid: values.is_liquid,
+              is_liquid: !!values.is_liquid,
             };
             await createAccount(payload);
             message.success('创建成功');
@@ -235,7 +276,7 @@ const Accounts: React.FC = () => {
               institution_id: values.institution_id ?? null,
               type: values.type,
               currency: values.currency,
-              is_liquid: values.is_liquid,
+              is_liquid: !!values.is_liquid,
             };
             await patchAccount(editing.id, payload);
             message.success('保存成功');

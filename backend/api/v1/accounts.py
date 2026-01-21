@@ -2,7 +2,7 @@ from flask import jsonify, request
 
 from database import get_session
 from models.account import AccountType
-from services.account_service import create_account, list_accounts, patch_account
+from services.account_service import create_account, list_accounts, patch_account, delete_account
 from utils.response import ok, err
 
 from . import bp
@@ -37,6 +37,7 @@ def post_accounts():
 
     institution_id = payload.get('institution_id')
     is_liquid = payload.get('is_liquid')
+    print(f"DEBUG: create_account payload is_liquid={is_liquid!r}, raw={payload.get('is_liquid')!r}")
     currency = payload.get('currency') or 'CNY'
 
     session = get_session()
@@ -85,5 +86,18 @@ def patch_accounts(account_id: int):
         except ValueError as e:
             return jsonify(err(str(e), code=404)), 404
         return jsonify(ok(updated))
+    finally:
+        session.close()
+
+
+@bp.route('/accounts/<int:account_id>', methods=['DELETE'])
+def delete_accounts(account_id: int):
+    session = get_session()
+    try:
+        try:
+            delete_account(session, account_id)
+        except ValueError as e:
+            return jsonify(err(str(e), code=404)), 404
+        return jsonify(ok({'message': 'deleted'}))
     finally:
         session.close()

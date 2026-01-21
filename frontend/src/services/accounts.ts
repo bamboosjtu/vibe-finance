@@ -1,4 +1,4 @@
-import { apiGet, apiPatch, apiPost } from './api';
+import { apiGet, apiPatch, apiPost, apiDelete } from './api';
 
 export type AccountType = 'cash' | 'debit' | 'credit' | 'investment_cash' | 'other';
 
@@ -9,6 +9,8 @@ export interface Account {
   type: AccountType;
   currency: string;
   is_liquid: boolean;
+  latest_balance?: number | null;
+  latest_date?: string | null;
 }
 
 export interface ListAccountsResp {
@@ -41,4 +43,8 @@ export async function createAccount(body: CreateAccountReq) {
 
 export async function patchAccount(id: number, body: PatchAccountReq) {
   return apiPatch<Account>(`/api/accounts/${id}`, body);
+}
+
+export async function deleteAccount(id: number) {
+  return apiDelete<{ message: string }>(`/api/accounts/${id}`);
 }

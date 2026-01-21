@@ -9,7 +9,7 @@ import {
   ProFormTextArea,
   ProTable,
 } from '@ant-design/pro-components';
-import { Button, Form, message, Tag } from 'antd';
+import { Button, Form, message, Popconfirm, Radio, Tag } from 'antd';
 import React, { useMemo, useRef, useState } from 'react';
 
 import type { Institution } from '@/services/institutions';
@@ -20,8 +20,10 @@ import type {
   PatchProductReq,
   Product,
   ProductType,
+  ProductWithMetrics,
 } from '@/services/products';
-import { createProduct, listProducts, patchProduct } from '@/services/products';
+import { createProduct, listProducts, patchProduct, deleteProduct } from '@/services/products';
+import { history } from '@umijs/max';
 
 import styles from './index.less';
 
@@ -50,6 +52,7 @@ const Products: React.FC = () => {
   const [editing, setEditing] = useState<Product | undefined>(undefined);
   const [productForm] = Form.useForm<ProductFormValues>();
   const [institutionForm] = Form.useForm<InstitutionFormValues>();
+  const [window, setWindow] = useState('8w');
 
   const institutionNameById = useMemo(() => {
     const map = new Map<number, string>();
@@ -88,6 +91,21 @@ const Products: React.FC = () => {
         title: '产品',
       }}
       extra={[
+        <Radio.Group
+          key="window"
+          value={window}
+          onChange={(e) => {
+            setWindow(e.target.value);
+            actionRef.current?.reload();
+          }}
+          buttonStyle="solid"
+        >
+          <Radio.Button value="4w">近1月</Radio.Button>
+          <Radio.Button value="8w">近2月</Radio.Button>
+          <Radio.Button value="12w">近3月</Radio.Button>
+          <Radio.Button value="24w">近半年</Radio.Button>
+          <Radio.Button value="1y">近1年</Radio.Button>
+        </Radio.Group>,
         <Button
           key="create"
           type="primary"
@@ -103,13 +121,13 @@ const Products: React.FC = () => {
       ]}
     >
       <div className={styles.toolbar} />
-      <ProTable<Product>
+      <ProTable<ProductWithMetrics>
         actionRef={actionRef}
         rowKey="id"
         search={false}
         request={async () => {
           await loadInstitutions();
-          const resp = await listProducts();
+          const resp = await listProducts(true, window);
           return {
             data: resp.items,
             success: true,
@@ -119,6 +137,7 @@ const Products: React.FC = () => {
           {
             title: '产品名',
             dataIndex: 'name',
+            render: (dom, record) => <a onClick={() => history.push(`/products/${record.id}`)}>{dom}</a>,
           },
           {
             title: '机构',
@@ -151,9 +170,45 @@ const Products: React.FC = () => {
             valueEnum: liquidityRuleEnum,
           },
           {
+            title: '年化收益',
+            dataIndex: ['metrics', 'annualized'],
+            sorter: (a, b) => (a.metrics?.annualized || -999) - (b.metrics?.annualized || -999),
+            render: (_, record) =>
+              record.metrics ? (
+                `${(record.metrics.annualized * 100).toFixed(2)}%`
+              ) : (
+                <span style={{ color: '#ccc' }}>--</span>
+              ),
+          },
+          {
+            title: '最大回撤',
+            dataIndex: ['metrics', 'max_drawdown'],
+            sorter: (a, b) => (a.metrics?.max_drawdown || 999) - (b.metrics?.max_drawdown || 999),
+            defaultSortOrder: 'ascend',
+            render: (_, record) =>
+              record.metrics ? (
+                `${(record.metrics.max_drawdown * 100).toFixed(2)}%`
+              ) : (
+                <span style={{ color: '#ccc' }}>--</span>
+              ),
+          },
+          {
+            title: '修复天数',
+            dataIndex: ['metrics', 'drawdown_recovery_days'],
+            render: (_, record) =>
+              record.metrics ? (
+                `${record.metrics.drawdown_recovery_days}天`
+              ) : (
+                <span style={{ color: '#ccc' }}>--</span>
+              ),
+          },
+          {
             title: '操作',
             valueType: 'option',
             render: (_, record) => [
+              <a key="detail" onClick={() => history.push(`/products/${record.id}`)}>
+                详情
+              </a>,
               <a
                 key="edit"
                 onClick={async () => {
@@ -175,6 +230,23 @@ const Products: React.FC = () => {
               >
                 编辑
               </a>,
+              <Popconfirm
+                key="delete"
+                title="确定删除此产品吗？"
+                description="删除后，相关的估值数据也将被删除，且不可恢复。"
+                onConfirm={async () => {
+                  try {
+                    await deleteProduct(record.id);
+                    message.success('删除成功');
+                    actionRef.current?.reload();
+                  } catch (e) {
+                    console.error('Delete failed:', e);
+                    message.error('删除失败');
+                  }
+                }}
+              >
+                <a style={{ color: 'red', marginLeft: 8 }}>删除</a>
+              </Popconfirm>,
             ],
           },
         ]}

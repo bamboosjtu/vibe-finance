@@ -80,7 +80,9 @@ export default (props: any) => {
   };
   const { initialState, loading, setInitialState } = initialInfo;
   const userConfig = {
-  "title": "@umijs/max"
+  "title": "Vibe Investment",
+  "locale": false,
+  "layout": "side"
 };
 const formatMessage = undefined;
   const runtimeConfig = pluginManager.applyPlugins({

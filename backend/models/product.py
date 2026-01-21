@@ -1,5 +1,5 @@
 from sqlmodel import SQLModel, Field, Relationship
-from typing import Optional
+from typing import Optional, List
 from enum import Enum
 from .base import BaseModel
 
@@ -37,6 +37,7 @@ class Product(BaseModel, table=True):
     
     # 关系
     institution: Optional["Institution"] = Relationship(back_populates="products")
+    valuations: List["ProductValuation"] = Relationship(back_populates="product")
     
     class Config:
         json_schema_extra = {

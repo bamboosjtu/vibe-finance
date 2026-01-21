@@ -7,7 +7,9 @@ load_dotenv()
 class Config:
     """应用配置类"""
     SECRET_KEY = os.environ.get('SECRET_KEY') or 'dev-secret-key-change-in-production'
-    DATABASE_URL = os.environ.get('DATABASE_URL') or 'sqlite:///construction.db'
+    BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    DB_PATH = os.path.join(BASE_DIR, 'db', 'construction.db')
+    DATABASE_URL = os.environ.get('DATABASE_URL') or f'sqlite:///{DB_PATH}'
     DEBUG = os.environ.get('DEBUG', 'False').lower() == 'true'
 
 

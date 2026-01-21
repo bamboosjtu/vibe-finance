@@ -14,6 +14,7 @@
     },
     "dependencies": {
       "@ant-design/icons": "^5.6.1",
+      "@ant-design/plots": "^2.6.8",
       "@ant-design/pro-components": "^2.8.10",
       "@types/lodash": "^4.17.23",
       "@umijs/max": "^4.6.22",
@@ -57,7 +58,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 21
+        "register": 32
       },
       "enableBy": "register"
     },
@@ -70,7 +71,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 8
+        "register": 13
       },
       "enableBy": "register"
     },
@@ -87,7 +88,7 @@
             0
           ]
         },
-        "register": 5
+        "register": 6
       },
       "enableBy": "register"
     },
@@ -101,10 +102,10 @@
       "time": {
         "hooks": {
           "onStart": [
-            3
+            4
           ]
         },
-        "register": 3
+        "register": 4
       },
       "enableBy": "register"
     },
@@ -134,7 +135,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 1
+        "register": 2
       },
       "enableBy": "register"
     },
@@ -148,10 +149,10 @@
       "time": {
         "hooks": {
           "modifyAppData": [
-            202
+            186
           ]
         },
-        "register": 29
+        "register": 35
       },
       "enableBy": "register"
     },
@@ -184,7 +185,7 @@
             0
           ]
         },
-        "register": 2
+        "register": 3
       },
       "enableBy": "register"
     },
@@ -214,7 +215,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 1
+        "register": 2
       },
       "enableBy": "config"
     },
@@ -231,7 +232,7 @@
             0
           ]
         },
-        "register": 11
+        "register": 18
       },
       "enableBy": "register"
     },
@@ -962,7 +963,7 @@
       "enableBy": "register",
       "time": {
         "hooks": {},
-        "register": 0
+        "register": 1
       }
     },
     "virtual: config-cssLoader": {
@@ -1083,7 +1084,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 0
+        "register": 1
       },
       "enableBy": "config"
     },
@@ -1100,7 +1101,7 @@
             1
           ]
         },
-        "register": 1
+        "register": 2
       },
       "enableBy": "register"
     },
@@ -1113,7 +1114,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 1
+        "register": 2
       },
       "enableBy": "register"
     },
@@ -1126,7 +1127,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 107
+        "register": 127
       },
       "enableBy": "register"
     },
@@ -1139,7 +1140,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 55
+        "register": 89
       },
       "enableBy": "config"
     },
@@ -1152,7 +1153,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 23
+        "register": 87
       },
       "enableBy": "config"
     },
@@ -1169,7 +1170,7 @@
             0
           ]
         },
-        "register": 1
+        "register": 3
       },
       "enableBy": "register"
     },
@@ -1182,7 +1183,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 1
+        "register": 4
       },
       "enableBy": "register"
     },
@@ -1195,7 +1196,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 2
+        "register": 8
       },
       "enableBy": "config"
     },
@@ -1209,10 +1210,10 @@
       "time": {
         "hooks": {
           "onStart": [
-            1
+            2
           ]
         },
-        "register": 42
+        "register": 237
       }
     },
     "./node_modules/@umijs/preset-umi/dist/features/mpa/mpa": {
@@ -1224,7 +1225,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 2
+        "register": 6
       },
       "enableBy": "config"
     },
@@ -1237,7 +1238,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 1
+        "register": 4
       }
     },
     "./node_modules/@umijs/preset-umi/dist/features/overrides/overrides": {
@@ -1262,7 +1263,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 1
+        "register": 5
       },
       "enableBy": "config"
     },
@@ -1279,7 +1280,7 @@
             1
           ]
         },
-        "register": 3
+        "register": 8
       }
     },
     "./node_modules/@umijs/preset-umi/dist/features/polyfill/publicPathPolyfill": {
@@ -1291,7 +1292,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 0
+        "register": 1
       },
       "enableBy": "register"
     },
@@ -1304,7 +1305,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 3
+        "register": 7
       },
       "enableBy": "register"
     },
@@ -1317,7 +1318,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 1
+        "register": 2
       },
       "enableBy": "config"
     },
@@ -1330,7 +1331,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 0
+        "register": 2
       },
       "enableBy": "config"
     },
@@ -1343,7 +1344,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 2
+        "register": 4
       },
       "enableBy": "register"
     },
@@ -1356,7 +1357,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 6
+        "register": 19
       },
       "enableBy": "register"
     },
@@ -1369,7 +1370,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 2
+        "register": 9
       },
       "enableBy": "config"
     },
@@ -1382,7 +1383,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 0
+        "register": 2
       }
     },
     "./node_modules/@umijs/preset-umi/dist/features/ssr/ssr": {
@@ -1394,7 +1395,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 4
+        "register": 12
       },
       "enableBy": "config"
     },
@@ -1407,7 +1408,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 4
+        "register": 13
       },
       "enableBy": "register"
     },
@@ -1420,7 +1421,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 6
+        "register": 17
       },
       "enableBy": "register"
     },
@@ -1433,7 +1434,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 6
+        "register": 23
       },
       "enableBy": "config"
     },
@@ -1446,7 +1447,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 1
+        "register": 3
       },
       "enableBy": "config"
     },
@@ -1459,7 +1460,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 9
+        "register": 25
       }
     },
     "./node_modules/@umijs/preset-umi/dist/features/monorepo/redirect": {
@@ -1471,7 +1472,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 26
+        "register": 140
       },
       "enableBy": "config"
     },
@@ -1484,7 +1485,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 2
+        "register": 4
       }
     },
     "./node_modules/@umijs/preset-umi/dist/features/clickToComponent/clickToComponent": {
@@ -1496,7 +1497,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 2
+        "register": 4
       },
       "enableBy": "config"
     },
@@ -1509,7 +1510,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 2
+        "register": 5
       },
       "enableBy": "config"
     },
@@ -1535,7 +1536,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 1
+        "register": 5
       }
     },
     "./node_modules/@umijs/preset-umi/dist/features/swc/swc": {
@@ -1548,10 +1549,10 @@
       "time": {
         "hooks": {
           "addOnDemandDeps": [
-            1
+            0
           ]
         },
-        "register": 1
+        "register": 2
       },
       "enableBy": "register"
     },
@@ -1564,7 +1565,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 3
+        "register": 11
       }
     },
     "./node_modules/@umijs/preset-umi/dist/features/mako/mako": {
@@ -1576,7 +1577,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 1
+        "register": 3
       },
       "enableBy": "config"
     },
@@ -1589,7 +1590,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 2
+        "register": 4
       }
     },
     "./node_modules/@umijs/preset-umi/dist/features/hmrGuardian/hmrGuardian": {
@@ -1601,7 +1602,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 5
+        "register": 14
       }
     },
     "./node_modules/@umijs/preset-umi/dist/features/routePreloadOnLoad/routePreloadOnLoad": {
@@ -1613,7 +1614,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 37
+        "register": 176
       }
     },
     "./node_modules/@umijs/preset-umi/dist/features/forget/forget": {
@@ -1625,7 +1626,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 2
+        "register": 4
       },
       "enableBy": "config"
     },
@@ -1638,7 +1639,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 2
+        "register": 6
       },
       "enableBy": "register"
     },
@@ -1651,7 +1652,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 22
+        "register": 20
       },
       "enableBy": "register"
     },
@@ -1664,7 +1665,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 50
+        "register": 166
       },
       "enableBy": "register"
     },
@@ -1678,10 +1679,10 @@
       "time": {
         "hooks": {
           "modifyAppData": [
-            22
+            23
           ]
         },
-        "register": 50
+        "register": 83
       }
     },
     "./node_modules/@umijs/preset-umi/dist/commands/help": {
@@ -1693,7 +1694,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 0
+        "register": 1
       },
       "enableBy": "register"
     },
@@ -1732,7 +1733,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 1
+        "register": 2
       },
       "enableBy": "register"
     },
@@ -1758,7 +1759,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 3
+        "register": 5
       },
       "enableBy": "register"
     },
@@ -1771,7 +1772,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 0
+        "register": 2
       },
       "enableBy": "register"
     },
@@ -1797,7 +1798,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 0
+        "register": 1
       },
       "enableBy": "register"
     },
@@ -1823,7 +1824,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 0
+        "register": 1
       },
       "enableBy": "register"
     },
@@ -1836,7 +1837,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 0
+        "register": 1
       },
       "enableBy": "register"
     },
@@ -1862,7 +1863,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 0
+        "register": 1
       },
       "enableBy": "register"
     },
@@ -1914,7 +1915,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 1
+        "register": 2
       },
       "enableBy": "register"
     },
@@ -1927,7 +1928,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 27
+        "register": 40
       },
       "enableBy": "register"
     },
@@ -1953,7 +1954,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 3
+        "register": 5
       },
       "enableBy": "register"
     },
@@ -1966,7 +1967,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 2
+        "register": 3
       },
       "enableBy": "config"
     },
@@ -1981,7 +1982,7 @@
       },
       "time": {
         "hooks": {},
-        "register": 0
+        "register": 1
       }
     },
     "./node_modules/@umijs/plugins/dist/antd": {
@@ -1994,16 +1995,16 @@
       "time": {
         "hooks": {
           "modifyConfig": [
-            5
+            6
           ],
           "modifyAppData": [
             0
           ],
           "onCheck": [
-            0
+            1
           ]
         },
-        "register": 9
+        "register": 12
       }
     },
     "./node_modules/@umijs/plugins/dist/dva": {
@@ -2015,7 +2016,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 9
+        "register": 12
       },
       "enableBy": "config"
     },
@@ -2050,10 +2051,10 @@
             0
           ],
           "modifyAppData": [
-            1
+            0
           ]
         },
-        "register": 5
+        "register": 4
       },
       "enableBy": "config"
     },
@@ -2066,7 +2067,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 3
+        "register": 5
       },
       "enableBy": "config"
     },
@@ -2079,7 +2080,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 2
+        "register": 4
       },
       "enableBy": "config"
     },
@@ -2105,7 +2106,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 0
+        "register": 1
       },
       "enableBy": "config"
     },
@@ -2143,7 +2144,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 2
+        "register": 3
       }
     },
     "./node_modules/@umijs/plugins/dist/react-query": {
@@ -2181,7 +2182,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 1
+        "register": 3
       },
       "enableBy": "config"
     },
@@ -2207,7 +2208,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 1
+        "register": 2
       },
       "enableBy": "config"
     },
@@ -2238,10 +2239,10 @@
       "time": {
         "hooks": {
           "modifyAppData": [
-            0
+            1
           ]
         },
-        "register": 0
+        "register": 1
       },
       "enableBy": "register"
     },
@@ -2255,10 +2256,10 @@
       "time": {
         "hooks": {
           "onCheckPkgJSON": [
-            1
+            0
           ]
         },
-        "register": 1
+        "register": 0
       },
       "enableBy": "register"
     },
@@ -2271,7 +2272,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 0
+        "register": 1
       },
       "enableBy": "register"
     }
@@ -2293,7 +2294,9 @@
       }
     },
     "layout": {
-      "title": "@umijs/max"
+      "title": "Vibe Investment",
+      "locale": false,
+      "layout": "side"
     },
     "routes": [
       {
@@ -2303,22 +2306,54 @@
       {
         "name": "Dashboard",
         "path": "/dashboard",
-        "component": "./Home"
-      },
-      {
-        "name": "首页",
-        "path": "/home",
-        "component": "./Home"
+        "component": "./Dashboard",
+        "icon": "dashboard"
       },
       {
         "name": "账户",
         "path": "/accounts",
-        "component": "./Accounts"
+        "icon": "accountBook",
+        "routes": [
+          {
+            "path": "/accounts",
+            "redirect": "/accounts/list"
+          },
+          {
+            "name": "账户列表",
+            "path": "/accounts/list",
+            "component": "./Accounts"
+          },
+          {
+            "name": "资产快照",
+            "path": "/accounts/snapshots",
+            "component": "./Snapshots/Entry"
+          }
+        ]
       },
       {
         "name": "产品",
         "path": "/products",
-        "component": "./Products"
+        "icon": "barChart",
+        "routes": [
+          {
+            "path": "/products",
+            "redirect": "/products/list"
+          },
+          {
+            "name": "产品列表",
+            "path": "/products/list",
+            "component": "./Products"
+          },
+          {
+            "name": "产品估值",
+            "path": "/products/valuations",
+            "component": "./ProductValuations"
+          }
+        ]
+      },
+      {
+        "path": "/products/:id",
+        "component": "./Products/Detail"
       }
     ],
     "npmClient": "npm"
@@ -2364,7 +2399,9 @@
       }
     },
     "layout": {
-      "title": "@umijs/max"
+      "title": "Vibe Investment",
+      "locale": false,
+      "layout": "side"
     },
     "routes": [
       {
@@ -2374,22 +2411,54 @@
       {
         "name": "Dashboard",
         "path": "/dashboard",
-        "component": "./Home"
-      },
-      {
-        "name": "首页",
-        "path": "/home",
-        "component": "./Home"
+        "component": "./Dashboard",
+        "icon": "dashboard"
       },
       {
         "name": "账户",
         "path": "/accounts",
-        "component": "./Accounts"
+        "icon": "accountBook",
+        "routes": [
+          {
+            "path": "/accounts",
+            "redirect": "/accounts/list"
+          },
+          {
+            "name": "账户列表",
+            "path": "/accounts/list",
+            "component": "./Accounts"
+          },
+          {
+            "name": "资产快照",
+            "path": "/accounts/snapshots",
+            "component": "./Snapshots/Entry"
+          }
+        ]
       },
       {
         "name": "产品",
         "path": "/products",
-        "component": "./Products"
+        "icon": "barChart",
+        "routes": [
+          {
+            "path": "/products",
+            "redirect": "/products/list"
+          },
+          {
+            "name": "产品列表",
+            "path": "/products/list",
+            "component": "./Products"
+          },
+          {
+            "name": "产品估值",
+            "path": "/products/valuations",
+            "component": "./ProductValuations"
+          }
+        ]
+      },
+      {
+        "path": "/products/:id",
+        "component": "./Products/Detail"
       }
     ],
     "npmClient": "npm",
@@ -3321,46 +3390,98 @@
     "2": {
       "name": "Dashboard",
       "path": "/dashboard",
-      "file": "@/pages/Home/index.tsx",
+      "icon": "dashboard",
+      "file": "@/pages/Dashboard/index.tsx",
       "parentId": "ant-design-pro-layout",
       "id": "2",
       "absPath": "/dashboard",
-      "__content": "import Guide from '@/components/Guide';\nimport { trim } from '@/utils/format';\nimport { PageContainer } from '@ant-design/pro-components';\nimport { useModel } from '@umijs/max';\nimport styles from './index.less';\n\nconst HomePage: React.FC = () => {\n  const { name } = useModel('global');\n  return (\n    <PageContainer ghost>\n      <div className={styles.container}>\n        <Guide name={trim(name)} />\n      </div>\n    </PageContainer>\n  );\n};\n\nexport default HomePage;\n",
+      "__content": "import { Card, Row, Col, Statistic } from 'antd';\r\nimport { AccountBookOutlined, BankOutlined, CreditCardOutlined, DollarOutlined } from '@ant-design/icons';\r\n\r\nconst Dashboard: React.FC = () => {\r\n  return (\r\n    <div style={{ padding: '24px' }}>\r\n      <h1>Dashboard</h1>\r\n      <p>投资概览页面 - Sprint 0 占位页</p>\r\n      \r\n      <Row gutter={16} style={{ marginTop: '24px' }}>\r\n        <Col span={6}>\r\n          <Card>\r\n            <Statistic\r\n              title=\"总资产\"\r\n              value={0}\r\n              prefix={<BankOutlined />}\r\n              suffix=\"元\"\r\n            />\r\n          </Card>\r\n        </Col>\r\n        <Col span={6}>\r\n          <Card>\r\n            <Statistic\r\n              title=\"流动资产\"\r\n              value={0}\r\n              prefix={<DollarOutlined />}\r\n              suffix=\"元\"\r\n            />\r\n          </Card>\r\n        </Col>\r\n        <Col span={6}>\r\n          <Card>\r\n            <Statistic\r\n              title=\"负债\"\r\n              value={0}\r\n              prefix={<CreditCardOutlined />}\r\n              suffix=\"元\"\r\n            />\r\n          </Card>\r\n        </Col>\r\n        <Col span={6}>\r\n          <Card>\r\n            <Statistic\r\n              title=\"可用现金\"\r\n              value={0}\r\n              prefix={<AccountBookOutlined />}\r\n              suffix=\"元\"\r\n            />\r\n          </Card>\r\n        </Col>\r\n      </Row>\r\n    </div>\r\n  );\r\n};\r\n\r\nexport default Dashboard;\r\n",
       "__isJSFile": true,
-      "__absFile": "C:/Users/bambo/Documents/Projects/vibe-test/frontend/src/pages/Home/index.tsx"
+      "__absFile": "C:/Users/bambo/Documents/Projects/vibe-test/frontend/src/pages/Dashboard/index.tsx"
     },
     "3": {
-      "name": "首页",
-      "path": "/home",
-      "file": "@/pages/Home/index.tsx",
-      "parentId": "ant-design-pro-layout",
-      "id": "3",
-      "absPath": "/home",
-      "__content": "import Guide from '@/components/Guide';\nimport { trim } from '@/utils/format';\nimport { PageContainer } from '@ant-design/pro-components';\nimport { useModel } from '@umijs/max';\nimport styles from './index.less';\n\nconst HomePage: React.FC = () => {\n  const { name } = useModel('global');\n  return (\n    <PageContainer ghost>\n      <div className={styles.container}>\n        <Guide name={trim(name)} />\n      </div>\n    </PageContainer>\n  );\n};\n\nexport default HomePage;\n",
-      "__isJSFile": true,
-      "__absFile": "C:/Users/bambo/Documents/Projects/vibe-test/frontend/src/pages/Home/index.tsx"
-    },
-    "4": {
       "name": "账户",
       "path": "/accounts",
-      "file": "@/pages/Accounts/index.tsx",
+      "icon": "accountBook",
       "parentId": "ant-design-pro-layout",
+      "id": "3",
+      "absPath": "/accounts"
+    },
+    "4": {
+      "path": "/accounts",
+      "redirect": "/accounts/list",
+      "parentId": "3",
       "id": "4",
-      "absPath": "/accounts",
-      "__content": "import { PlusOutlined } from '@ant-design/icons';\r\nimport {\r\n  ActionType,\r\n  ModalForm,\r\n  PageContainer,\r\n  ProFormCheckbox,\r\n  ProFormSelect,\r\n  ProFormText,\r\n  ProTable,\r\n} from '@ant-design/pro-components';\r\nimport { Button, Form, message } from 'antd';\r\nimport React, { useMemo, useRef, useState } from 'react';\r\n\r\nimport type { Account, AccountType, CreateAccountReq, PatchAccountReq } from '@/services/accounts';\r\nimport { createAccount, listAccounts, patchAccount } from '@/services/accounts';\r\nimport type { Institution } from '@/services/institutions';\r\nimport { createInstitution, listInstitutions } from '@/services/institutions';\r\n\r\nimport styles from './index.less';\r\n\r\ntype AccountFormValues = {\r\n  name: string;\r\n  institution_id?: number | null;\r\n  type: AccountType;\r\n  currency?: string;\r\n  is_liquid?: boolean;\r\n};\r\n\r\ntype InstitutionFormValues = {\r\n  name: string;\r\n};\r\n\r\nconst Accounts: React.FC = () => {\r\n  const actionRef = useRef<ActionType>();\r\n  const [institutions, setInstitutions] = useState<Institution[]>([]);\r\n  const [createOpen, setCreateOpen] = useState(false);\r\n  const [editOpen, setEditOpen] = useState(false);\r\n  const [institutionCreateOpen, setInstitutionCreateOpen] = useState(false);\r\n  const [editing, setEditing] = useState<Account | undefined>(undefined);\r\n  const [accountForm] = Form.useForm<AccountFormValues>();\r\n  const [institutionForm] = Form.useForm<InstitutionFormValues>();\r\n\r\n  const institutionNameById = useMemo(() => {\r\n    const map = new Map<number, string>();\r\n    institutions.forEach((i) => map.set(i.id, i.name));\r\n    return map;\r\n  }, [institutions]);\r\n\r\n  const loadInstitutions = async () => {\r\n    try {\r\n      const resp = await listInstitutions();\r\n      setInstitutions(resp.items);\r\n    } catch (e) {\r\n      message.error('加载机构列表失败');\r\n      setInstitutions([]);\r\n    }\r\n  };\r\n\r\n  const accountTypeEnum: Record<AccountType, { text: string }> = {\r\n    cash: { text: '现金' },\r\n    debit: { text: '银行卡' },\r\n    credit: { text: '信用卡' },\r\n    investment_cash: { text: '投资账户' },\r\n    other: { text: '其他' },\r\n  };\r\n\r\n  return (\r\n    <PageContainer\r\n      header={{\r\n        title: '账户',\r\n      }}\r\n      extra={[\r\n        <Button\r\n          key=\"create\"\r\n          type=\"primary\"\r\n          icon={<PlusOutlined />}\r\n          onClick={async () => {\r\n            await loadInstitutions();\r\n            accountForm.resetFields();\r\n            setCreateOpen(true);\r\n          }}\r\n        >\r\n          新建账户\r\n        </Button>,\r\n      ]}\r\n    >\r\n      <div className={styles.toolbar} />\r\n      <ProTable<Account>\r\n        actionRef={actionRef}\r\n        rowKey=\"id\"\r\n        search={false}\r\n        request={async () => {\r\n          await loadInstitutions();\r\n          const resp = await listAccounts();\r\n          return {\r\n            data: resp.items,\r\n            success: true,\r\n          };\r\n        }}\r\n        columns={[\r\n          {\r\n            title: '账户名',\r\n            dataIndex: 'name',\r\n          },\r\n          {\r\n            title: '类型',\r\n            dataIndex: 'type',\r\n            valueEnum: accountTypeEnum,\r\n          },\r\n          {\r\n            title: '机构',\r\n            dataIndex: 'institution_id',\r\n            render: (_, record) => {\r\n              if (!record.institution_id) return '-';\r\n              return institutionNameById.get(record.institution_id) || String(record.institution_id);\r\n            },\r\n          },\r\n          {\r\n            title: '计入可用现金',\r\n            dataIndex: 'is_liquid',\r\n            render: (_, record) => (record.is_liquid ? '✓' : '×'),\r\n          },\r\n          {\r\n            title: '操作',\r\n            valueType: 'option',\r\n            render: (_, record) => [\r\n              <a\r\n                key=\"edit\"\r\n                onClick={async () => {\r\n                  await loadInstitutions();\r\n                  setEditing(record);\r\n                  accountForm.setFieldsValue({\r\n                    name: record.name,\r\n                    institution_id: record.institution_id,\r\n                    type: record.type,\r\n                    currency: record.currency,\r\n                    is_liquid: record.is_liquid,\r\n                  });\r\n                  setEditOpen(true);\r\n                }}\r\n              >\r\n                编辑\r\n              </a>,\r\n            ],\r\n          },\r\n        ]}\r\n      />\r\n\r\n      <ModalForm<AccountFormValues>\r\n        form={accountForm}\r\n        title=\"新建账户\"\r\n        open={createOpen}\r\n        onOpenChange={(v) => setCreateOpen(v)}\r\n        modalProps={{ destroyOnClose: true }}\r\n        onFinish={async (values) => {\r\n          try {\r\n            const payload: CreateAccountReq = {\r\n              name: values.name,\r\n              institution_id: values.institution_id ?? null,\r\n              type: values.type,\r\n              currency: values.currency || 'CNY',\r\n              is_liquid: values.is_liquid,\r\n            };\r\n            await createAccount(payload);\r\n            message.success('创建成功');\r\n            actionRef.current?.reload();\r\n            return true;\r\n          } catch (e) {\r\n            message.error('创建失败');\r\n            return false;\r\n          }\r\n        }}\r\n      >\r\n        <ProFormText name=\"name\" label=\"名称\" rules={[{ required: true }]} />\r\n        <ProFormSelect\r\n          name=\"institution_id\"\r\n          label=\"机构\"\r\n          options={institutions.map((i) => ({ label: i.name, value: i.id }))}\r\n          fieldProps={{\r\n            allowClear: true,\r\n            dropdownRender: (menu) => (\r\n              <div>\r\n                {menu}\r\n                <div>\r\n                  <Button\r\n                    type=\"link\"\r\n                    onClick={() => {\r\n                      institutionForm.resetFields();\r\n                      setInstitutionCreateOpen(true);\r\n                    }}\r\n                  >\r\n                    新建机构\r\n                  </Button>\r\n                </div>\r\n              </div>\r\n            ),\r\n          }}\r\n        />\r\n        <ProFormSelect\r\n          name=\"type\"\r\n          label=\"类型\"\r\n          valueEnum={accountTypeEnum}\r\n          rules={[{ required: true }]}\r\n          fieldProps={{\r\n            onChange: (v) => {\r\n              if (v === 'credit') {\r\n                const current = accountForm.getFieldValue('is_liquid');\r\n                if (current === undefined) {\r\n                  accountForm.setFieldsValue({ is_liquid: false });\r\n                }\r\n              }\r\n            },\r\n          }}\r\n        />\r\n        <ProFormText name=\"currency\" label=\"币种\" initialValue=\"CNY\" />\r\n        <ProFormCheckbox name=\"is_liquid\">计入可用现金</ProFormCheckbox>\r\n      </ModalForm>\r\n\r\n      <ModalForm<AccountFormValues>\r\n        form={accountForm}\r\n        title=\"编辑账户\"\r\n        open={editOpen}\r\n        onOpenChange={(v) => {\r\n          setEditOpen(v);\r\n          if (!v) {\r\n            setEditing(undefined);\r\n          }\r\n        }}\r\n        modalProps={{ destroyOnClose: true }}\r\n        onFinish={async (values) => {\r\n          if (!editing) return false;\r\n          try {\r\n            const payload: PatchAccountReq = {\r\n              name: values.name,\r\n              institution_id: values.institution_id ?? null,\r\n              type: values.type,\r\n              currency: values.currency,\r\n              is_liquid: values.is_liquid,\r\n            };\r\n            await patchAccount(editing.id, payload);\r\n            message.success('保存成功');\r\n            actionRef.current?.reload();\r\n            return true;\r\n          } catch (e) {\r\n            message.error('保存失败');\r\n            return false;\r\n          }\r\n        }}\r\n      >\r\n        <ProFormText name=\"name\" label=\"名称\" rules={[{ required: true }]} />\r\n        <ProFormSelect\r\n          name=\"institution_id\"\r\n          label=\"机构\"\r\n          options={institutions.map((i) => ({ label: i.name, value: i.id }))}\r\n          fieldProps={{ allowClear: true }}\r\n        />\r\n        <ProFormSelect\r\n          name=\"type\"\r\n          label=\"类型\"\r\n          valueEnum={accountTypeEnum}\r\n          rules={[{ required: true }]}\r\n        />\r\n        <ProFormText name=\"currency\" label=\"币种\" />\r\n        <ProFormCheckbox name=\"is_liquid\">计入可用现金</ProFormCheckbox>\r\n      </ModalForm>\r\n\r\n      <ModalForm<InstitutionFormValues>\r\n        form={institutionForm}\r\n        title=\"新建机构\"\r\n        open={institutionCreateOpen}\r\n        onOpenChange={(v) => setInstitutionCreateOpen(v)}\r\n        modalProps={{ destroyOnClose: true }}\r\n        onFinish={async (values) => {\r\n          try {\r\n            const created = await createInstitution({ name: values.name });\r\n            message.success('创建成功');\r\n            await loadInstitutions();\r\n            accountForm.setFieldsValue({ institution_id: created.id });\r\n            return true;\r\n          } catch (e) {\r\n            message.error('创建失败');\r\n            return false;\r\n          }\r\n        }}\r\n      >\r\n        <ProFormText name=\"name\" label=\"机构名称\" rules={[{ required: true }]} />\r\n      </ModalForm>\r\n    </PageContainer>\r\n  );\r\n};\r\n\r\nexport default Accounts;\r\n",
+      "absPath": "/accounts"
+    },
+    "5": {
+      "name": "账户列表",
+      "path": "/accounts/list",
+      "file": "@/pages/Accounts/index.tsx",
+      "parentId": "3",
+      "id": "5",
+      "absPath": "/accounts/list",
+      "__content": "import { PlusOutlined } from '@ant-design/icons';\nimport {\n  ActionType,\n  ModalForm,\n  PageContainer,\n  ProFormCheckbox,\n  ProFormSelect,\n  ProFormText,\n  ProTable,\n} from '@ant-design/pro-components';\nimport { Button, Form, message, Popconfirm } from 'antd';\nimport React, { useMemo, useRef, useState } from 'react';\n\nimport type { Account, AccountType, CreateAccountReq, PatchAccountReq } from '@/services/accounts';\nimport { createAccount, listAccounts, patchAccount, deleteAccount } from '@/services/accounts';\nimport type { Institution } from '@/services/institutions';\nimport { createInstitution, listInstitutions } from '@/services/institutions';\n\nimport styles from './index.less';\n\ntype AccountFormValues = {\n  name: string;\n  institution_id?: number | null;\n  type: AccountType;\n  currency?: string;\n  is_liquid?: boolean;\n};\n\ntype InstitutionFormValues = {\n  name: string;\n};\n\nexport const accountTypeEnum: Record<AccountType, { text: string }> = {\n  cash: { text: '现金' },\n  debit: { text: '银行卡' },\n  credit: { text: '信用卡' },\n  investment_cash: { text: '投资账户' },\n  other: { text: '其他' },\n};\n\nconst Accounts: React.FC = () => {\n  const actionRef = useRef<ActionType>();\n  const [institutions, setInstitutions] = useState<Institution[]>([]);\n  const [createOpen, setCreateOpen] = useState(false);\n  const [editOpen, setEditOpen] = useState(false);\n  const [institutionCreateOpen, setInstitutionCreateOpen] = useState(false);\n  const [editing, setEditing] = useState<Account | undefined>(undefined);\n  const [accountForm] = Form.useForm<AccountFormValues>();\n  const [institutionForm] = Form.useForm<InstitutionFormValues>();\n\n  const institutionNameById = useMemo(() => {\n    const map = new Map<number, string>();\n    institutions.forEach((i) => map.set(i.id, i.name));\n    return map;\n  }, [institutions]);\n\n  const loadInstitutions = async () => {\n    try {\n      const resp = await listInstitutions();\n      setInstitutions(resp.items);\n    } catch (e) {\n      message.error('加载机构列表失败');\n      setInstitutions([]);\n    }\n  };\n\n\n\n  return (\n    <PageContainer\n      header={{\n        title: '账户',\n      }}\n      extra={[\n        <Button\n          key=\"create\"\n          type=\"primary\"\n          icon={<PlusOutlined />}\n          onClick={async () => {\n            await loadInstitutions();\n            accountForm.resetFields();\n            setCreateOpen(true);\n          }}\n        >\n          新建账户\n        </Button>,\n      ]}\n    >\n      <div className={styles.toolbar} />\n      <ProTable<Account>\n        actionRef={actionRef}\n        rowKey=\"id\"\n        search={false}\n        request={async () => {\n          await loadInstitutions();\n          const resp = await listAccounts();\n          return {\n            data: resp.items,\n            success: true,\n          };\n        }}\n        columns={[\n          {\n            title: '序号',\n            valueType: 'index',\n            width: 48,\n          },\n          {\n            title: '账户名',\n            dataIndex: 'name',\n          },\n          {\n            title: '类型',\n            dataIndex: 'type',\n            valueEnum: accountTypeEnum,\n            width: 120,\n          },\n          {\n            title: '机构',\n            dataIndex: 'institution_id',\n            width: 180,\n            render: (_, record) => {\n              if (!record.institution_id) return '-';\n              return institutionNameById.get(record.institution_id) || String(record.institution_id);\n            },\n          },\n          {\n            title: '计入可用现金',\n            dataIndex: 'is_liquid',\n            width: 120,\n            align: 'center',\n            render: (_, record) => (record.is_liquid ? '✓' : '×'),\n          },\n          {\n            title: '资产快照',\n            dataIndex: 'latest_balance',\n            width: 150,\n            align: 'right',\n            valueType: 'money',\n            render: (dom, record) => {\n              return record.latest_balance !== undefined && record.latest_balance !== null \n                ? dom \n                : '-';\n            },\n          },\n          {\n            title: '操作',\n            valueType: 'option',\n            width: 120,\n            render: (_, record) => [\n              <a\n                key=\"edit\"\n                onClick={async () => {\n                  await loadInstitutions();\n                  setEditing(record);\n                  accountForm.setFieldsValue({\n                    name: record.name,\n                    institution_id: record.institution_id,\n                    type: record.type,\n                    currency: record.currency,\n                    is_liquid: record.is_liquid,\n                  });\n                  setEditOpen(true);\n                }}\n              >\n                编辑\n              </a>,\n              <Popconfirm\n                key=\"delete\"\n                title=\"确定删除此账户吗？\"\n                description=\"删除后，相关的资产快照数据也将被删除，且不可恢复。\"\n                onConfirm={async () => {\n                  try {\n                    await deleteAccount(record.id);\n                    message.success('删除成功');\n                    actionRef.current?.reload();\n                  } catch (e) {\n                    console.error('Delete failed:', e);\n                    message.error('删除失败');\n                  }\n                }}\n              >\n                <a style={{ color: 'red', marginLeft: 8 }}>删除</a>\n              </Popconfirm>,\n            ],\n          },\n        ]}\n      />\n\n      <ModalForm<AccountFormValues>\n        form={accountForm}\n        title=\"新建账户\"\n        open={createOpen}\n        onOpenChange={(v) => setCreateOpen(v)}\n        modalProps={{ destroyOnClose: true }}\n        onFinish={async (values) => {\n          try {\n            const payload: CreateAccountReq = {\n              name: values.name,\n              institution_id: values.institution_id ?? null,\n              type: values.type,\n              currency: values.currency || 'CNY',\n              is_liquid: !!values.is_liquid,\n            };\n            await createAccount(payload);\n            message.success('创建成功');\n            actionRef.current?.reload();\n            return true;\n          } catch (e) {\n            message.error('创建失败');\n            return false;\n          }\n        }}\n      >\n        <ProFormText name=\"name\" label=\"名称\" rules={[{ required: true }]} />\n        <ProFormSelect\n          name=\"institution_id\"\n          label=\"机构\"\n          options={institutions.map((i) => ({ label: i.name, value: i.id }))}\n          fieldProps={{\n            allowClear: true,\n            dropdownRender: (menu) => (\n              <div>\n                {menu}\n                <div>\n                  <Button\n                    type=\"link\"\n                    onClick={() => {\n                      institutionForm.resetFields();\n                      setInstitutionCreateOpen(true);\n                    }}\n                  >\n                    新建机构\n                  </Button>\n                </div>\n              </div>\n            ),\n          }}\n        />\n        <ProFormSelect\n          name=\"type\"\n          label=\"类型\"\n          valueEnum={accountTypeEnum}\n          rules={[{ required: true }]}\n          fieldProps={{\n            onChange: (v) => {\n              if (v === 'credit') {\n                const current = accountForm.getFieldValue('is_liquid');\n                if (current === undefined) {\n                  accountForm.setFieldsValue({ is_liquid: false });\n                }\n              }\n            },\n          }}\n        />\n        <ProFormText name=\"currency\" label=\"币种\" initialValue=\"CNY\" />\n        <ProFormCheckbox name=\"is_liquid\">计入可用现金</ProFormCheckbox>\n      </ModalForm>\n\n      <ModalForm<AccountFormValues>\n        form={accountForm}\n        title=\"编辑账户\"\n        open={editOpen}\n        onOpenChange={(v) => {\n          setEditOpen(v);\n          if (!v) {\n            setEditing(undefined);\n          }\n        }}\n        modalProps={{ destroyOnClose: true }}\n        onFinish={async (values) => {\n          if (!editing) return false;\n          try {\n            const payload: PatchAccountReq = {\n              name: values.name,\n              institution_id: values.institution_id ?? null,\n              type: values.type,\n              currency: values.currency,\n              is_liquid: !!values.is_liquid,\n            };\n            await patchAccount(editing.id, payload);\n            message.success('保存成功');\n            actionRef.current?.reload();\n            return true;\n          } catch (e) {\n            message.error('保存失败');\n            return false;\n          }\n        }}\n      >\n        <ProFormText name=\"name\" label=\"名称\" rules={[{ required: true }]} />\n        <ProFormSelect\n          name=\"institution_id\"\n          label=\"机构\"\n          options={institutions.map((i) => ({ label: i.name, value: i.id }))}\n          fieldProps={{ allowClear: true }}\n        />\n        <ProFormSelect\n          name=\"type\"\n          label=\"类型\"\n          valueEnum={accountTypeEnum}\n          rules={[{ required: true }]}\n        />\n        <ProFormText name=\"currency\" label=\"币种\" />\n        <ProFormCheckbox name=\"is_liquid\">计入可用现金</ProFormCheckbox>\n      </ModalForm>\n\n      <ModalForm<InstitutionFormValues>\n        form={institutionForm}\n        title=\"新建机构\"\n        open={institutionCreateOpen}\n        onOpenChange={(v) => setInstitutionCreateOpen(v)}\n        modalProps={{ destroyOnClose: true }}\n        onFinish={async (values) => {\n          try {\n            const created = await createInstitution({ name: values.name });\n            message.success('创建成功');\n            await loadInstitutions();\n            accountForm.setFieldsValue({ institution_id: created.id });\n            return true;\n          } catch (e) {\n            message.error('创建失败');\n            return false;\n          }\n        }}\n      >\n        <ProFormText name=\"name\" label=\"机构名称\" rules={[{ required: true }]} />\n      </ModalForm>\n    </PageContainer>\n  );\n};\n\nexport default Accounts;\n",
       "__isJSFile": true,
       "__absFile": "C:/Users/bambo/Documents/Projects/vibe-test/frontend/src/pages/Accounts/index.tsx"
     },
-    "5": {
+    "6": {
+      "name": "资产快照",
+      "path": "/accounts/snapshots",
+      "file": "@/pages/Snapshots/Entry.tsx",
+      "parentId": "3",
+      "id": "6",
+      "absPath": "/accounts/snapshots",
+      "__content": "import React, { useState, useEffect } from 'react';\r\nimport { PageContainer } from '@ant-design/pro-components';\r\nimport { EditableProTable } from '@ant-design/pro-components';\r\nimport type { ProColumns } from '@ant-design/pro-components';\r\nimport { Button, DatePicker, message, Card, Space } from 'antd';\r\nimport dayjs from 'dayjs';\r\nimport { listAccounts, Account } from '@/services/accounts';\r\nimport { batchUpsertSnapshots, listSnapshots, SnapshotItem } from '@/services/snapshots';\r\n\r\ntype DataSourceType = {\r\n  id: React.Key;\r\n  account_id: number;\r\n  account_name: string;\r\n  institution_name: string;\r\n  type: string;\r\n  balance: number | null;\r\n  latest_balance?: number | null;\r\n  latest_date?: string | null;\r\n};\r\n\r\nconst SnapshotEntry: React.FC = () => {\r\n  const [date, setDate] = useState<dayjs.Dayjs>(dayjs());\r\n  const [editableKeys, setEditableRowKeys] = useState<React.Key[]>([]);\r\n  const [dataSource, setDataSource] = useState<DataSourceType[]>([]);\r\n  const [loading, setLoading] = useState(false);\r\n  const [reloadKey, setReloadKey] = useState(0);\r\n\r\n  // 加载数据\r\n  const loadData = async (targetDate: dayjs.Dayjs) => {\r\n    setLoading(true);\r\n    try {\r\n      const dateStr = targetDate.format('YYYY-MM-DD');\r\n      \r\n      // 并行获取账户列表和当天的快照\r\n      const [accountsResp, snapshotsResp] = await Promise.all([\r\n        listAccounts(),\r\n        listSnapshots(dateStr).catch(() => ({ items: [] } as any)) // 如果快照不存在，返回空\r\n      ]);\r\n\r\n      const accounts = accountsResp.items || [];\r\n      const snapshots = snapshotsResp.items || [];\r\n      const snapshotMap = new Map(snapshots.map((s: any) => [s.account_id, s.balance]));\r\n\r\n      // 合并数据\r\n      const data: DataSourceType[] = accounts.map((acc: Account) => {\r\n        const bal = snapshotMap.get(acc.id);\r\n        return {\r\n          id: acc.id,\r\n          account_id: acc.id,\r\n          account_name: acc.name,\r\n          institution_name: `Institution ${acc.institution_id}`, // 暂时简化\r\n          type: acc.type,\r\n          // 如果后端返回了该日的快照，balance 应该是一个数字\r\n          // 如果没有，balance 是 null。\r\n          // 确保 0 也能被正确显示\r\n          balance: (bal !== undefined && bal !== null) ? Number(bal) : null,\r\n          latest_balance: acc.latest_balance,\r\n          latest_date: acc.latest_date,\r\n        };\r\n      });\r\n\r\n      setDataSource(data);\r\n      setEditableRowKeys(data.map(item => item.id)); // 默认全部可编辑\r\n      setReloadKey(prev => prev + 1);\r\n    } catch (error) {\r\n      console.error(error);\r\n      message.error('Failed to load data');\r\n    } finally {\r\n      setLoading(false);\r\n    }\r\n  };\r\n\r\n  useEffect(() => {\r\n    loadData(date);\r\n  }, [date]);\r\n\r\n  const handleSave = async () => {\r\n    const rows: SnapshotItem[] = dataSource\r\n      .filter(item => item.balance !== null && item.balance !== undefined) // 过滤未填写的\r\n      .map(item => ({\r\n        date: date.format('YYYY-MM-DD'),\r\n        account_id: item.account_id,\r\n        balance: Number(item.balance),\r\n      }));\r\n\r\n    if (rows.length === 0) {\r\n      message.warning('No data to save');\r\n      return;\r\n    }\r\n\r\n    try {\r\n      const res = await batchUpsertSnapshots({ rows });\r\n      message.success(`Saved successfully: Inserted ${res.inserted}, Updated ${res.updated}`);\r\n      loadData(date);\r\n    } catch (error: any) {\r\n      message.error(error.message || 'Save failed');\r\n    }\r\n  };\r\n\r\n  const columns: ProColumns<DataSourceType>[] = [\r\n    {\r\n      title: '账户名称',\r\n      dataIndex: 'account_name',\r\n      readonly: true,\r\n      width: '20%',\r\n    },\r\n    {\r\n      title: '类型',\r\n      dataIndex: 'type',\r\n      readonly: true,\r\n      width: '15%',\r\n      valueEnum: {\r\n        cash: { text: '现金', status: 'Success' },\r\n        debit: { text: '储蓄卡', status: 'Processing' },\r\n        credit: { text: '信用卡', status: 'Error' },\r\n        investment_cash: { text: '投资账户', status: 'Warning' },\r\n        other: { text: '其他', status: 'Default' },\r\n      },\r\n    },\r\n    {\r\n      title: '最近更新日',\r\n      dataIndex: 'latest_date',\r\n      readonly: true,\r\n      width: '15%',\r\n      valueType: 'date',\r\n      render: (_, record: any) => {\r\n        return record.latest_date ? record.latest_date : '-';\r\n      }\r\n    },\r\n    {\r\n      title: '最新余额',\r\n      dataIndex: 'latest_balance',\r\n      readonly: true,\r\n      width: '20%',\r\n      valueType: 'money',\r\n      render: (_, record: any) => {\r\n        // We need to pass latest_balance from API first\r\n        return record.latest_balance !== undefined && record.latest_balance !== null \r\n          ? record.latest_balance \r\n          : '-';\r\n      }\r\n    },\r\n    {\r\n      title: '余额',\r\n      dataIndex: 'balance',\r\n      valueType: 'money',\r\n      width: '30%',\r\n      fieldProps: {\r\n        autoFocus: false,\r\n        placeholder: '未录入',\r\n      }\r\n    },\r\n  ];\r\n\r\n  return (\r\n    <PageContainer title=\"资产快照录入\">\r\n      <Card>\r\n        <Space style={{ marginBottom: 16 }}>\r\n          <span>选择日期：</span>\r\n          <DatePicker \r\n            value={date} \r\n            onChange={(d) => d && setDate(d)} \r\n            allowClear={false}\r\n          />\r\n          <Button type=\"primary\" onClick={handleSave} loading={loading}>\r\n            保存当前快照\r\n          </Button>\r\n          <Button onClick={() => loadData(date)}>\r\n            刷新\r\n          </Button>\r\n        </Space>\r\n        \r\n        <EditableProTable<DataSourceType>\r\n          key={reloadKey}\r\n          rowKey=\"id\"\r\n          headerTitle={`资产清单 (${date.format('YYYY-MM-DD')})`}\r\n          loading={loading}\r\n          columns={columns}\r\n          value={dataSource}\r\n          onChange={(val) => setDataSource([...val])}\r\n          recordCreatorProps={false}\r\n          editable={{\r\n            type: 'multiple',\r\n            editableKeys,\r\n            onChange: setEditableRowKeys,\r\n            onValuesChange: (record, recordList) => {\r\n              setDataSource([...recordList]);\r\n            },\r\n          }}\r\n        />\r\n      </Card>\r\n    </PageContainer>\r\n  );\r\n};\r\n\r\nexport default SnapshotEntry;\r\n",
+      "__isJSFile": true,
+      "__absFile": "C:/Users/bambo/Documents/Projects/vibe-test/frontend/src/pages/Snapshots/Entry.tsx"
+    },
+    "7": {
       "name": "产品",
       "path": "/products",
-      "file": "@/pages/Products/index.tsx",
+      "icon": "barChart",
       "parentId": "ant-design-pro-layout",
-      "id": "5",
-      "absPath": "/products",
-      "__content": "import { PlusOutlined } from '@ant-design/icons';\r\nimport {\r\n  ActionType,\r\n  ModalForm,\r\n  PageContainer,\r\n  ProFormDigit,\r\n  ProFormSelect,\r\n  ProFormText,\r\n  ProFormTextArea,\r\n  ProTable,\r\n} from '@ant-design/pro-components';\r\nimport { Button, Form, message, Tag } from 'antd';\r\nimport React, { useMemo, useRef, useState } from 'react';\r\n\r\nimport type { Institution } from '@/services/institutions';\r\nimport { createInstitution, listInstitutions } from '@/services/institutions';\r\nimport type {\r\n  CreateProductReq,\r\n  LiquidityRule,\r\n  PatchProductReq,\r\n  Product,\r\n  ProductType,\r\n} from '@/services/products';\r\nimport { createProduct, listProducts, patchProduct } from '@/services/products';\r\n\r\nimport styles from './index.less';\r\n\r\ntype ProductFormValues = {\r\n  name: string;\r\n  institution_id?: number | null;\r\n  product_code?: string | null;\r\n  product_type: ProductType;\r\n  risk_level?: string | null;\r\n  term_days?: number | null;\r\n  liquidity_rule: LiquidityRule;\r\n  settle_days?: number;\r\n  note?: string | null;\r\n};\r\n\r\ntype InstitutionFormValues = {\r\n  name: string;\r\n};\r\n\r\nconst Products: React.FC = () => {\r\n  const actionRef = useRef<ActionType>();\r\n  const [institutions, setInstitutions] = useState<Institution[]>([]);\r\n  const [createOpen, setCreateOpen] = useState(false);\r\n  const [editOpen, setEditOpen] = useState(false);\r\n  const [institutionCreateOpen, setInstitutionCreateOpen] = useState(false);\r\n  const [editing, setEditing] = useState<Product | undefined>(undefined);\r\n  const [productForm] = Form.useForm<ProductFormValues>();\r\n  const [institutionForm] = Form.useForm<InstitutionFormValues>();\r\n\r\n  const institutionNameById = useMemo(() => {\r\n    const map = new Map<number, string>();\r\n    institutions.forEach((i) => map.set(i.id, i.name));\r\n    return map;\r\n  }, [institutions]);\r\n\r\n  const loadInstitutions = async () => {\r\n    try {\r\n      const resp = await listInstitutions();\r\n      setInstitutions(resp.items);\r\n    } catch (e) {\r\n      message.error('加载机构列表失败');\r\n      setInstitutions([]);\r\n    }\r\n  };\r\n\r\n  const productTypeEnum: Record<ProductType, { text: string }> = {\r\n    bank_wmp: { text: '银行理财' },\r\n    money_market: { text: '货币/活期类' },\r\n    term_deposit: { text: '定期存款' },\r\n    fund: { text: '基金' },\r\n    stock: { text: '股票' },\r\n    other: { text: '其他' },\r\n  };\r\n\r\n  const liquidityRuleEnum: Record<LiquidityRule, { text: string }> = {\r\n    open: { text: '开放' },\r\n    closed: { text: '封闭' },\r\n    periodic_open: { text: '定开' },\r\n  };\r\n\r\n  return (\r\n    <PageContainer\r\n      header={{\r\n        title: '产品',\r\n      }}\r\n      extra={[\r\n        <Button\r\n          key=\"create\"\r\n          type=\"primary\"\r\n          icon={<PlusOutlined />}\r\n          onClick={async () => {\r\n            await loadInstitutions();\r\n            productForm.resetFields();\r\n            setCreateOpen(true);\r\n          }}\r\n        >\r\n          新建产品\r\n        </Button>,\r\n      ]}\r\n    >\r\n      <div className={styles.toolbar} />\r\n      <ProTable<Product>\r\n        actionRef={actionRef}\r\n        rowKey=\"id\"\r\n        search={false}\r\n        request={async () => {\r\n          await loadInstitutions();\r\n          const resp = await listProducts();\r\n          return {\r\n            data: resp.items,\r\n            success: true,\r\n          };\r\n        }}\r\n        columns={[\r\n          {\r\n            title: '产品名',\r\n            dataIndex: 'name',\r\n          },\r\n          {\r\n            title: '机构',\r\n            dataIndex: 'institution_id',\r\n            render: (_, record) => {\r\n              if (!record.institution_id) return '-';\r\n              return institutionNameById.get(record.institution_id) || String(record.institution_id);\r\n            },\r\n          },\r\n          {\r\n            title: '风险等级',\r\n            dataIndex: 'risk_level',\r\n            render: (_, record) => {\r\n              if (!record.risk_level) return '-';\r\n              return <Tag color=\"blue\">{record.risk_level}</Tag>;\r\n            },\r\n          },\r\n          {\r\n            title: '期限',\r\n            dataIndex: 'term_days',\r\n            render: (_, record) => {\r\n              if (record.term_days === null || record.term_days === undefined) return '-';\r\n              if (record.term_days === 0) return '0天';\r\n              return `${record.term_days}天`;\r\n            },\r\n          },\r\n          {\r\n            title: '赎回规则',\r\n            dataIndex: 'liquidity_rule',\r\n            valueEnum: liquidityRuleEnum,\r\n          },\r\n          {\r\n            title: '操作',\r\n            valueType: 'option',\r\n            render: (_, record) => [\r\n              <a\r\n                key=\"edit\"\r\n                onClick={async () => {\r\n                  await loadInstitutions();\r\n                  setEditing(record);\r\n                  productForm.setFieldsValue({\r\n                    name: record.name,\r\n                    institution_id: record.institution_id,\r\n                    product_code: record.product_code,\r\n                    product_type: record.product_type,\r\n                    risk_level: record.risk_level,\r\n                    term_days: record.term_days,\r\n                    liquidity_rule: record.liquidity_rule,\r\n                    settle_days: record.settle_days,\r\n                    note: record.note,\r\n                  });\r\n                  setEditOpen(true);\r\n                }}\r\n              >\r\n                编辑\r\n              </a>,\r\n            ],\r\n          },\r\n        ]}\r\n      />\r\n\r\n      <ModalForm<ProductFormValues>\r\n        form={productForm}\r\n        title=\"新建产品\"\r\n        open={createOpen}\r\n        onOpenChange={(v) => setCreateOpen(v)}\r\n        modalProps={{ destroyOnClose: true }}\r\n        onFinish={async (values) => {\r\n          try {\r\n            const payload: CreateProductReq = {\r\n              name: values.name,\r\n              institution_id: values.institution_id ?? null,\r\n              product_code: values.product_code ?? null,\r\n              product_type: values.product_type,\r\n              risk_level: values.risk_level ?? null,\r\n              term_days: values.term_days ?? null,\r\n              liquidity_rule: values.liquidity_rule,\r\n              settle_days: values.settle_days,\r\n              note: values.note ?? null,\r\n            };\r\n            await createProduct(payload);\r\n            message.success('创建成功');\r\n            actionRef.current?.reload();\r\n            return true;\r\n          } catch (e) {\r\n            message.error('创建失败');\r\n            return false;\r\n          }\r\n        }}\r\n      >\r\n        <ProFormText name=\"name\" label=\"产品名\" rules={[{ required: true }]} />\r\n        <ProFormSelect\r\n          name=\"institution_id\"\r\n          label=\"机构\"\r\n          options={institutions.map((i) => ({ label: i.name, value: i.id }))}\r\n          fieldProps={{\r\n            allowClear: true,\r\n            dropdownRender: (menu) => (\r\n              <div>\r\n                {menu}\r\n                <div>\r\n                  <Button\r\n                    type=\"link\"\r\n                    onClick={() => {\r\n                      institutionForm.resetFields();\r\n                      setInstitutionCreateOpen(true);\r\n                    }}\r\n                  >\r\n                    新建机构\r\n                  </Button>\r\n                </div>\r\n              </div>\r\n            ),\r\n          }}\r\n        />\r\n        <ProFormText name=\"product_code\" label=\"产品代码\" />\r\n        <ProFormSelect\r\n          name=\"product_type\"\r\n          label=\"产品类型\"\r\n          valueEnum={productTypeEnum}\r\n          rules={[{ required: true }]}\r\n        />\r\n        <ProFormSelect\r\n          name=\"risk_level\"\r\n          label=\"风险等级\"\r\n          allowClear\r\n          options={['R1', 'R2', 'R3', 'R4', 'R5'].map((r) => ({ label: r, value: r }))}\r\n        />\r\n        <ProFormDigit name=\"term_days\" label=\"期限天数\" fieldProps={{ precision: 0 }} />\r\n        <ProFormSelect\r\n          name=\"liquidity_rule\"\r\n          label=\"流动性规则\"\r\n          valueEnum={liquidityRuleEnum}\r\n          rules={[{ required: true }]}\r\n          fieldProps={{\r\n            onChange: (v) => {\r\n              if (v === 'open') {\r\n                const current = productForm.getFieldValue('term_days');\r\n                if (current === undefined) {\r\n                  productForm.setFieldsValue({ term_days: 0 });\r\n                }\r\n              }\r\n            },\r\n          }}\r\n        />\r\n        <ProFormDigit name=\"settle_days\" label=\"赎回到账 T+N\" fieldProps={{ precision: 0 }} />\r\n        <ProFormTextArea name=\"note\" label=\"备注\" />\r\n      </ModalForm>\r\n\r\n      <ModalForm<ProductFormValues>\r\n        form={productForm}\r\n        title=\"编辑产品\"\r\n        open={editOpen}\r\n        onOpenChange={(v) => {\r\n          setEditOpen(v);\r\n          if (!v) setEditing(undefined);\r\n        }}\r\n        modalProps={{ destroyOnClose: true }}\r\n        onFinish={async (values) => {\r\n          if (!editing) return false;\r\n          try {\r\n            const payload: PatchProductReq = {\r\n              name: values.name,\r\n              institution_id: values.institution_id ?? null,\r\n              product_code: values.product_code ?? null,\r\n              product_type: values.product_type,\r\n              risk_level: values.risk_level ?? null,\r\n              term_days: values.term_days ?? null,\r\n              liquidity_rule: values.liquidity_rule,\r\n              settle_days: values.settle_days,\r\n              note: values.note ?? null,\r\n            };\r\n            await patchProduct(editing.id, payload);\r\n            message.success('保存成功');\r\n            actionRef.current?.reload();\r\n            return true;\r\n          } catch (e) {\r\n            message.error('保存失败');\r\n            return false;\r\n          }\r\n        }}\r\n      >\r\n        <ProFormText name=\"name\" label=\"产品名\" rules={[{ required: true }]} />\r\n        <ProFormSelect\r\n          name=\"institution_id\"\r\n          label=\"机构\"\r\n          options={institutions.map((i) => ({ label: i.name, value: i.id }))}\r\n          fieldProps={{ allowClear: true }}\r\n        />\r\n        <ProFormText name=\"product_code\" label=\"产品代码\" />\r\n        <ProFormSelect\r\n          name=\"product_type\"\r\n          label=\"产品类型\"\r\n          valueEnum={productTypeEnum}\r\n          rules={[{ required: true }]}\r\n        />\r\n        <ProFormSelect\r\n          name=\"risk_level\"\r\n          label=\"风险等级\"\r\n          allowClear\r\n          options={['R1', 'R2', 'R3', 'R4', 'R5'].map((r) => ({ label: r, value: r }))}\r\n        />\r\n        <ProFormDigit name=\"term_days\" label=\"期限天数\" fieldProps={{ precision: 0 }} />\r\n        <ProFormSelect\r\n          name=\"liquidity_rule\"\r\n          label=\"流动性规则\"\r\n          valueEnum={liquidityRuleEnum}\r\n          rules={[{ required: true }]}\r\n        />\r\n        <ProFormDigit name=\"settle_days\" label=\"赎回到账 T+N\" fieldProps={{ precision: 0 }} />\r\n        <ProFormTextArea name=\"note\" label=\"备注\" />\r\n      </ModalForm>\r\n\r\n      <ModalForm<InstitutionFormValues>\r\n        form={institutionForm}\r\n        title=\"新建机构\"\r\n        open={institutionCreateOpen}\r\n        onOpenChange={(v) => setInstitutionCreateOpen(v)}\r\n        modalProps={{ destroyOnClose: true }}\r\n        onFinish={async (values) => {\r\n          try {\r\n            const created = await createInstitution({ name: values.name });\r\n            message.success('创建成功');\r\n            await loadInstitutions();\r\n            productForm.setFieldsValue({ institution_id: created.id });\r\n            return true;\r\n          } catch (e) {\r\n            message.error('创建失败');\r\n            return false;\r\n          }\r\n        }}\r\n      >\r\n        <ProFormText name=\"name\" label=\"机构名称\" rules={[{ required: true }]} />\r\n      </ModalForm>\r\n    </PageContainer>\r\n  );\r\n};\r\n\r\nexport default Products;\r\n",
+      "id": "7",
+      "absPath": "/products"
+    },
+    "8": {
+      "path": "/products",
+      "redirect": "/products/list",
+      "parentId": "7",
+      "id": "8",
+      "absPath": "/products"
+    },
+    "9": {
+      "name": "产品列表",
+      "path": "/products/list",
+      "file": "@/pages/Products/index.tsx",
+      "parentId": "7",
+      "id": "9",
+      "absPath": "/products/list",
+      "__content": "import { PlusOutlined } from '@ant-design/icons';\nimport {\n  ActionType,\n  ModalForm,\n  PageContainer,\n  ProFormDigit,\n  ProFormSelect,\n  ProFormText,\n  ProFormTextArea,\n  ProTable,\n} from '@ant-design/pro-components';\nimport { Button, Form, message, Popconfirm, Radio, Tag } from 'antd';\nimport React, { useMemo, useRef, useState } from 'react';\n\nimport type { Institution } from '@/services/institutions';\nimport { createInstitution, listInstitutions } from '@/services/institutions';\nimport type {\n  CreateProductReq,\n  LiquidityRule,\n  PatchProductReq,\n  Product,\n  ProductType,\n  ProductWithMetrics,\n} from '@/services/products';\nimport { createProduct, listProducts, patchProduct, deleteProduct } from '@/services/products';\nimport { history } from '@umijs/max';\n\nimport styles from './index.less';\n\ntype ProductFormValues = {\n  name: string;\n  institution_id?: number | null;\n  product_code?: string | null;\n  product_type: ProductType;\n  risk_level?: string | null;\n  term_days?: number | null;\n  liquidity_rule: LiquidityRule;\n  settle_days?: number;\n  note?: string | null;\n};\n\ntype InstitutionFormValues = {\n  name: string;\n};\n\nconst Products: React.FC = () => {\n  const actionRef = useRef<ActionType>();\n  const [institutions, setInstitutions] = useState<Institution[]>([]);\n  const [createOpen, setCreateOpen] = useState(false);\n  const [editOpen, setEditOpen] = useState(false);\n  const [institutionCreateOpen, setInstitutionCreateOpen] = useState(false);\n  const [editing, setEditing] = useState<Product | undefined>(undefined);\n  const [productForm] = Form.useForm<ProductFormValues>();\n  const [institutionForm] = Form.useForm<InstitutionFormValues>();\n  const [window, setWindow] = useState('8w');\n\n  const institutionNameById = useMemo(() => {\n    const map = new Map<number, string>();\n    institutions.forEach((i) => map.set(i.id, i.name));\n    return map;\n  }, [institutions]);\n\n  const loadInstitutions = async () => {\n    try {\n      const resp = await listInstitutions();\n      setInstitutions(resp.items);\n    } catch (e) {\n      message.error('加载机构列表失败');\n      setInstitutions([]);\n    }\n  };\n\n  const productTypeEnum: Record<ProductType, { text: string }> = {\n    bank_wmp: { text: '银行理财' },\n    money_market: { text: '货币/活期类' },\n    term_deposit: { text: '定期存款' },\n    fund: { text: '基金' },\n    stock: { text: '股票' },\n    other: { text: '其他' },\n  };\n\n  const liquidityRuleEnum: Record<LiquidityRule, { text: string }> = {\n    open: { text: '开放' },\n    closed: { text: '封闭' },\n    periodic_open: { text: '定开' },\n  };\n\n  return (\n    <PageContainer\n      header={{\n        title: '产品',\n      }}\n      extra={[\n        <Radio.Group\n          key=\"window\"\n          value={window}\n          onChange={(e) => {\n            setWindow(e.target.value);\n            actionRef.current?.reload();\n          }}\n          buttonStyle=\"solid\"\n        >\n          <Radio.Button value=\"4w\">近1月</Radio.Button>\n          <Radio.Button value=\"8w\">近2月</Radio.Button>\n          <Radio.Button value=\"12w\">近3月</Radio.Button>\n          <Radio.Button value=\"24w\">近半年</Radio.Button>\n          <Radio.Button value=\"1y\">近1年</Radio.Button>\n        </Radio.Group>,\n        <Button\n          key=\"create\"\n          type=\"primary\"\n          icon={<PlusOutlined />}\n          onClick={async () => {\n            await loadInstitutions();\n            productForm.resetFields();\n            setCreateOpen(true);\n          }}\n        >\n          新建产品\n        </Button>,\n      ]}\n    >\n      <div className={styles.toolbar} />\n      <ProTable<ProductWithMetrics>\n        actionRef={actionRef}\n        rowKey=\"id\"\n        search={false}\n        request={async () => {\n          await loadInstitutions();\n          const resp = await listProducts(true, window);\n          return {\n            data: resp.items,\n            success: true,\n          };\n        }}\n        columns={[\n          {\n            title: '产品名',\n            dataIndex: 'name',\n            render: (dom, record) => <a onClick={() => history.push(`/products/${record.id}`)}>{dom}</a>,\n          },\n          {\n            title: '机构',\n            dataIndex: 'institution_id',\n            render: (_, record) => {\n              if (!record.institution_id) return '-';\n              return institutionNameById.get(record.institution_id) || String(record.institution_id);\n            },\n          },\n          {\n            title: '风险等级',\n            dataIndex: 'risk_level',\n            render: (_, record) => {\n              if (!record.risk_level) return '-';\n              return <Tag color=\"blue\">{record.risk_level}</Tag>;\n            },\n          },\n          {\n            title: '期限',\n            dataIndex: 'term_days',\n            render: (_, record) => {\n              if (record.term_days === null || record.term_days === undefined) return '-';\n              if (record.term_days === 0) return '0天';\n              return `${record.term_days}天`;\n            },\n          },\n          {\n            title: '赎回规则',\n            dataIndex: 'liquidity_rule',\n            valueEnum: liquidityRuleEnum,\n          },\n          {\n            title: '年化收益',\n            dataIndex: ['metrics', 'annualized'],\n            sorter: (a, b) => (a.metrics?.annualized || -999) - (b.metrics?.annualized || -999),\n            render: (_, record) =>\n              record.metrics ? (\n                `${(record.metrics.annualized * 100).toFixed(2)}%`\n              ) : (\n                <span style={{ color: '#ccc' }}>--</span>\n              ),\n          },\n          {\n            title: '最大回撤',\n            dataIndex: ['metrics', 'max_drawdown'],\n            sorter: (a, b) => (a.metrics?.max_drawdown || 999) - (b.metrics?.max_drawdown || 999),\n            defaultSortOrder: 'ascend',\n            render: (_, record) =>\n              record.metrics ? (\n                `${(record.metrics.max_drawdown * 100).toFixed(2)}%`\n              ) : (\n                <span style={{ color: '#ccc' }}>--</span>\n              ),\n          },\n          {\n            title: '修复天数',\n            dataIndex: ['metrics', 'drawdown_recovery_days'],\n            render: (_, record) =>\n              record.metrics ? (\n                `${record.metrics.drawdown_recovery_days}天`\n              ) : (\n                <span style={{ color: '#ccc' }}>--</span>\n              ),\n          },\n          {\n            title: '操作',\n            valueType: 'option',\n            render: (_, record) => [\n              <a key=\"detail\" onClick={() => history.push(`/products/${record.id}`)}>\n                详情\n              </a>,\n              <a\n                key=\"edit\"\n                onClick={async () => {\n                  await loadInstitutions();\n                  setEditing(record);\n                  productForm.setFieldsValue({\n                    name: record.name,\n                    institution_id: record.institution_id,\n                    product_code: record.product_code,\n                    product_type: record.product_type,\n                    risk_level: record.risk_level,\n                    term_days: record.term_days,\n                    liquidity_rule: record.liquidity_rule,\n                    settle_days: record.settle_days,\n                    note: record.note,\n                  });\n                  setEditOpen(true);\n                }}\n              >\n                编辑\n              </a>,\n              <Popconfirm\n                key=\"delete\"\n                title=\"确定删除此产品吗？\"\n                description=\"删除后，相关的估值数据也将被删除，且不可恢复。\"\n                onConfirm={async () => {\n                  try {\n                    await deleteProduct(record.id);\n                    message.success('删除成功');\n                    actionRef.current?.reload();\n                  } catch (e) {\n                    console.error('Delete failed:', e);\n                    message.error('删除失败');\n                  }\n                }}\n              >\n                <a style={{ color: 'red', marginLeft: 8 }}>删除</a>\n              </Popconfirm>,\n            ],\n          },\n        ]}\n      />\n\n      <ModalForm<ProductFormValues>\n        form={productForm}\n        title=\"新建产品\"\n        open={createOpen}\n        onOpenChange={(v) => setCreateOpen(v)}\n        modalProps={{ destroyOnClose: true }}\n        onFinish={async (values) => {\n          try {\n            const payload: CreateProductReq = {\n              name: values.name,\n              institution_id: values.institution_id ?? null,\n              product_code: values.product_code ?? null,\n              product_type: values.product_type,\n              risk_level: values.risk_level ?? null,\n              term_days: values.term_days ?? null,\n              liquidity_rule: values.liquidity_rule,\n              settle_days: values.settle_days,\n              note: values.note ?? null,\n            };\n            await createProduct(payload);\n            message.success('创建成功');\n            actionRef.current?.reload();\n            return true;\n          } catch (e) {\n            message.error('创建失败');\n            return false;\n          }\n        }}\n      >\n        <ProFormText name=\"name\" label=\"产品名\" rules={[{ required: true }]} />\n        <ProFormSelect\n          name=\"institution_id\"\n          label=\"机构\"\n          options={institutions.map((i) => ({ label: i.name, value: i.id }))}\n          fieldProps={{\n            allowClear: true,\n            dropdownRender: (menu) => (\n              <div>\n                {menu}\n                <div>\n                  <Button\n                    type=\"link\"\n                    onClick={() => {\n                      institutionForm.resetFields();\n                      setInstitutionCreateOpen(true);\n                    }}\n                  >\n                    新建机构\n                  </Button>\n                </div>\n              </div>\n            ),\n          }}\n        />\n        <ProFormText name=\"product_code\" label=\"产品代码\" />\n        <ProFormSelect\n          name=\"product_type\"\n          label=\"产品类型\"\n          valueEnum={productTypeEnum}\n          rules={[{ required: true }]}\n        />\n        <ProFormSelect\n          name=\"risk_level\"\n          label=\"风险等级\"\n          allowClear\n          options={['R1', 'R2', 'R3', 'R4', 'R5'].map((r) => ({ label: r, value: r }))}\n        />\n        <ProFormDigit name=\"term_days\" label=\"期限天数\" fieldProps={{ precision: 0 }} />\n        <ProFormSelect\n          name=\"liquidity_rule\"\n          label=\"流动性规则\"\n          valueEnum={liquidityRuleEnum}\n          rules={[{ required: true }]}\n          fieldProps={{\n            onChange: (v) => {\n              if (v === 'open') {\n                const current = productForm.getFieldValue('term_days');\n                if (current === undefined) {\n                  productForm.setFieldsValue({ term_days: 0 });\n                }\n              }\n            },\n          }}\n        />\n        <ProFormDigit name=\"settle_days\" label=\"赎回到账 T+N\" fieldProps={{ precision: 0 }} />\n        <ProFormTextArea name=\"note\" label=\"备注\" />\n      </ModalForm>\n\n      <ModalForm<ProductFormValues>\n        form={productForm}\n        title=\"编辑产品\"\n        open={editOpen}\n        onOpenChange={(v) => {\n          setEditOpen(v);\n          if (!v) setEditing(undefined);\n        }}\n        modalProps={{ destroyOnClose: true }}\n        onFinish={async (values) => {\n          if (!editing) return false;\n          try {\n            const payload: PatchProductReq = {\n              name: values.name,\n              institution_id: values.institution_id ?? null,\n              product_code: values.product_code ?? null,\n              product_type: values.product_type,\n              risk_level: values.risk_level ?? null,\n              term_days: values.term_days ?? null,\n              liquidity_rule: values.liquidity_rule,\n              settle_days: values.settle_days,\n              note: values.note ?? null,\n            };\n            await patchProduct(editing.id, payload);\n            message.success('保存成功');\n            actionRef.current?.reload();\n            return true;\n          } catch (e) {\n            message.error('保存失败');\n            return false;\n          }\n        }}\n      >\n        <ProFormText name=\"name\" label=\"产品名\" rules={[{ required: true }]} />\n        <ProFormSelect\n          name=\"institution_id\"\n          label=\"机构\"\n          options={institutions.map((i) => ({ label: i.name, value: i.id }))}\n          fieldProps={{ allowClear: true }}\n        />\n        <ProFormText name=\"product_code\" label=\"产品代码\" />\n        <ProFormSelect\n          name=\"product_type\"\n          label=\"产品类型\"\n          valueEnum={productTypeEnum}\n          rules={[{ required: true }]}\n        />\n        <ProFormSelect\n          name=\"risk_level\"\n          label=\"风险等级\"\n          allowClear\n          options={['R1', 'R2', 'R3', 'R4', 'R5'].map((r) => ({ label: r, value: r }))}\n        />\n        <ProFormDigit name=\"term_days\" label=\"期限天数\" fieldProps={{ precision: 0 }} />\n        <ProFormSelect\n          name=\"liquidity_rule\"\n          label=\"流动性规则\"\n          valueEnum={liquidityRuleEnum}\n          rules={[{ required: true }]}\n        />\n        <ProFormDigit name=\"settle_days\" label=\"赎回到账 T+N\" fieldProps={{ precision: 0 }} />\n        <ProFormTextArea name=\"note\" label=\"备注\" />\n      </ModalForm>\n\n      <ModalForm<InstitutionFormValues>\n        form={institutionForm}\n        title=\"新建机构\"\n        open={institutionCreateOpen}\n        onOpenChange={(v) => setInstitutionCreateOpen(v)}\n        modalProps={{ destroyOnClose: true }}\n        onFinish={async (values) => {\n          try {\n            const created = await createInstitution({ name: values.name });\n            message.success('创建成功');\n            await loadInstitutions();\n            productForm.setFieldsValue({ institution_id: created.id });\n            return true;\n          } catch (e) {\n            message.error('创建失败');\n            return false;\n          }\n        }}\n      >\n        <ProFormText name=\"name\" label=\"机构名称\" rules={[{ required: true }]} />\n      </ModalForm>\n    </PageContainer>\n  );\n};\n\nexport default Products;\n",
       "__isJSFile": true,
       "__absFile": "C:/Users/bambo/Documents/Projects/vibe-test/frontend/src/pages/Products/index.tsx"
+    },
+    "10": {
+      "name": "产品估值",
+      "path": "/products/valuations",
+      "file": "@/pages/ProductValuations/index.tsx",
+      "parentId": "7",
+      "id": "10",
+      "absPath": "/products/valuations",
+      "__content": "import React, { useState, useEffect } from 'react';\nimport { PageContainer, EditableProTable, ProColumns } from '@ant-design/pro-components';\nimport { message, Select, Popconfirm } from 'antd';\nimport dayjs from 'dayjs';\nimport { listProducts, Product } from '@/services/products';\nimport { batchUpsertValuations, getProductValuations, ProductValuation, deleteProductValuation } from '@/services/valuations';\n\n// Define the type used in the table which includes the synthetic 'id'\ntype TableItem = ProductValuation & { id: string };\n\nconst ProductValuations: React.FC = () => {\n  const [products, setProducts] = useState<Product[]>([]);\n  const [selectedProductId, setSelectedProductId] = useState<number | null>(null);\n  const [editableKeys, setEditableRowKeys] = useState<React.Key[]>([]);\n  const [dataSource, setDataSource] = useState<TableItem[]>([]);\n  const [loading, setLoading] = useState(false);\n\n  // Define functions before use\n  const loadProducts = async () => {\n    try {\n      const resp = await listProducts();\n      setProducts(resp.items);\n      // 默认选择\"国债逆回购\"\n      const defaultProduct = resp.items.find(p => p.name === '国债逆回购');\n      if (defaultProduct) {\n        setSelectedProductId(defaultProduct.id);\n      }\n    } catch (e) {\n      message.error('加载产品列表失败');\n    }\n  };\n\n  const loadValuations = async (productId: number) => {\n    setLoading(true);\n    try {\n      const end = dayjs().format('YYYY-MM-DD');\n      const start = dayjs().subtract(1, 'year').format('YYYY-MM-DD');\n      const resp = await getProductValuations(productId, start, end);\n      const data = resp.points.map((p) => ({\n        ...p,\n        id: `${p.date}`,\n      }));\n      data.sort((a, b) => dayjs(b.date).valueOf() - dayjs(a.date).valueOf());\n      setDataSource(data);\n    } catch (e) {\n      message.error('加载估值数据失败');\n    } finally {\n      setLoading(false);\n    }\n  };\n\n  useEffect(() => {\n    loadProducts();\n  }, []);\n\n  useEffect(() => {\n    if (selectedProductId) {\n      loadValuations(selectedProductId);\n    } else {\n      setDataSource([]);\n    }\n  }, [selectedProductId]);\n\n  const columns: ProColumns<TableItem>[] = [\n    {\n      title: '日期',\n      dataIndex: 'date',\n      valueType: 'date',\n      width: '40%',\n      formItemProps: {\n        rules: [{ required: true, message: '此项是必填项' }],\n      },\n    },\n    {\n      title: '市值/净值',\n      dataIndex: 'market_value',\n      valueType: 'money',\n      width: '40%',\n      fieldProps: {\n        precision: 4,\n      },\n      formItemProps: {\n        rules: [{ required: true, message: '此项是必填项' }],\n      },\n    },\n    {\n      title: '操作',\n      valueType: 'option',\n      width: '20%',\n      render: (text, record, _, action) => [\n        <a\n          key=\"editable\"\n          onClick={() => {\n            action?.startEditable?.(record.id);\n          }}\n        >\n          编辑\n        </a>,\n        <Popconfirm\n          key=\"delete\"\n          title=\"确定删除这条估值记录吗？\"\n          onConfirm={async () => {\n             if (!selectedProductId) return;\n             try {\n                await deleteProductValuation(selectedProductId, record.date);\n                message.success('删除成功');\n                loadValuations(selectedProductId);\n             } catch (e) {\n                message.error('删除失败');\n             }\n          }}\n        >\n          <a style={{ color: 'red' }}>删除</a>\n        </Popconfirm>,\n      ],\n    },\n  ];\n\n  return (\n    <PageContainer\n      header={{\n        title: '产品估值',\n        extra: [\n          <Select\n            key=\"product-select\"\n            style={{ width: 200 }}\n            placeholder=\"选择产品\"\n            options={products.map(p => ({ label: p.name, value: p.id }))}\n            value={selectedProductId}\n            onChange={setSelectedProductId}\n            showSearch\n            filterOption={(input, option) =>\n              (option?.label ?? '').toLowerCase().includes(input.toLowerCase())\n            }\n          />\n        ],\n      }}\n    >\n      <EditableProTable<TableItem>\n        rowKey=\"id\"\n        headerTitle=\"估值记录\"\n        recordCreatorProps={\n          selectedProductId\n            ? {\n                position: 'top',\n                record: () => ({ id: dayjs().valueOf().toString(), date: dayjs().format('YYYY-MM-DD'), market_value: 0, product_id: selectedProductId }),\n                creatorButtonText: '新增一行',\n              }\n            : false\n        }\n        loading={loading}\n        columns={columns}\n        value={dataSource}\n        onChange={(val) => setDataSource([...val])}\n        editable={{\n          type: 'multiple',\n          editableKeys,\n          onSave: async (rowKey, data) => {\n            if (!selectedProductId) return;\n            try {\n              await batchUpsertValuations({\n                source: 'manual',\n                rows: [{\n                  product_id: selectedProductId,\n                  date: data.date,\n                  market_value: data.market_value,\n                }]\n              });\n              message.success('保存成功');\n              loadValuations(selectedProductId);\n            } catch (e) {\n              message.error('保存失败');\n              throw e;\n            }\n          },\n          onChange: setEditableRowKeys,\n          actionRender: (row, config, dom) => [dom.save, dom.cancel],\n        }}\n      />\n    </PageContainer>\n  );\n};\n\nexport default ProductValuations;\n",
+      "__isJSFile": true,
+      "__absFile": "C:/Users/bambo/Documents/Projects/vibe-test/frontend/src/pages/ProductValuations/index.tsx"
+    },
+    "11": {
+      "path": "/products/:id",
+      "file": "@/pages/Products/Detail.tsx",
+      "parentId": "ant-design-pro-layout",
+      "id": "11",
+      "absPath": "/products/:id",
+      "__content": "import React, { useState, useEffect } from 'react';\nimport { useParams, history } from '@umijs/max';\nimport { PageContainer, ProCard, StatisticCard } from '@ant-design/pro-components';\nimport { Line } from '@ant-design/plots';\nimport { Radio, Descriptions, Tag, Alert, Empty, Button } from 'antd';\nimport { getProductMetrics, listProducts, Product, ProductMetrics } from '@/services/products';\nimport { getProductValuations, ProductValuation } from '@/services/valuations';\nimport dayjs from 'dayjs';\n\nconst ProductDetail: React.FC = () => {\n  const params = useParams<{ id: string }>();\n  const productId = Number(params.id);\n  \n  const [product, setProduct] = useState<Product | null>(null);\n  const [metrics, setMetrics] = useState<ProductMetrics | null>(null);\n  const [valuations, setValuations] = useState<ProductValuation[]>([]);\n  const [loading, setLoading] = useState(false);\n  const [window, setWindow] = useState('8w');\n  const [metricsStatus, setMetricsStatus] = useState<string>('ok');\n\n  // Define functions before use\n  const loadProductInfo = async () => {\n    const resp = await listProducts();\n    const p = resp.items.find(i => i.id === productId);\n    if (p) setProduct(p);\n  };\n\n  const loadData = async () => {\n    setLoading(true);\n    try {\n      // 1. Metrics\n      const mResp = await getProductMetrics(productId, window);\n      setMetrics(mResp.metrics);\n      setMetricsStatus(mResp.status);\n\n      // 2. Valuations (for chart)\n      let start = dayjs();\n      if (window === '4w') start = start.subtract(4, 'week');\n      else if (window === '8w') start = start.subtract(8, 'week');\n      else if (window === '12w') start = start.subtract(12, 'week');\n      else if (window === '24w') start = start.subtract(24, 'week');\n      else if (window === '1y') start = start.subtract(1, 'year');\n      else if (window === 'ytd') start = dayjs().startOf('year');\n      \n      const vResp = await getProductValuations(\n          productId, \n          start.format('YYYY-MM-DD'), \n          dayjs().format('YYYY-MM-DD')\n      );\n      setValuations(vResp.points);\n      \n    } catch (e) {\n      console.error(e);\n    } finally {\n      setLoading(false);\n    }\n  };\n\n  useEffect(() => {\n    loadProductInfo();\n  }, [productId]);\n\n  useEffect(() => {\n    if (productId) {\n      loadData();\n    }\n  }, [productId, window]);\n\n  const config = {\n    data: valuations,\n    xField: 'date',\n    yField: 'market_value',\n    point: {\n      size: 2,\n      shape: 'circle',\n    },\n    tooltip: {\n        formatter: (datum: any) => {\n            return { name: '市值', value: Number(datum.market_value).toFixed(4) };\n        },\n    },\n    xAxis: {\n        tickCount: 5,\n    }\n  };\n\n  return (\n    <PageContainer\n      header={{\n        title: product?.name || '产品详情',\n        subTitle: product?.product_code,\n        extra: [\n            <Button key=\"back\" onClick={() => history.back()}>\n                返回\n            </Button>,\n            <Radio.Group key=\"window\" value={window} onChange={e => setWindow(e.target.value)} buttonStyle=\"solid\">\n                <Radio.Button value=\"4w\">近1月</Radio.Button>\n                <Radio.Button value=\"8w\">近2月</Radio.Button>\n                <Radio.Button value=\"12w\">近3月</Radio.Button>\n                <Radio.Button value=\"24w\">近半年</Radio.Button>\n                <Radio.Button value=\"1y\">近1年</Radio.Button>\n            </Radio.Group>\n        ]\n      }}\n    >\n      <ProCard direction=\"column\" ghost gutter={[0, 16]}>\n        \n        {/* 基本信息 */}\n        <ProCard title=\"基本信息\" bordered>\n            <Descriptions column={3}>\n                <Descriptions.Item label=\"机构\">{product?.institution_id}</Descriptions.Item>\n                <Descriptions.Item label=\"类型\"><Tag>{product?.product_type}</Tag></Descriptions.Item>\n                <Descriptions.Item label=\"风险等级\">{product?.risk_level}</Descriptions.Item>\n                <Descriptions.Item label=\"流动性\">{product?.liquidity_rule}</Descriptions.Item>\n                <Descriptions.Item label=\"期限\">{product?.term_days}天</Descriptions.Item>\n                <Descriptions.Item label=\"赎回到账\">T+{product?.settle_days}</Descriptions.Item>\n            </Descriptions>\n        </ProCard>\n\n        {/* 指标卡片 */}\n        <ProCard bordered loading={loading}>\n            {metricsStatus === 'insufficient_data' ? (\n                <Alert message=\"数据不足（少于 2 周），暂不支持对比\" type=\"warning\" showIcon />\n            ) : (\n                <StatisticCard.Group>\n                    <StatisticCard \n                        statistic={{ \n                            title: '年化收益率', \n                            value: metrics?.annualized ? (metrics.annualized * 100).toFixed(2) : '--',\n                            suffix: '%',\n                            precision: 2\n                        }} \n                    />\n                    <StatisticCard \n                        statistic={{ \n                            title: '最大回撤', \n                            value: metrics?.max_drawdown ? (metrics.max_drawdown * 100).toFixed(2) : '--',\n                            suffix: '%',\n                            precision: 2,\n                            valueStyle: { color: 'green' }\n                        }} \n                    />\n                    <StatisticCard \n                        statistic={{ \n                            title: 'TWR (区间累计)', \n                            value: metrics?.twr ? (metrics.twr * 100).toFixed(2) : '--',\n                            suffix: '%',\n                            precision: 2\n                        }} \n                    />\n                    <StatisticCard \n                        statistic={{ \n                            title: '回撤修复天数', \n                            value: metrics?.drawdown_recovery_days ?? '--',\n                            suffix: '天'\n                        }} \n                    />\n                </StatisticCard.Group>\n            )}\n        </ProCard>\n\n        {/* 估值曲线 */}\n        <ProCard title=\"估值走势\" bordered loading={loading}>\n            {valuations.length > 0 ? (\n                <Line {...config} />\n            ) : (\n                <Empty description=\"暂无估值数据\" />\n            )}\n        </ProCard>\n      \n      </ProCard>\n    </PageContainer>\n  );\n};\n\nexport default ProductDetail;\n",
+      "__isJSFile": true,
+      "__absFile": "C:/Users/bambo/Documents/Projects/vibe-test/frontend/src/pages/Products/Detail.tsx"
     },
     "ant-design-pro-layout": {
       "id": "ant-design-pro-layout",

@@ -2,18 +2,46 @@ from flask import jsonify, request
 
 from database import get_session
 from models.product import ProductType, LiquidityRule
-from services.product_service import create_product, list_products, patch_product
+from services.product_service import create_product, list_products, patch_product, delete_product
+from services.valuation_service import get_valuation_series
+from services.analytics_service import calculate_metrics
 from utils.response import ok, err
+from datetime import date, timedelta
 
 from . import bp
 
 
 @bp.route('/products', methods=['GET'])
 def get_products():
+    include_metrics = request.args.get('include_metrics') == 'true'
+    window = request.args.get('window', '8w')
+    
     session = get_session()
     try:
         items = list_products(session)
-        return jsonify(ok({"items": items}))
+        result = []
+        
+        # Prepare date range for metrics if needed
+        today = date.today()
+        start_date = today - timedelta(weeks=8) # Default 8w
+        if window == '4w': start_date = today - timedelta(weeks=4)
+        elif window == '12w': start_date = today - timedelta(weeks=12)
+        elif window == '24w': start_date = today - timedelta(weeks=24)
+        elif window == '1y': start_date = today - timedelta(days=365)
+        elif window == 'ytd': start_date = date(today.year, 1, 1)
+
+        for p in items:
+            p_dict = p.model_dump()
+            if include_metrics:
+                # Calculate metrics
+                series = get_valuation_series(session, p.id, start_date, today, interpolate=True)
+                metrics = None
+                if series and len(series) >= 14:
+                    metrics = calculate_metrics(series)
+                p_dict['metrics'] = metrics
+            result.append(p_dict)
+            
+        return jsonify(ok({"items": result}))
     finally:
         session.close()
 
@@ -108,5 +136,76 @@ def patch_products(product_id: int):
             return jsonify(err(str(e), code=404)), 404
 
         return jsonify(ok(updated))
+    finally:
+        session.close()
+
+
+@bp.route('/products/<int:product_id>', methods=['DELETE'])
+def delete_products(product_id: int):
+    session = get_session()
+    try:
+        try:
+            delete_product(session, product_id)
+        except ValueError as e:
+            return jsonify(err(str(e), code=404)), 404
+        return jsonify(ok({'message': 'deleted'}))
+    finally:
+        session.close()
+
+
+@bp.route('/products/<int:product_id>/metrics', methods=['GET'])
+def get_product_metrics(product_id: int):
+    window = request.args.get('window', '8w')
+    
+    # 解析窗口
+    today = date.today()
+    start_date = today
+    
+    if window == '4w':
+        start_date = today - timedelta(weeks=4)
+    elif window == '8w':
+        start_date = today - timedelta(weeks=8)
+    elif window == '12w':
+        start_date = today - timedelta(weeks=12)
+    elif window == '24w':
+        start_date = today - timedelta(weeks=24)
+    elif window == '1y':
+        start_date = today - timedelta(days=365)
+    elif window == 'ytd':
+        start_date = date(today.year, 1, 1)
+    else:
+        # 默认 8w
+        start_date = today - timedelta(weeks=8)
+        
+    session = get_session()
+    try:
+        # 获取插值后的序列
+        series = get_valuation_series(session, product_id, start_date, today, interpolate=True)
+        
+        # 检查数据是否足够 (至少2周数据)
+        if not series or len(series) < 14:
+             return jsonify(ok({
+                "product_id": product_id,
+                "window": window,
+                "status": "insufficient_data",
+                "metrics": None
+            }))
+            
+        metrics = calculate_metrics(series)
+        
+        if not metrics:
+             return jsonify(ok({
+                "product_id": product_id,
+                "window": window,
+                "status": "insufficient_data",
+                "metrics": None
+            }))
+            
+        return jsonify(ok({
+            "product_id": product_id,
+            "window": window,
+            "status": "ok",
+            "metrics": metrics
+        }))
     finally:
         session.close()

@@ -1,0 +1,77 @@
+from flask import jsonify, request
+from datetime import date
+
+from database import get_session
+from services.valuation_service import batch_upsert_valuations, list_valuations, delete_valuation
+from utils.response import ok, err
+
+from . import bp
+
+@bp.route('/valuations/batch_upsert', methods=['POST'], endpoint='batch_upsert_valuations')
+def batch_upsert():
+    payload = request.get_json(silent=True) or {}
+    rows = payload.get('rows', [])
+    source = payload.get('source', 'manual')
+    
+    if not rows:
+        return jsonify(ok({"inserted": 0, "updated": 0, "warnings": []}))
+        
+    session = get_session()
+    try:
+        result = batch_upsert_valuations(session, rows)
+        return jsonify(ok(result))
+    except Exception as e:
+        return jsonify(err(str(e), code=500)), 500
+    finally:
+        session.close()
+
+@bp.route('/products/<int:product_id>/valuations', methods=['GET'])
+def get_product_valuations(product_id: int):
+    start_date_str = request.args.get('from')
+    end_date_str = request.args.get('to')
+    
+    if not start_date_str or not end_date_str:
+        return jsonify(err("from and to dates are required", code=400)), 400
+        
+    try:
+        start_date = date.fromisoformat(start_date_str)
+        end_date = date.fromisoformat(end_date_str)
+    except ValueError:
+        return jsonify(err("invalid date format", code=400)), 400
+        
+    session = get_session()
+    try:
+        valuations = list_valuations(session, product_id, start_date, end_date)
+        points = [
+            {"date": v.date.isoformat(), "market_value": v.market_value}
+            for v in valuations
+        ]
+        return jsonify(ok({
+            "product_id": product_id,
+            "points": points
+        }))
+    finally:
+        session.close()
+
+@bp.route('/products/<int:product_id>/valuations', methods=['DELETE'])
+def delete_product_valuation(product_id: int):
+    date_str = request.args.get('date')
+    if not date_str:
+        return jsonify(err("date is required", code=400)), 400
+        
+    try:
+        valuation_date = date.fromisoformat(date_str)
+    except ValueError:
+        return jsonify(err("invalid date format", code=400)), 400
+        
+    session = get_session()
+    try:
+        success = delete_valuation(session, product_id, valuation_date)
+        if success:
+            return jsonify(ok({"message": "deleted"}))
+        else:
+            return jsonify(err("valuation not found", code=404)), 404
+    except Exception as e:
+        return jsonify(err(str(e), code=500)), 500
+    finally:
+        session.close()

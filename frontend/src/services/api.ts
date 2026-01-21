@@ -56,3 +56,10 @@ export function apiPatch<T>(url: string, body?: unknown) {
     data: body,
   });
 }
+
+export function apiDelete<T>(url: string, params?: Record<string, unknown>) {
+  return apiRequest<T>(url, {
+    method: 'DELETE',
+    params,
+  });
+}
