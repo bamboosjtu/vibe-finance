@@ -488,6 +488,57 @@ paths:
                   nullable: true
             example:
               is_liquid: true
+    delete:
+      summary: Delete account
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                  data:
+                    type: object
+                    properties:
+                      message:
+                        type: string
+                  message:
+                    type: string
+                required:
+                - code
+                - data
+                - message
+              example:
+                code: 200
+                data:
+                  message: deleted
+                message: ok
+        '404':
+          description: Not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                  message:
+                    type: string
+                required:
+                - code
+                - message
+              example:
+                code: 404
+                message: Account 11 not found
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
   /api/snapshots/batch_upsert:
     post:
       summary: Batch upsert snapshots (authoritative)
@@ -522,11 +573,6 @@ paths:
             schema:
               type: object
               properties:
-                source:
-                  type: string
-                  enum:
-                  - manual
-                  - import_excel
                 rows:
                   type: array
                   items:
@@ -534,7 +580,6 @@ paths:
               required:
               - rows
             example:
-              source: import_excel
               rows:
               - date: '2025-01-05'
                 account_id: 10
@@ -778,6 +823,57 @@ paths:
                   nullable: true
             example:
               note: 更新备注
+    delete:
+      summary: Delete product
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                  data:
+                    type: object
+                    properties:
+                      message:
+                        type: string
+                  message:
+                    type: string
+                required:
+                - code
+                - data
+                - message
+              example:
+                code: 200
+                data:
+                  message: deleted
+                message: ok
+        '404':
+          description: Not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                  message:
+                    type: string
+                required:
+                - code
+                - message
+              example:
+                code: 404
+                message: Product 201 not found
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
   /api/valuations/batch_upsert:
     post:
       summary: Batch upsert product valuations
@@ -812,11 +908,6 @@ paths:
             schema:
               type: object
               properties:
-                source:
-                  type: string
-                  enum:
-                  - manual
-                  - import_excel
                 rows:
                   type: array
                   items:
@@ -824,7 +915,6 @@ paths:
               required:
               - rows
             example:
-              source: import_excel
               rows:
               - product_id: 200
                 date: '2025-01-05'
@@ -959,6 +1049,128 @@ paths:
                   redeem_date: null
                   settle_date: null
                   note: 第1批
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+  /api/lots/{id}:
+    patch:
+      summary: Update lot
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                  data:
+                    $ref: '#/components/schemas/Lot'
+                  message:
+                    type: string
+                required:
+                - code
+                - data
+                - message
+              example:
+                code: 200
+                data:
+                  id: 9001
+                  product_id: 200
+                  open_date: '2025-01-05'
+                  principal: 100000
+                  shares: null
+                  status: holding
+                  redeem_date: null
+                  settle_date: null
+                  note: 更新备注
+                message: ok
+        '404':
+          description: Not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                  message:
+                    type: string
+                required:
+                - code
+                - message
+              example:
+                code: 404
+                message: Lot 9001 not found
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                principal:
+                  type: number
+                note:
+                  type: string
+                  nullable: true
+            example:
+              note: 更新备注
+    delete:
+      summary: Delete lot
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                  data:
+                    type: object
+                    properties:
+                      message:
+                        type: string
+                  message:
+                    type: string
+                required:
+                - code
+                - data
+                - message
+              example:
+                code: 200
+                data:
+                  message: deleted
+                message: ok
+        '404':
+          description: Not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                  message:
+                    type: string
+                required:
+                - code
+                - message
+              example:
+                code: 404
+                message: Lot 9001 not found
       parameters:
       - name: id
         in: path

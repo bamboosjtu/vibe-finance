@@ -61,7 +61,6 @@
 **实现要点**
 
 * name 唯一
-* 不支持删除（避免被引用后出问题）
 
 ---
 
@@ -76,6 +75,7 @@
 
 * 下拉选择已有机构
 * 支持「新建并立即选中」
+* is_liquid：若“未勾选/未触达”视为 false
 
 ---
 
@@ -110,10 +110,10 @@
 }
 ```
 
-**校验规则**
-
-* `type = credit` → `is_liquid` 默认 false
-* `type ≠ credit` → `is_liquid` 默认 true
+- 前端规则（强约束）：前端提交 POST /api/accounts 时必须传 is_liquid: boolean，未勾选就传 false。
+- 后端规则（兜底兼容其它调用方）：后端把 is_liquid 当成 optional：
+    - 若请求里 is_liquid 为 null / 缺失：按 type 计算默认值（type == credit => false，否则 true）。
+    - 若请求里 is_liquid 为 true/false：直接使用，不改写。
 
 ---
 
@@ -309,13 +309,13 @@
 ---
 
 
-## T1-5 Lot（持仓批次）管理（Sprint 1 新增）
+# T1-5 Lot（持仓批次）管理
 
 * **新增批次（Lot）**：表示“我在某次买入形成的一笔持仓批次”
 * Sprint 1 只需要做到：**能创建/查看 Lot**
   （赎回/到账状态机在后续Sprint）
 
-### 任务
+## 任务
 
 为同一产品支持多次买入，记录为多个 Lot。Lot 在 Sprint 1 阶段只需支持：
 
@@ -327,9 +327,9 @@
 
 ---
 
-### 接口
+## 接口
 
-#### POST /api/lots
+### POST /api/lots
 
 **请求**
 
@@ -356,7 +356,7 @@
 
 ---
 
-#### GET /api/products/{id}/lots
+### GET /api/products/{id}/lots
 
 **响应**
 
@@ -386,7 +386,7 @@
 
 ---
 
-#### （可选）PATCH /api/lots/{id}
+### PATCH /api/lots/{id}
 
 **请求**
 
@@ -397,20 +397,33 @@
 **响应**
 
 ```json
-{ "ok": true }
+{
+  "code": 200,
+  "data": {
+    "created_at": "Sat, 24 Jan 2026 15:33:09 GMT",
+    "id": 9,
+    "note": "\u5df2\u53ef\u8d4e\u56de",
+    "open_date": "Tue, 06 Jan 2026 00:00:00 GMT",
+    "principal": 30000.0,
+    "product_id": 8,
+    "status": "holding",
+    "updated_at": "Sat, 24 Jan 2026 15:33:09 GMT"
+  },
+  "message": "ok"
+}
 ```
 
 ---
 
-### 页面
+## 页面
 
 > Lot UI 嵌在“产品页”里**，不额外开新模块。
 
-#### A. 产品列表页
+### A. 产品列表页
 
 * 依旧是列表 + 新建/编辑产品
 
-#### B. 产品详情页
+### B. 产品详情页
 
 从产品列表点进来即可
 
@@ -443,23 +456,23 @@
 
 ---
 
-### 验收标准（Acceptance Criteria）
+## 验收标准（Acceptance Criteria）
 
 * [x] 我能把现在所有账户建进去
 * [x] 我能把现在所有理财产品建进去
 * [x] 填写过程中没有明显“反人类字段”
 * [x] 我对这些数据“以后能一直用”有信心
-* [ ] 同一产品可以创建多个 Lot（至少 2 条）
-* [ ] Lot 创建后能在产品详情页看到且刷新不丢
-* [ ] Lot 默认状态为 holding（Sprint 1 不做状态机）
-* [ ] 不需要把“第二次买入”当成第二个产品来建模
-* [ ] 为 Sprint 3 的“分段点识别”预留：Lot.open_date 可被读取（即接口已具备）
-* [ ] 同一产品支持多次买入，通过 Lot 表达（不拆分为多个 Product）
-* [ ] 从产品列表进入产品详情页能看到 Lot 列表
-* [ ] 新增 Lot 后产品详情页立即更新且刷新不丢
+* [x] 同一产品可以创建多个 Lot（至少 2 条）
+* [x] Lot 创建后能在产品详情页看到且刷新不丢
+* [x] Lot 默认状态为 holding（Sprint 1 不做状态机）
+* [x] 不需要把“第二次买入”当成第二个产品来建模
+* [x] 为 Sprint 3 的“分段点识别”预留：Lot.open_date 可被读取（即接口已具备）
+* [x] 同一产品支持多次买入，通过 Lot 表达（不拆分为多个 Product）
+* [x] 从产品列表进入产品详情页能看到 Lot 列表
+* [x] 新增 Lot 后产品详情页立即更新且刷新不丢
 ---
 
-## 🧠 给你的一个关键提醒（作为 Tech Lead）
+# 🧠 给你的一个关键提醒（作为 Tech Lead）
 
 > **Sprint 1 不追求“完整”，只追求“真实”。**
 

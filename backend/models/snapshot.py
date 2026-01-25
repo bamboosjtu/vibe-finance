@@ -16,7 +16,7 @@ class Snapshot(BaseModel, table=True):
     balance: float = Field(description="账户余额")
     
     # 关系
-    # account: Optional["Account"] = Relationship()
+    account: Optional["Account"] = Relationship()
     
     class Config:
         json_schema_extra = {

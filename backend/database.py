@@ -4,6 +4,7 @@ from models.base import BaseModel
 from models.institution import Institution
 from models.account import Account
 from models.product import Product
+from models.lot import Lot
 
 
 def init_db():

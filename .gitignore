@@ -17,6 +17,11 @@ backend/construction.db
 
 # Python (backend)
 backend/__pycache__/
+backend/api/__pycache__/
+backend/api/v1/__pycache__/
+backend/services/__pycache__/
+backend/models/__pycache__/
+backend/utils/__pycache__/
 backend/*.py[cod]
 backend/*$py.class
 backend/*.so
@@ -58,6 +63,10 @@ frontend/build/
 frontend/.umi/
 frontend/.umi-production/
 frontend/.umi-test/
+frontend/.umi/appData.json
+frontend/src/.umi/appData.json
+frontend/.umi-production/appData.json
+frontend/.umi-test/appData.json
 
 # IDE
 .vscode/

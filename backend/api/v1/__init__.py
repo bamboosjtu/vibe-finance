@@ -9,4 +9,7 @@ from . import accounts
 from . import products
 from . import snapshots
 from . import valuations
+from . import lots
+from . import dashboard
+from . import reconciliation
 

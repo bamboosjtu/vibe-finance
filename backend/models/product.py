@@ -38,6 +38,7 @@ class Product(BaseModel, table=True):
     # 关系
     institution: Optional["Institution"] = Relationship(back_populates="products")
     valuations: List["ProductValuation"] = Relationship(back_populates="product")
+    lots: List["Lot"] = Relationship(back_populates="product")
     
     class Config:
         json_schema_extra = {

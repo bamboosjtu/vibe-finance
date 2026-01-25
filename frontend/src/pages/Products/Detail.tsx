@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, history } from '@umijs/max';
-import { PageContainer, ProCard, StatisticCard } from '@ant-design/pro-components';
+import { PageContainer, ProCard, StatisticCard, ProTable, ModalForm, ProFormDatePicker, ProFormDigit, ProFormTextArea } from '@ant-design/pro-components';
 import { Line } from '@ant-design/plots';
-import { Radio, Descriptions, Tag, Alert, Empty, Button } from 'antd';
+import { Radio, Descriptions, Tag, Alert, Empty, Button, Form, Popconfirm, message } from 'antd';
 import { getProductMetrics, listProducts, Product, ProductMetrics } from '@/services/products';
 import { getProductValuations, ProductValuation } from '@/services/valuations';
+import { createLot, listProductLots, Lot, CreateLotReq, patchLot, deleteLot } from '@/services/lots';
 import dayjs from 'dayjs';
 
 const ProductDetail: React.FC = () => {
@@ -14,15 +15,29 @@ const ProductDetail: React.FC = () => {
   const [product, setProduct] = useState<Product | null>(null);
   const [metrics, setMetrics] = useState<ProductMetrics | null>(null);
   const [valuations, setValuations] = useState<ProductValuation[]>([]);
+  const [lots, setLots] = useState<Lot[]>([]);
   const [loading, setLoading] = useState(false);
   const [window, setWindow] = useState('8w');
   const [metricsStatus, setMetricsStatus] = useState<string>('ok');
+  const [createLotOpen, setCreateLotOpen] = useState(false);
+  const [editLotOpen, setEditLotOpen] = useState(false);
+  const [editingLot, setEditingLot] = useState<Lot | undefined>(undefined);
+  const [lotForm] = Form.useForm<CreateLotReq>();
 
   // Define functions before use
   const loadProductInfo = async () => {
     const resp = await listProducts();
     const p = resp.items.find(i => i.id === productId);
     if (p) setProduct(p);
+  };
+
+  const loadLots = async () => {
+    try {
+      const resp = await listProductLots(productId);
+      setLots(resp.items);
+    } catch (e) {
+      console.error('Failed to load lots:', e);
+    }
   };
 
   const loadData = async () => {
@@ -58,6 +73,7 @@ const ProductDetail: React.FC = () => {
 
   useEffect(() => {
     loadProductInfo();
+    loadLots();
   }, [productId]);
 
   useEffect(() => {
@@ -167,8 +183,190 @@ const ProductDetail: React.FC = () => {
                 <Empty description="暂无估值数据" />
             )}
         </ProCard>
+
+        {/* 持仓批次 */}
+        <ProCard 
+          title="持仓批次" 
+          bordered
+          extra={
+            <Button type="primary" onClick={() => {
+              lotForm.resetFields();
+              setCreateLotOpen(true);
+            }}>
+              新增批次
+            </Button>
+          }
+        >
+          <ProTable<Lot>
+            rowKey="id"
+            search={false}
+            pagination={false}
+            dataSource={lots}
+            columns={[
+              {
+                title: '买入日',
+                dataIndex: 'open_date',
+                width: '25%',
+                valueType: 'date',
+                fieldProps: {
+                  format: 'YYYY-MM-DD',
+                },
+              },
+              {
+                title: '本金',
+                dataIndex: 'principal',
+                width: '25%',
+                valueType: 'money',
+              },
+              {
+                title: '状态',
+                dataIndex: 'status',
+                width: '15%',
+                valueEnum: {
+                  holding: { text: '持有中' },
+                  redeeming: { text: '赎回中' },
+                  settled: { text: '已到账' },
+                },
+              },
+              {
+                title: '备注',
+                dataIndex: 'note',
+                width: '20%',
+                ellipsis: true,
+              },
+              {
+                title: '操作',
+                valueType: 'option',
+                width: '15%',
+                render: (_, record) => [
+                  <a
+                    key="edit"
+                    onClick={() => {
+                      setEditingLot(record);
+                      lotForm.setFieldsValue({
+                        open_date: record.open_date,
+                        principal: record.principal,
+                        note: record.note,
+                      });
+                      setEditLotOpen(true);
+                    }}
+                  >
+                    编辑
+                  </a>,
+                  <Popconfirm
+                    key="delete"
+                    title="确定删除此批次吗？"
+                    onConfirm={async () => {
+                      try {
+                        await deleteLot(record.id);
+                        message.success('删除成功');
+                        loadLots();
+                      } catch (e) {
+                        console.error('Delete failed:', e);
+                        message.error('删除失败');
+                      }
+                    }}
+                  >
+                    <a style={{ color: 'red', marginLeft: 8 }}>删除</a>
+                  </Popconfirm>,
+                ],
+              },
+            ]}
+          />
+        </ProCard>
       
       </ProCard>
+
+      {/* 新增批次表单 */}
+      <ModalForm<CreateLotReq>
+        form={lotForm}
+        title="新增批次"
+        open={createLotOpen}
+        onOpenChange={(v) => setCreateLotOpen(v)}
+        modalProps={{ destroyOnClose: true }}
+        onFinish={async (values) => {
+          try {
+            const payload: CreateLotReq = {
+              product_id: productId,
+              open_date: values.open_date,
+              principal: values.principal,
+              note: values.note,
+            };
+            await createLot(payload);
+            message.success('创建成功');
+            loadLots();
+            return true;
+          } catch (e) {
+            message.error('创建失败');
+            return false;
+          }
+        }}
+      >
+        <ProFormDatePicker name="open_date" label="买入日" rules={[{ required: true }]} />
+        <ProFormDigit 
+          name="principal" 
+          label="本金" 
+          rules={[
+            { required: true },
+            {
+              validator: (_: any, value: number) => {
+                if (value && value <= 0) {
+                  return Promise.reject(new Error('本金必须大于0'));
+                }
+                return Promise.resolve();
+              },
+            },
+          ]} 
+          fieldProps={{ precision: 2 }} 
+        />
+        <ProFormTextArea name="note" label="备注" />
+      </ModalForm>
+
+      {/* 编辑批次表单 */}
+      <ModalForm<CreateLotReq>
+        form={lotForm}
+        title="编辑批次"
+        open={editLotOpen}
+        onOpenChange={(v) => {
+          setEditLotOpen(v);
+          if (!v) setEditingLot(undefined);
+        }}
+        modalProps={{ destroyOnClose: true }}
+        onFinish={async (values) => {
+          if (!editingLot) return false;
+          try {
+            await patchLot(editingLot.id, {
+              principal: values.principal,
+              note: values.note,
+            });
+            message.success('保存成功');
+            loadLots();
+            return true;
+          } catch (e) {
+            message.error('保存失败');
+            return false;
+          }
+        }}
+      >
+        <ProFormDatePicker name="open_date" label="买入日" disabled />
+        <ProFormDigit 
+          name="principal" 
+          label="本金" 
+          rules={[
+            { required: true },
+            {
+              validator: (_: any, value: number) => {
+                if (value && value <= 0) {
+                  return Promise.reject(new Error('本金必须大于0'));
+                }
+                return Promise.resolve();
+              },
+            },
+          ]} 
+          fieldProps={{ precision: 2 }} 
+        />
+        <ProFormTextArea name="note" label="备注" />
+      </ModalForm>
     </PageContainer>
   );
 };

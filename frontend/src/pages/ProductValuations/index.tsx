@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { PageContainer, EditableProTable, ProColumns } from '@ant-design/pro-components';
-import { message, Select, Popconfirm } from 'antd';
+import { message, Select, Popconfirm, Pagination } from 'antd';
 import dayjs from 'dayjs';
 import { listProducts, Product } from '@/services/products';
 import { batchUpsertValuations, getProductValuations, ProductValuation, deleteProductValuation } from '@/services/valuations';
@@ -14,13 +14,17 @@ const ProductValuations: React.FC = () => {
   const [editableKeys, setEditableRowKeys] = useState<React.Key[]>([]);
   const [dataSource, setDataSource] = useState<TableItem[]>([]);
   const [loading, setLoading] = useState(false);
+  const [pagination, setPagination] = useState({
+    current: 1,
+    pageSize: 20,
+    total: 0,
+  });
 
   // Define functions before use
   const loadProducts = async () => {
     try {
       const resp = await listProducts();
       setProducts(resp.items);
-      // 默认选择"国债逆回购"
       const defaultProduct = resp.items.find(p => p.name === '国债逆回购');
       if (defaultProduct) {
         setSelectedProductId(defaultProduct.id);
@@ -30,18 +34,21 @@ const ProductValuations: React.FC = () => {
     }
   };
 
-  const loadValuations = async (productId: number) => {
+  const loadValuations = async (productId: number, page: number = 1) => {
     setLoading(true);
     try {
-      const end = dayjs().format('YYYY-MM-DD');
-      const start = dayjs().subtract(1, 'year').format('YYYY-MM-DD');
-      const resp = await getProductValuations(productId, start, end);
+      const resp = await getProductValuations(productId, '2020-01-01', dayjs().format('YYYY-MM-DD'), page, 20);
       const data = resp.points.map((p) => ({
         ...p,
         id: `${p.date}`,
       }));
       data.sort((a, b) => dayjs(b.date).valueOf() - dayjs(a.date).valueOf());
       setDataSource(data);
+      setPagination({
+        current: page,
+        pageSize: resp.pagination.page_size,
+        total: resp.pagination.total,
+      });
     } catch (e) {
       message.error('加载估值数据失败');
     } finally {
@@ -55,9 +62,14 @@ const ProductValuations: React.FC = () => {
 
   useEffect(() => {
     if (selectedProductId) {
-      loadValuations(selectedProductId);
+      loadValuations(selectedProductId, 1);
     } else {
       setDataSource([]);
+      setPagination({
+        current: 1,
+        pageSize: 20,
+        total: 0,
+      });
     }
   }, [selectedProductId]);
 
@@ -104,7 +116,7 @@ const ProductValuations: React.FC = () => {
              try {
                 await deleteProductValuation(selectedProductId, record.date);
                 message.success('删除成功');
-                loadValuations(selectedProductId);
+                loadValuations(selectedProductId, pagination.current);
              } catch (e) {
                 message.error('删除失败');
              }
@@ -152,6 +164,18 @@ const ProductValuations: React.FC = () => {
         columns={columns}
         value={dataSource}
         onChange={(val) => setDataSource([...val])}
+        pagination={{
+          current: pagination.current,
+          pageSize: pagination.pageSize,
+          total: pagination.total,
+          showSizeChanger: true,
+          showTotal: (total) => `共 ${total} 条`,
+          onChange: (page, pageSize) => {
+            if (selectedProductId) {
+              loadValuations(selectedProductId, page);
+            }
+          },
+        }}
         editable={{
           type: 'multiple',
           editableKeys,
@@ -167,7 +191,7 @@ const ProductValuations: React.FC = () => {
                 }]
               });
               message.success('保存成功');
-              loadValuations(selectedProductId);
+              loadValuations(selectedProductId, pagination.current);
             } catch (e) {
               message.error('保存失败');
               throw e;

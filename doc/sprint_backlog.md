@@ -103,6 +103,17 @@
 
 ---
 
+#### T1-5 Lot（持仓批次）管理
+
+* [x] POST /api/lots
+* [x] GET /api/products/{id}/lots
+* [x] PATCH /api/lots/{id}
+
+**前端**
+
+* [x] 产品列表
+* [x] 产品详情页Lot列表
+
 ## 🟦 Sprint 2：资产快照 & Dashboard v1
 
 ### 🎯 Sprint Goal
@@ -115,12 +126,12 @@
 
 #### T2-1 Snapshot 批量录入
 
-* [ ] POST /api/snapshots/batch_upsert
-* [ ] GET /api/snapshots?date=
+* [x] POST /api/snapshots/batch_upsert
+* [x] GET /api/snapshots?date=
 
 **前端**
 
-* [ ] Snapshot 手工录入页（表格）
+* [x] Snapshot 手工录入页（表格）
 
 **验收标准**
 
@@ -131,9 +142,11 @@
 
 #### T2-2 Dashboard v1
 
-* [ ] 总资产
-* [ ] 流动资产
-* [ ] 负债（信用卡）
+* [x] 总资产
+* [x] 流动资产（is_liquid = true）
+* [x] 负债（信用卡）
+* [x] 可用现金(流动资产-负债)
+* [x] 资产结构（按账户类型分组）
 
 **验收标准**
 

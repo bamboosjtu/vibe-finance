@@ -29,6 +29,8 @@ def batch_upsert():
 def get_product_valuations(product_id: int):
     start_date_str = request.args.get('from')
     end_date_str = request.args.get('to')
+    page = request.args.get('page', 1, type=int)
+    page_size = request.args.get('page_size', 20, type=int)
     
     if not start_date_str or not end_date_str:
         return jsonify(err("from and to dates are required", code=400)), 400
@@ -42,13 +44,26 @@ def get_product_valuations(product_id: int):
     session = get_session()
     try:
         valuations = list_valuations(session, product_id, start_date, end_date)
+        
+        # 分页逻辑
+        total = len(valuations)
+        start_idx = (page - 1) * page_size
+        end_idx = start_idx + page_size
+        paginated_valuations = valuations[start_idx:end_idx]
+        
         points = [
             {"date": v.date.isoformat(), "market_value": v.market_value}
-            for v in valuations
+            for v in paginated_valuations
         ]
         return jsonify(ok({
             "product_id": product_id,
-            "points": points
+            "points": points,
+            "pagination": {
+                "page": page,
+                "page_size": page_size,
+                "total": total,
+                "total_pages": (total + page_size - 1) // page_size
+            }
         }))
     finally:
         session.close()

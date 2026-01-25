@@ -37,7 +37,6 @@ def post_accounts():
 
     institution_id = payload.get('institution_id')
     is_liquid = payload.get('is_liquid')
-    print(f"DEBUG: create_account payload is_liquid={is_liquid!r}, raw={payload.get('is_liquid')!r}")
     currency = payload.get('currency') or 'CNY'
 
     session = get_session()

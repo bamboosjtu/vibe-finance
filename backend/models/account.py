@@ -25,6 +25,7 @@ class Account(BaseModel, table=True):
     
     # 关系
     institution: Optional["Institution"] = Relationship(back_populates="accounts")
+    snapshots: list["Snapshot"] = Relationship(back_populates="account")
     
     class Config:
         json_schema_extra = {

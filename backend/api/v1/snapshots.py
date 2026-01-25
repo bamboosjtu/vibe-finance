@@ -13,7 +13,6 @@ def batch_upsert():
         return jsonify(err("Missing 'rows' in request body", code=400)), 400
         
     rows = data['rows']
-    # source = data.get('source', 'manual')
     
     session = get_session()
     try:
