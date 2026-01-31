@@ -5,6 +5,7 @@ import type { ProColumns } from '@ant-design/pro-components';
 import { Button, DatePicker, message, Card, Space } from 'antd';
 import dayjs from 'dayjs';
 import { listAccounts, Account } from '@/services/accounts';
+import { listInstitutions, Institution } from '@/services/institutions';
 import { batchUpsertSnapshots, listSnapshots, SnapshotItem } from '@/services/snapshots';
 
 type DataSourceType = {
@@ -30,14 +31,17 @@ const SnapshotEntry: React.FC = () => {
     setLoading(true);
     try {
       const dateStr = targetDate.format('YYYY-MM-DD');
-      
-      // 并行获取账户列表和当天的快照
-      const [accountsResp, snapshotsResp] = await Promise.all([
+
+      // 并行获取账户列表、机构列表和当天的快照
+      const [accountsResp, institutionsResp, snapshotsResp] = await Promise.all([
         listAccounts(),
+        listInstitutions(),
         listSnapshots(dateStr).catch(() => ({ items: [] } as any)) // 如果快照不存在，返回空
       ]);
 
       const accounts = accountsResp.items || [];
+      const institutions = institutionsResp.items || [];
+      const institutionMap = new Map(institutions.map((inst: Institution) => [inst.id, inst.name]));
       const snapshots = snapshotsResp.items || [];
       const snapshotMap = new Map(snapshots.map((s: any) => [s.account_id, s.balance]));
 
@@ -48,7 +52,7 @@ const SnapshotEntry: React.FC = () => {
           id: acc.id,
           account_id: acc.id,
           account_name: acc.name,
-          institution_name: `Institution ${acc.institution_id}`, // 暂时简化
+          institution_name: institutionMap.get(acc.institution_id) || '-',
           type: acc.type,
           // 如果后端返回了该日的快照，balance 应该是一个数字
           // 如果没有，balance 是 null。
@@ -99,6 +103,12 @@ const SnapshotEntry: React.FC = () => {
 
   const columns: ProColumns<DataSourceType>[] = [
     {
+      title: '机构',
+      dataIndex: 'institution_name',
+      readonly: true,
+      width: '15%',
+    },
+    {
       title: '账户名称',
       dataIndex: 'account_name',
       readonly: true,
@@ -108,7 +118,7 @@ const SnapshotEntry: React.FC = () => {
       title: '类型',
       dataIndex: 'type',
       readonly: true,
-      width: '15%',
+      width: '12%',
       valueEnum: {
         cash: { text: '现金', status: 'Success' },
         debit: { text: '储蓄卡', status: 'Processing' },

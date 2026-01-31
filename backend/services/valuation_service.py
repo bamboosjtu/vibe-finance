@@ -1,9 +1,10 @@
-from typing import List, Dict, Any
+from typing import List, Dict, Any, Optional
 from datetime import date, timedelta
 from sqlmodel import Session, select, delete
 from sqlalchemy.dialects.sqlite import insert
 
 from models.valuation import ProductValuation
+
 
 def delete_valuation(session: Session, product_id: int, valuation_date: date) -> bool:
     """
@@ -17,9 +18,10 @@ def delete_valuation(session: Session, product_id: int, valuation_date: date) ->
     session.commit()
     return result.rowcount > 0
 
+
 def batch_upsert_valuations(session: Session, rows: List[Dict[str, Any]]) -> Dict[str, Any]:
     """
-    批量插入或更新估值数据
+    批量插入或更新产品估值数据
     """
     if not rows:
         return {"inserted": 0, "updated": 0, "warnings": []}
@@ -31,11 +33,16 @@ def batch_upsert_valuations(session: Session, rows: List[Dict[str, Any]]) -> Dic
         d = row['date']
         if isinstance(d, str):
             d = date.fromisoformat(d)
+        
+        # 确保 market_value 是 float
+        mv = row['market_value']
+        if isinstance(mv, str):
+            mv = float(mv)
             
         data_to_insert.append({
             "product_id": row['product_id'],
             "date": d,
-            "market_value": row['market_value']
+            "market_value": mv
         })
 
     # 使用 SQLite 的 ON CONFLICT DO UPDATE
@@ -49,24 +56,9 @@ def batch_upsert_valuations(session: Session, rows: List[Dict[str, Any]]) -> Dic
     result = session.exec(stmt)
     session.commit()
     
-    # 尝试区分插入和更新 (SQLite upsert rowcount 行为: insert=1, update=1, no-op=0? )
-    # 实际上 SQLite 的 rowcount 很难精确区分。
-    # 如果一定要精确，需要先查询存在性。但这会增加 IO。
-    # 这里我们采用一种近似策略，或者简单地都算作 processed。
-    # 为了满足需求，我们先查一下哪些已存在。
-    
-    # 实际上，对于前端展示，知道总共成功处理了多少行可能就够了。
-    # 但如果一定要区分，我们可以这样做：
-    
     total_rows = len(rows)
-    # 这里我们不做精确区分以保持性能，或者如果数据量小，可以先查。
-    # 鉴于这是 MVP，且为了性能，我们暂时只返回 total processed，或者全部算作 inserted/updated 的一种。
-    # 既然使用了 upsert，我们假设它是幂等的。
-    
-    # 为了更准确一点，我们可以利用 result.rowcount。
-    # 在 SQLAlchemy + SQLite 中，upsert 的 rowcount 并不总是能区分 insert/update。
-    
     return {"inserted": total_rows, "updated": 0, "warnings": []}
+
 
 def list_valuations(session: Session, product_id: int, start_date: date, end_date: date) -> List[ProductValuation]:
     """
@@ -80,24 +72,34 @@ def list_valuations(session: Session, product_id: int, start_date: date, end_dat
     
     return session.exec(statement).all()
 
+
 def get_valuation_series(
-    session: Session, 
-    product_id: int, 
-    start_date: date, 
-    end_date: date, 
+    session: Session,
+    product_id: int,
+    start_date: date,
+    end_date: date,
     interpolate: bool = True
 ) -> List[Dict[str, Any]]:
     """
     获取连续的估值序列，支持插值
+    只在两个 manual 点之间插值，之外使用外推（extrapolated）
+    返回格式: [{"date": date, "value": float, "source": "manual"|"interpolated"|"extrapolated"}, ...]
+    - manual: 用户录入的真实估值点
+    - interpolated: 在两个 manual 点之间线性插值
+    - extrapolated: 在最后一个 manual 点之后外推（保持最后一个值）
     """
-    # 1. 获取范围内的所有点
+    # 1. 获取范围内的所有 manual 点
     raw_points = list_valuations(session, product_id, start_date, end_date)
     
     if not interpolate:
-        return [{"date": p.date, "value": p.market_value} for p in raw_points]
+        return [{"date": p.date, "value": p.market_value, "source": "manual"} for p in raw_points]
+    
+    # 2. 如果没有 manual 点，返回空
+    if not raw_points:
+        return []
         
-    # 2. 插值逻辑
-    # 查找范围前的最近一个点
+    # 3. 只在 manual 点之间插值，之外断线
+    # 获取范围前的最近一个点（用于插值边界）
     prev_point = session.exec(
         select(ProductValuation)
         .where(ProductValuation.product_id == product_id, ProductValuation.date < start_date)
@@ -105,70 +107,106 @@ def get_valuation_series(
         .limit(1)
     ).first()
     
-    # 合并点集
-    points = []
+    # 获取范围后的最近一个点（用于插值边界）
+    next_point = session.exec(
+        select(ProductValuation)
+        .where(ProductValuation.product_id == product_id, ProductValuation.date > end_date)
+        .order_by(ProductValuation.date.asc())
+        .limit(1)
+    ).first()
+    
+    # 构建完整的 manual 点列表（包含边界点）
+    all_manual_points = []
     if prev_point:
-        points.append(prev_point)
-    points.extend(raw_points)
+        all_manual_points.append(prev_point)
+    all_manual_points.extend(raw_points)
+    if next_point:
+        all_manual_points.append(next_point)
     
-    # 查找范围后的最近一个点
-    last_point_in_range = raw_points[-1] if raw_points else prev_point
-    
-    if last_point_in_range:
-        next_point = session.exec(
-            select(ProductValuation)
-            .where(ProductValuation.product_id == product_id, ProductValuation.date > end_date)
-            .order_by(ProductValuation.date.asc())
-            .limit(1)
-        ).first()
-        if next_point:
-            points.append(next_point)
-            
-    if not points:
-        return []
-
-    # 转换为 dict 并去重
-    val_map = {p.date: p.market_value for p in points}
-    sorted_dates = sorted(val_map.keys())
-    
-    if not sorted_dates:
-        return []
-        
+    # 4. 只在相邻 manual 点之间插值
     result = []
     
-    # 确定插值有效区间
-    valid_start = max(start_date, sorted_dates[0])
-    valid_end = min(end_date, sorted_dates[-1])
+    # 处理只有一个点的情况
+    if len(all_manual_points) == 1:
+        single_point = all_manual_points[0]
+        if start_date <= single_point.date <= end_date:
+            result.append({
+                "date": single_point.date,
+                "value": float(single_point.market_value),
+                "source": "manual"
+            })
+        # 外推到 end_date（使用 extrapolated 标记）
+        if single_point.date < end_date:
+            curr = single_point.date + timedelta(days=1)
+            while curr <= end_date:
+                result.append({
+                    "date": curr,
+                    "value": float(single_point.market_value),
+                    "source": "extrapolated"
+                })
+                curr += timedelta(days=1)
+        return result
     
-    if valid_start > valid_end:
-        return []
+    for i in range(len(all_manual_points) - 1):
+        left_point = all_manual_points[i]
+        right_point = all_manual_points[i + 1]
         
-    curr = valid_start
-    left_idx = 0
+        # 确定当前区间的有效范围（与请求范围交集）
+        interval_start = max(left_point.date, start_date)
+        interval_end = min(right_point.date, end_date)
+        
+        if interval_start > interval_end:
+            continue
+        
+        # 生成区间内的所有日期
+        curr = interval_start
+        while curr <= interval_end:
+            if curr == left_point.date:
+                # manual 点 - 只在范围内添加（避免与上一个区间的right_point重复）
+                if curr >= start_date:
+                    result.append({
+                        "date": curr,
+                        "value": float(left_point.market_value),
+                        "source": "manual"
+                    })
+            elif curr == right_point.date:
+                # manual 点 - 只在范围内添加
+                # 如果是最后一个区间，需要添加right_point；否则跳过（会在下一个区间作为left_point添加）
+                is_last_interval = (i == len(all_manual_points) - 2)
+                if curr <= end_date and curr >= start_date and is_last_interval:
+                    result.append({
+                        "date": curr,
+                        "value": float(right_point.market_value),
+                        "source": "manual"
+                    })
+            else:
+                # 插值点
+                total_days = (right_point.date - left_point.date).days
+                curr_days = (curr - left_point.date).days
+                
+                left_val = float(left_point.market_value)
+                right_val = float(right_point.market_value)
+                val = left_val + (right_val - left_val) * (curr_days / total_days)
+                result.append({
+                    "date": curr,
+                    "value": val,
+                    "source": "interpolated"
+                })
+            
+            curr += timedelta(days=1)
     
-    while curr <= valid_end:
-        # 找到左边界索引：最大的 left_idx 使得 sorted_dates[left_idx] <= curr
-        while left_idx + 1 < len(sorted_dates) and sorted_dates[left_idx + 1] <= curr:
-            left_idx += 1
-            
-        l_date = sorted_dates[left_idx]
-        
-        if l_date == curr:
-            result.append({"date": curr, "value": val_map[curr]})
-        else:
-            # 插值
-            # 既然 curr <= valid_end <= sorted_dates[-1]，且 sorted_dates[left_idx] < curr
-            # 那么一定存在 right_idx = left_idx + 1
-            r_date = sorted_dates[left_idx + 1]
-            l_val = val_map[l_date]
-            r_val = val_map[r_date]
-            
-            total_days = (r_date - l_date).days
-            curr_days = (curr - l_date).days
-            
-            val = l_val + (r_val - l_val) * (curr_days / total_days)
-            result.append({"date": curr, "value": val})
-            
-        curr += timedelta(days=1)
-        
+    # 5. 最后一个 manual 点之后到 end_date 进行外推（extrapolated）
+    last_manual_point = all_manual_points[-1]
+    if last_manual_point.date < end_date:
+        # 使用0斜率外推：保持最后一个manual点的值
+        # 明确标记为 extrapolated，与 interpolated 区分，避免误导
+        curr = last_manual_point.date + timedelta(days=1)
+        while curr <= end_date:
+            result.append({
+                "date": curr,
+                "value": float(last_manual_point.market_value),
+                "source": "extrapolated"
+            })
+            curr += timedelta(days=1)
+
     return result

@@ -1,54 +1,45 @@
-# 环境变量文件 - 绝对不允许跟踪
+# Repository-wide encoding rule:
+# - Keep this file in UTF-8.
+
+# Env files (never commit)
 .env
-.env.local
-.env.development.local
-.env.test.local
-.env.production.local
+.env.*
 backend/.env
 frontend/.env
-**/__pycache__
 
-# 数据库文件
+# Python caches / bytecode
+**/__pycache__/
+**/*.py[cod]
+**/*$py.class
+
+# Repo hygiene: do not commit local Python env/caches (backend)
+backend/.venv/
+backend/venv/
+backend/env/
+backend/ENV/
+backend/.ENV/
+backend/__pycache__/
+backend/api/__pycache__/
+backend/api/v1/__pycache__/
+backend/models/__pycache__/
+backend/services/__pycache__/
+backend/utils/__pycache__/
+
+# Databases
 *.db
 *.sqlite
 *.sqlite3
 db/construction.db
 backend/construction.db
 
-# Python (backend)
-backend/__pycache__/
-backend/api/__pycache__/
-backend/api/v1/__pycache__/
-backend/services/__pycache__/
-backend/models/__pycache__/
-backend/utils/__pycache__/
-backend/*.py[cod]
-backend/*$py.class
-backend/*.so
-backend/.Python
+# Python build artifacts (backend)
 backend/build/
-backend/develop-eggs/
 backend/dist/
-backend/downloads/
-backend/eggs/
-backend/.eggs/
-backend/lib/
-backend/lib64/
-backend/parts/
-backend/sdist/
-backend/var/
-backend/wheels/
 backend/*.egg-info/
+backend/.eggs/
 backend/.installed.cfg
 backend/*.egg
 backend/MANIFEST
-
-# Python 虚拟环境
-backend/venv/
-backend/env/
-backend/ENV/
-backend/.venv/
-backend/.ENV/
 
 # Node.js (frontend)
 frontend/node_modules/
@@ -57,16 +48,30 @@ frontend/yarn-debug.log*
 frontend/yarn-error.log*
 frontend/lerna-debug.log*
 
-# 前端构建产物
+# Frontend build artifacts
 frontend/dist/
 frontend/build/
 frontend/.umi/
 frontend/.umi-production/
 frontend/.umi-test/
+frontend/src/.umi/
 frontend/.umi/appData.json
 frontend/src/.umi/appData.json
 frontend/.umi-production/appData.json
 frontend/.umi-test/appData.json
+
+# Logs
+*.log
+logs/
+
+# Temp / cache
+*.tmp
+*.temp
+.cache/
+
+# Coverage
+coverage/
+.nyc_output/
 
 # IDE
 .vscode/
@@ -84,20 +89,7 @@ frontend/.umi-test/appData.json
 ehthumbs.db
 Thumbs.db
 
-# 日志文件
-*.log
-logs/
-
-# 临时文件
-*.tmp
-*.temp
-.cache/
-
-# 测试覆盖率
-coverage/
-.nyc_output/
-
-# 依赖锁定文件（可选，根据团队偏好）
+# Lockfiles (optional, keep if you want reproducible installs)
 # package-lock.json
 # yarn.lock
 # uv.lock

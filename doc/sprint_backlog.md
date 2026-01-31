@@ -1,359 +1,246 @@
-# Sprint Backlog（MVP 阶段）
+# Sprint Backlog（v3 对齐修正版）
 
-> Sprint 长度建议：**1 周**
-> 原则：**每个 Sprint 结束，你都能像用户一样点一遍系统**
+> 需求基线：`需求文档 v3`  
+> 目标原则：**产品视角、录入融合、走势可信、收益参考、不误导**
+
+> Sprint 建议节奏：1 周 / Sprint  
+> 方法论：**每个 Sprint 结束，都敢作为真实个人用户使用**
 
 ---
 
-## 🟦 Sprint 0：项目骨架 & 最小可运行系统
+## 全局冻结原则（适用于所有 Sprint）
+
+1. **Snapshot 是最高权威**
+   - Snapshot 不被 Transaction / 估值 / 推导结果纠正
+   - 不一致仅提示 Warning，不阻断、不回写
+
+2. **估值是观察事实**
+   - 允许缺失、不连续
+   - 系统不得“补成事实”
+
+3. **推导只用于展示与分析**
+   - 插值、收益近似、区间计算只存在于 Derived Series
+   - 永不回写事实表
+
+4. **收益默认是参考值**
+   - 精确口径不成立时，只能给“参考收益”
+   - 不做伪精确
+
+5. **产品是唯一用户操作对象**
+   - 本阶段不维护 Lot / InternalHolding；未来可基于 Transaction 回放重建。
+
+---
+
+## 🟦 Sprint 0：项目骨架 & 可运行系统
 
 ### 🎯 Sprint Goal
 
-> 打开网页 → 能看到页面 → 前后端能通信
-> 为后续并行开发打地基
-
----
+> 打开页面即可使用，无真实数据也不报错
 
 ### Backlog
 
-#### T0-1 项目初始化
-
-* [x] 初始化前端项目（Next.js / React）
-* [x] 初始化后端（API Routes / 独立 API）
-* [x] SQLite 连接 + migrations 机制
-
-**验收标准**
-
-* 能启动前端 `localhost`
-* 能访问 `/api/health` 返回 200
+- 项目初始化（前端 + 后端）
+- 基础 Layout / Sidebar
+- 健康检查接口
 
 ---
 
-#### T0-2 基础 Layout
-
-* [x] 侧边导航
-* [x] 路由占位页：
-
-  * Dashboard
-  * 账户
-  * 产品
-
-**验收标准**
-
-* 页面可点击切换
-* 不要求有真实数据
-
----
-
-## 🟦 Sprint 1：账户 & 产品管理（你最强调的并行点）
+## 🟦 Sprint 1：账户 & 产品主数据
 
 ### 🎯 Sprint Goal
 
-> 能像真实用户一样，把“现实世界里的账户和理财产品”建进系统
-
----
+> 能把现实世界中的账户和产品准确建模
 
 ### Backlog
 
-#### T1-1 Institution 管理
+- Institution CRUD
+- Account CRUD（is_liquid）
+- Product CRUD（规则、风险等级、赎回 T+N）
 
-* [x] POST /api/institutions
-* [x] GET /api/institutions
+**验收**
 
-**验收标准**
-
-* 能新建银行（如：长沙银行）
-* 下拉可复用
-
----
-
-#### T1-2 Account CRUD
-
-* [x] POST /api/accounts
-* [x] GET /api/accounts
-* [x] PATCH /api/accounts/{id}
-
-**前端**
-
-* [x] 账户列表
-* [x] 新建 / 编辑账户表单
-
-**验收标准**
-
-* 能区分 cash / debit / credit
-* credit 默认 `is_liquid = false`
-* 修改 is_liquid 后立刻生效
+- 产品与账户可独立维护
+- 不涉及交易与估值
 
 ---
 
-#### T1-3 Product CRUD
-
-* [x] POST /api/products
-* [x] GET /api/products
-
-**前端**
-
-* [x] 产品列表
-* [x] 新建产品表单
-
-**验收标准**
-
-* 能录入：期限、R1–R5、T+N
-* 产品字段填起来不别扭（主观但重要）
-
----
-
-#### T1-5 Lot（持仓批次）管理
-
-* [x] POST /api/lots
-* [x] GET /api/products/{id}/lots
-* [x] PATCH /api/lots/{id}
-
-**前端**
-
-* [x] 产品列表
-* [x] 产品详情页Lot列表
-
-## 🟦 Sprint 2：资产快照 & Dashboard v1
+## 🟦 Sprint 2：资产快照 & Dashboard
 
 ### 🎯 Sprint Goal
 
-> 验证「Snapshot 是权威」这条核心设计是否成立
-
----
+> Snapshot 成为所有资产展示的权威来源
 
 ### Backlog
 
-#### T2-1 Snapshot 批量录入
-
-* [x] POST /api/snapshots/batch_upsert
-* [x] GET /api/snapshots?date=
-
-**前端**
-
-* [x] Snapshot 手工录入页（表格）
-
-**验收标准**
-
-* 同一天可录多个账户
-* 覆盖同日数据不报错
+- Snapshot 批量录入
+- Dashboard v1（总资产 / 流动资产 / 负债）
+- Snapshot vs 推导差异 Warning
 
 ---
 
-#### T2-2 Dashboard v1
+## 🟦 Sprint 3：产品详情页（录入融合 + 走势核心 Sprint）
 
-* [x] 总资产
-* [x] 流动资产（is_liquid = true）
-* [x] 负债（信用卡）
-* [x] 可用现金(流动资产-负债)
-* [x] 资产结构（按账户类型分组）
+### 🎯 Sprint Goal（冻结）
 
-**验收标准**
-
-* 数值来自 Snapshot
-* 修改 Snapshot 后 Dashboard 实时变化
+> 在**一个产品详情页**完成：  
+> 录入（买入 / 卖出 / 估值） + 展示（走势 / 参考收益），  
+> 且 **走势真实、重点突出、不被插值或现金流误导**。
 
 ---
 
-## 🟦 Sprint 3：产品估值 & 可比性验证
+### S3-1 产品详情页：统一录入能力【必做】
+
+**能力范围**
+
+- 产品估值点录入（ProductValuation）
+- 买入 / 赎回 / 到账（Transaction）
+
+**规则**
+
+- 所有操作都绑定 product_id
+- 交易必须选择 account_id
+
+**验收**
+
+- 在一个页面完成估值与交易录入
+- 无独立“交易页 / 估值页”
+
+---
+
+### S3-2 产品市值序列生成（Derived）【必做】
+
+**输入**
+
+- ProductValuation（manual）
+- 插值规则
+
+**输出**
+
+- Product Market Value Series：
+  - date
+  - value
+  - source = manual | interpolated
+
+**规则（冻结）**
+
+- 插值仅发生在两个 manual 点之间
+- 无 manual 点的区间 → 断线，不补
+
+---
+
+### S3-3 走势可视化（重点强化）【最高优先级】
+
+> 本 Story 是 Sprint 3 的核心价值
+
+#### 4.1 点与事件的视觉区分（必须）
+
+- **观察点（manual）**
+  - 实心点 / 强对比色
+  - Tooltip 显示“观察估值”
+
+- **插值点（interpolated）**
+  - 空心点 / 虚线
+  - Tooltip 显示“插值估算，仅用于参考”
+
+- **买入 / 卖出事件**
+  - 垂直事件线（不同颜色区分 buy / redeem）
+  - Hover 显示金额与日期
+
+---
+
+#### 4.2 Y 轴范围的处理规则（必须明确）
+
+**问题背景**
+
+- 大额买入 / 赎回会导致市值台阶变化
+- 自动缩放可能掩盖真实走势
+
+**规则（冻结）**
+
+1. Y 轴默认基于：
+   - 产品市值序列（manual + interpolated）
+   - - 买入 / 卖出当日的市值跳变
+2. 当买入 / 卖出导致极端值时：
+   - 不压缩历史波动到不可见
+   - 允许增加 padding 或断轴提示
+3. Tooltip 必须明确：
+   - 市值变化是否来自“市场变化”或“资金流动”
+
+**验收**
+
+- 用户能直观看到：
+  - 哪些波动来自估值变化
+  - 哪些来自资金进出
+
+---
+
+### S3-5 收益与风险指标（参考档）【必做】
+
+**收益指标**
+
+- 默认展示：参考收益率（含现金流，近似）
+- 明确标注：
+  > “参考值，包含资金流动影响，不用于精确比较”
+
+**严格收益**
+
+- 仅在以下条件成立时展示：
+  - 区间内无现金流
+  - manual 估值点 ≥ 2 周
+
+**风险指标**
+
+- 最大回撤、回撤修复、波动
+- 可使用插值点
+- 必须提示“受现金流影响”
+
+---
+
+### Sprint 3 明确不做（冻结）
+
+- Lot / 批次 UI
+- 批次估值录入
+- 精确 TWR / XIRR
+- 自动收益拆分
+
+---
+
+## 🟦 Sprint 4：赎回在途 & 现金可用性
 
 ### 🎯 Sprint Goal
 
-> 回答：**不同期限理财，现在能不能放在一把尺上比？**
-
----
+> 赎回 ≠ 到账，现金可用性准确
 
 ### Backlog
 
-#### T3-1 Product Valuation 录入
-
-* [ ] POST /api/valuations/batch_upsert
-* [ ] GET /api/products/{id}/valuations
-
-**前端**
-
-* [ ] 估值手工录入
-* [ ] 简单折线图
-
-**验收标准**
-
-* 支持非每日
-* 缺失点不报错
+- redeem_request / redeem_settle 区分
+- 在途资金不计入可用现金
+- 产品详情页提示到账时间
 
 ---
 
-#### T3-2 产品指标计算
-
-* [ ] TWR
-* [ ] 年化
-* [ ] 最大回撤
-
-**前端**
-
-* [ ] 产品详情页指标展示
-
-**验收标准**
-
-* 数据 < 2 周 → 灰显
-* 不硬算、不报 NaN
-
----
-
-## 🟦 Sprint 4：交易流水 & Lot 状态机
+## 🟦 Sprint 5：资金预测
 
 ### 🎯 Sprint Goal
 
-> 验证「赎回 ≠ 到账」这个你非常在意的真实场景
+> 回答“未来什么时候有钱可用”
 
 ---
 
-### Backlog
-
-#### T4-1 Lot 创建
-
-* [ ] POST /api/lots
-* [ ] GET /api/products/{id}/lots
-
-**前端**
-
-* [ ] Lot 列表
-
-**验收标准**
-
-* 同一产品支持多 Lot
-
----
-
-#### T4-2 Lot 状态机
-
-* [ ] POST /api/lots/{id}/redeem
-* [ ] POST /api/lots/{id}/settle
-
-**前端**
-
-* [ ] 赎回按钮
-* [ ] 到账按钮
-* [ ] 状态展示（holding / redeeming / settled）
-
-**验收标准**
-
-* 赎回日即从投资中消失
-* redeeming 不算可用现金
-
----
-
-## 🟦 Sprint 5：现金可用性 & 预测
+## 🟦 Sprint 6：导入 & 对账
 
 ### 🎯 Sprint Goal
 
-> 系统能回答：**我现在、未来什么时候有钱可用？**
+> 从 Excel 平滑迁移 + 看见不一致
 
 ---
 
-### Backlog
+## 完成定义（DoD）
 
-#### T5-1 Today Available
+当系统做到：
 
-* [ ] GET /api/cash/today
-* [ ] 设置：预留金 / 还款参数
+- 走势中**观察点、插值点、资金事件一眼可分**
+- 收益率不会被当作精确结论
+- 我能基于它做个人投资判断
 
-**前端**
-
-* [ ] Dashboard 显示“可用现金”
-
-**验收标准**
-
-* redeeming 资金被排除
-* 信用卡正确扣减
-
----
-
-#### T5-2 Forecast Available
-
-* [ ] GET /api/cash/forecast
-
-**前端**
-
-* [ ] 现金流日历（列表即可）
-
-**验收标准**
-
-* 到账日跳变正确
-* 不提前释放资金
-
----
-
-## 🟦 Sprint 6：Excel 导入 & 对账 Warning
-
-### 🎯 Sprint Goal
-
-> 把你现在的 Excel 无痛迁进来，并且“看见不一致”
-
----
-
-### Backlog
-
-#### T6-1 Excel 导入
-
-* [ ] 资产表导入
-* [ ] 估值表导入
-
-**验收标准**
-
-* 自动建账户 / 产品
-* 可回滚（至少逻辑回滚）
-
----
-
-#### T6-2 Snapshot vs Transaction Warning
-
-* [ ] 对账计算
-* [ ] Warning 列表页
-
-**验收标准**
-
-* 不修改数据
-* 只提示，不阻断
-
----
-
-## 🟦 Sprint 7（可选）：XIRR & 收益拆解
-
-### 🎯 Sprint Goal
-
-> 用一个数字回答：**我整体资金效率怎么样？**
-
----
-
-### Backlog
-
-#### T7-1 XIRR
-
-* [ ] 产品 XIRR
-* [ ] 全组合 XIRR
-
-**验收标准**
-
-* 使用现金流 + 期末估值
-* 与 Excel 手算结果接近
-
----
-
-## 🎁 给你一个“单人敏捷”的小建议（很适合你）
-
-每个 Sprint 结束，问自己 **3 个问题**：
-
-1. 今天我敢不敢用这个系统做一次真实决策？
-2. 有没有哪个字段/页面让我“录得很不爽”？
-3. 有没有哪个数字让我本能觉得“不对劲”？
-
-👉 这 3 个问题比任何 KPI 都重要。
-
----
-
-如果你愿意，下一步我可以：
-
-* **直接把 Sprint 1 写成「任务 → 接口 → 页面 → 验收」的实现清单**
-* 或 **给你一个 Notion / GitHub Projects 的 Backlog 模板**
-
-你选一个，我继续。
+则认为 Backlog 设计成功。

@@ -7,7 +7,6 @@ export interface ProductValuation {
 }
 
 export interface BatchUpsertReq {
-  source: string;
   rows: ProductValuation[];
 }
 
@@ -39,5 +38,9 @@ export async function getProductValuations(productId: number, from: string, to: 
 }
 
 export async function deleteProductValuation(productId: number, date: string) {
+  return apiDelete<{ message: string }>(`/api/products/${productId}/valuations`, { date });
+}
+
+export async function deleteValuation(productId: number, date: string) {
   return apiDelete<{ message: string }>(`/api/products/${productId}/valuations`, { date });
 }

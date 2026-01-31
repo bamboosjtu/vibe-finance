@@ -21,6 +21,12 @@ class LiquidityRule(str, Enum):
     PERIODIC_OPEN = "periodic_open"    # 定开
 
 
+class ValuationMode(str, Enum):
+    """估值模式枚举"""
+    PRODUCT_VALUE = "product_value"    # 产品级别估值
+    LOT_VALUE = "lot_value"            # 批次级别估值
+
+
 class Product(BaseModel, table=True):
     """理财产品模型"""
     __tablename__ = "products"
@@ -34,11 +40,13 @@ class Product(BaseModel, table=True):
     liquidity_rule: LiquidityRule = Field(description="流动性规则")
     settle_days: int = Field(default=1, description="赎回到账天数")
     note: Optional[str] = Field(default=None, description="备注")
+    valuation_mode: ValuationMode = Field(default=ValuationMode.PRODUCT_VALUE, description="估值模式")
     
     # 关系
     institution: Optional["Institution"] = Relationship(back_populates="products")
     valuations: List["ProductValuation"] = Relationship(back_populates="product")
     lots: List["Lot"] = Relationship(back_populates="product")
+    transactions: List["Transaction"] = Relationship(back_populates="product")
     
     class Config:
         json_schema_extra = {
@@ -52,6 +60,7 @@ class Product(BaseModel, table=True):
                 "term_days": 28,
                 "liquidity_rule": "closed",
                 "settle_days": 1,
-                "note": "到期赎回"
+                "note": "到期赎回",
+                "valuation_mode": "lot_value"
             }
         }

@@ -125,9 +125,9 @@ const Accounts: React.FC = () => {
             },
           },
           {
-            title: '计入可用现金',
+            title: '流动资产（基础版）',
             dataIndex: 'is_liquid',
-            width: 120,
+            width: 140,
             align: 'center',
             render: (_, record) => (record.is_liquid ? '✓' : '×'),
           },
@@ -254,7 +254,7 @@ const Accounts: React.FC = () => {
           }}
         />
         <ProFormText name="currency" label="币种" initialValue="CNY" />
-        <ProFormCheckbox name="is_liquid">计入可用现金</ProFormCheckbox>
+        <ProFormCheckbox name="is_liquid">计入流动资产（基础版）</ProFormCheckbox>
       </ModalForm>
 
       <ModalForm<AccountFormValues>
@@ -302,7 +302,7 @@ const Accounts: React.FC = () => {
           rules={[{ required: true }]}
         />
         <ProFormText name="currency" label="币种" />
-        <ProFormCheckbox name="is_liquid">计入可用现金</ProFormCheckbox>
+        <ProFormCheckbox name="is_liquid">计入流动资产（基础版）</ProFormCheckbox>
       </ModalForm>
 
       <ModalForm<InstitutionFormValues>

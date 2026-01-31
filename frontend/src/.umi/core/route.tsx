@@ -4,7 +4,7 @@
 import React from 'react';
 
 export async function getRoutes() {
-  const routes = {"1":{"path":"/","redirect":"/dashboard","parentId":"ant-design-pro-layout","id":"1"},"2":{"name":"Dashboard","path":"/dashboard","icon":"dashboard","parentId":"ant-design-pro-layout","id":"2"},"3":{"name":"账户","path":"/accounts","icon":"accountBook","parentId":"ant-design-pro-layout","id":"3"},"4":{"path":"/accounts","redirect":"/accounts/list","parentId":"3","id":"4"},"5":{"name":"账户列表","path":"/accounts/list","parentId":"3","id":"5"},"6":{"name":"资产快照","path":"/accounts/snapshots","parentId":"3","id":"6"},"7":{"name":"产品","path":"/products","icon":"barChart","parentId":"ant-design-pro-layout","id":"7"},"8":{"path":"/products","redirect":"/products/list","parentId":"7","id":"8"},"9":{"name":"产品列表","path":"/products/list","parentId":"7","id":"9"},"10":{"name":"产品估值","path":"/products/valuations","parentId":"7","id":"10"},"11":{"path":"/products/:id","parentId":"ant-design-pro-layout","id":"11"},"ant-design-pro-layout":{"id":"ant-design-pro-layout","path":"/","isLayout":true}} as const;
+  const routes = {"1":{"path":"/","redirect":"/dashboard","parentId":"ant-design-pro-layout","id":"1"},"2":{"name":"Dashboard","path":"/dashboard","icon":"dashboard","parentId":"ant-design-pro-layout","id":"2"},"3":{"name":"录入（事实）","path":"/entry","icon":"edit","parentId":"ant-design-pro-layout","id":"3"},"4":{"path":"/entry","redirect":"/entry/snapshots","parentId":"3","id":"4"},"5":{"name":"资产快照","path":"/entry/snapshots","parentId":"3","id":"5"},"6":{"name":"主数据","path":"/master","icon":"database","parentId":"ant-design-pro-layout","id":"6"},"7":{"path":"/master","redirect":"/master/accounts","parentId":"6","id":"7"},"8":{"name":"账户","path":"/master/accounts","parentId":"6","id":"8"},"9":{"name":"产品","path":"/master/products","parentId":"6","id":"9"},"10":{"path":"/products/:id","hideInMenu":true,"parentId":"ant-design-pro-layout","id":"10"},"ant-design-pro-layout":{"id":"ant-design-pro-layout","path":"/","isLayout":true}} as const;
   return {
     routes,
     routeComponents: {
@@ -12,13 +12,12 @@ export async function getRoutes() {
 '2': React.lazy(() => import(/* webpackChunkName: "p__Dashboard__index" */'@/pages/Dashboard/index.tsx')),
 '3': React.lazy(() => import('./EmptyRoute')),
 '4': React.lazy(() => import('./EmptyRoute')),
-'5': React.lazy(() => import(/* webpackChunkName: "p__Accounts__index" */'@/pages/Accounts/index.tsx')),
-'6': React.lazy(() => import(/* webpackChunkName: "p__Snapshots__Entry" */'@/pages/Snapshots/Entry.tsx')),
+'5': React.lazy(() => import(/* webpackChunkName: "p__Snapshots__Entry" */'@/pages/Snapshots/Entry.tsx')),
+'6': React.lazy(() => import('./EmptyRoute')),
 '7': React.lazy(() => import('./EmptyRoute')),
-'8': React.lazy(() => import('./EmptyRoute')),
+'8': React.lazy(() => import(/* webpackChunkName: "p__Accounts__index" */'@/pages/Accounts/index.tsx')),
 '9': React.lazy(() => import(/* webpackChunkName: "p__Products__index" */'@/pages/Products/index.tsx')),
-'10': React.lazy(() => import(/* webpackChunkName: "p__ProductValuations__index" */'@/pages/ProductValuations/index.tsx')),
-'11': React.lazy(() => import(/* webpackChunkName: "p__Products__Detail" */'@/pages/Products/Detail.tsx')),
+'10': React.lazy(() => import(/* webpackChunkName: "p__Products__Detail" */'@/pages/Products/Detail.tsx')),
 'ant-design-pro-layout': React.lazy(() => import(/* webpackChunkName: "umi__plugin-layout__Layout" */'C:/Users/bambo/Documents/Projects/vibe-test/frontend/src/.umi/plugin-layout/Layout.tsx')),
 },
   };

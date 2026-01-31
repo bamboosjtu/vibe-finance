@@ -148,7 +148,7 @@ const Dashboard: React.FC = () => {
           {summary ? (
             <>
               <Row gutter={16}>
-                <Col span={6}>
+                <Col span={8}>
                   <StatisticCard
                     statistic={{
                       title: '总资产',
@@ -158,17 +158,17 @@ const Dashboard: React.FC = () => {
                     }}
                   />
                 </Col>
-                <Col span={6}>
+                <Col span={8}>
                   <StatisticCard
                     statistic={{
-                      title: '流动资产',
+                      title: '流动资产（基础版）',
                       value: summary.liquid_assets,
                       precision: 2,
                       suffix: '元',
                     }}
                   />
                 </Col>
-                <Col span={6}>
+                <Col span={8}>
                   <StatisticCard
                     statistic={{
                       title: '负债',
@@ -176,17 +176,6 @@ const Dashboard: React.FC = () => {
                       precision: 2,
                       suffix: '元',
                       valueStyle: { color: 'red' },
-                    }}
-                  />
-                </Col>
-                <Col span={6}>
-                  <StatisticCard
-                    statistic={{
-                      title: '可用现金',
-                      value: summary.available_cash,
-                      precision: 2,
-                      suffix: '元',
-                      valueStyle: { color: summary.available_cash > 0 ? 'green' : 'red' },
                     }}
                   />
                 </Col>

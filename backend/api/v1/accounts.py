@@ -3,7 +3,8 @@ from flask import jsonify, request
 from database import get_session
 from models.account import AccountType
 from services.account_service import create_account, list_accounts, patch_account, delete_account
-from utils.response import ok, err
+from utils.response import ok, err, ErrorCode
+from utils.logger import log_error
 
 from . import bp
 
@@ -83,7 +84,16 @@ def patch_accounts(account_id: int):
                 currency=currency,
             )
         except ValueError as e:
-            return jsonify(err(str(e), code=404)), 404
+            log_error(
+                "更新账户失败",
+                error=e,
+                extra={
+                    "endpoint": f"PATCH /accounts/{account_id}",
+                    "account_id": account_id,
+                    "payload": {"name": name, "institution_id": institution_id, "is_liquid": is_liquid, "currency": currency}
+                }
+            )
+            return jsonify(err(error_code=ErrorCode.NOT_FOUND)), 404
         return jsonify(ok(updated))
     finally:
         session.close()
@@ -96,7 +106,15 @@ def delete_accounts(account_id: int):
         try:
             delete_account(session, account_id)
         except ValueError as e:
-            return jsonify(err(str(e), code=404)), 404
+            log_error(
+                "删除账户失败",
+                error=e,
+                extra={
+                    "endpoint": f"DELETE /accounts/{account_id}",
+                    "account_id": account_id
+                }
+            )
+            return jsonify(err(error_code=ErrorCode.NOT_FOUND)), 404
         return jsonify(ok({'message': 'deleted'}))
     finally:
         session.close()

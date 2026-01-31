@@ -2,7 +2,8 @@ from flask import jsonify, request
 
 from database import get_session
 from services.institution_service import create_institution, list_institutions
-from utils.response import ok, err
+from utils.response import ok, err, ErrorCode
+from utils.logger import log_error
 
 from . import bp
 
@@ -22,14 +23,22 @@ def post_institutions():
     payload = request.get_json(silent=True) or {}
     name = payload.get('name')
     if not name:
-        return jsonify(err('name is required', code=400)), 400
+        return jsonify(err(error_code=ErrorCode.BAD_REQUEST)), 400
 
     session = get_session()
     try:
         try:
             institution = create_institution(session, name=name)
         except ValueError as e:
-            return jsonify(err(str(e), code=400)), 400
+            log_error(
+                "创建机构失败",
+                error=e,
+                extra={
+                    "endpoint": "POST /institutions",
+                    "name": name
+                }
+            )
+            return jsonify(err(error_code=ErrorCode.BAD_REQUEST)), 400
         return jsonify(ok(institution))
     finally:
         session.close()

@@ -98,9 +98,9 @@ def calculate_metrics(series: List[Dict[str, Any]]) -> Optional[Dict[str, float]
             recovery_days = (dates[-1] - worst_peak_date).days
             
     return {
-        "twr": twr,
-        "annualized": annualized,
-        "volatility": volatility,
-        "max_drawdown": max_dd,
+        "twr": twr * 100,  # 转换为百分比
+        "annualized": annualized * 100,  # 转换为百分比
+        "volatility": volatility * 100,  # 转换为百分比
+        "max_drawdown": max_dd * 100,  # 转换为百分比
         "drawdown_recovery_days": recovery_days
     }

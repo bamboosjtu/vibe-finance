@@ -9,7 +9,7 @@ import {
   ProFormTextArea,
   ProTable,
 } from '@ant-design/pro-components';
-import { Button, Form, message, Popconfirm, Radio, Tag } from 'antd';
+import { Button, Form, message, Popconfirm, Tag } from 'antd';
 import React, { useMemo, useRef, useState } from 'react';
 
 import type { Institution } from '@/services/institutions';
@@ -52,7 +52,6 @@ const Products: React.FC = () => {
   const [editing, setEditing] = useState<Product | undefined>(undefined);
   const [productForm] = Form.useForm<ProductFormValues>();
   const [institutionForm] = Form.useForm<InstitutionFormValues>();
-  const [window, setWindow] = useState('8w');
 
   const institutionNameById = useMemo(() => {
     const map = new Map<number, string>();
@@ -91,21 +90,6 @@ const Products: React.FC = () => {
         title: '产品',
       }}
       extra={[
-        <Radio.Group
-          key="window"
-          value={window}
-          onChange={(e) => {
-            setWindow(e.target.value);
-            actionRef.current?.reload();
-          }}
-          buttonStyle="solid"
-        >
-          <Radio.Button value="4w">近1月</Radio.Button>
-          <Radio.Button value="8w">近2月</Radio.Button>
-          <Radio.Button value="12w">近3月</Radio.Button>
-          <Radio.Button value="24w">近半年</Radio.Button>
-          <Radio.Button value="1y">近1年</Radio.Button>
-        </Radio.Group>,
         <Button
           key="create"
           type="primary"
@@ -127,7 +111,7 @@ const Products: React.FC = () => {
         search={false}
         request={async () => {
           await loadInstitutions();
-          const resp = await listProducts(true, window);
+          const resp = await listProducts(true);
           return {
             data: resp.items,
             success: true,
@@ -170,24 +154,72 @@ const Products: React.FC = () => {
             valueEnum: liquidityRuleEnum,
           },
           {
-            title: '年化收益',
-            dataIndex: ['metrics', 'annualized'],
-            sorter: (a, b) => (a.metrics?.annualized || -999) - (b.metrics?.annualized || -999),
+            title: '产品总金额',
+            dataIndex: 'total_holding_amount',
             render: (_, record) =>
-              record.metrics ? (
-                `${(record.metrics.annualized * 100).toFixed(2)}%`
+              record.total_holding_amount ? (
+                `¥${record.total_holding_amount.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
               ) : (
-                <span style={{ color: '#ccc' }}>--</span>
+                <span style={{ color: '#ccc' }}>¥0.00</span>
               ),
+          },
+          {
+            title: '参考收益率',
+            children: [
+              {
+                title: '1月',
+                dataIndex: ['metrics_by_window', '4w', 'annualized'],
+                width: 70,
+                render: (_, record) => {
+                  const val = record.metrics_by_window?.['4w']?.annualized;
+                  return val !== undefined ? `${val.toFixed(2)}%` : <span style={{ color: '#ccc' }}>--</span>;
+                },
+              },
+              {
+                title: '2月',
+                dataIndex: ['metrics_by_window', '8w', 'annualized'],
+                width: 70,
+                render: (_, record) => {
+                  const val = record.metrics_by_window?.['8w']?.annualized;
+                  return val !== undefined ? `${val.toFixed(2)}%` : <span style={{ color: '#ccc' }}>--</span>;
+                },
+              },
+              {
+                title: '3月',
+                dataIndex: ['metrics_by_window', '12w', 'annualized'],
+                width: 70,
+                render: (_, record) => {
+                  const val = record.metrics_by_window?.['12w']?.annualized;
+                  return val !== undefined ? `${val.toFixed(2)}%` : <span style={{ color: '#ccc' }}>--</span>;
+                },
+              },
+              {
+                title: '半年',
+                dataIndex: ['metrics_by_window', '24w', 'annualized'],
+                width: 70,
+                render: (_, record) => {
+                  const val = record.metrics_by_window?.['24w']?.annualized;
+                  return val !== undefined ? `${val.toFixed(2)}%` : <span style={{ color: '#ccc' }}>--</span>;
+                },
+              },
+              {
+                title: '1年',
+                dataIndex: ['metrics_by_window', '1y', 'annualized'],
+                width: 70,
+                render: (_, record) => {
+                  const val = record.metrics_by_window?.['1y']?.annualized;
+                  return val !== undefined ? `${val.toFixed(2)}%` : <span style={{ color: '#ccc' }}>--</span>;
+                },
+              },
+            ],
           },
           {
             title: '最大回撤',
             dataIndex: ['metrics', 'max_drawdown'],
             sorter: (a, b) => (a.metrics?.max_drawdown || 999) - (b.metrics?.max_drawdown || 999),
-            defaultSortOrder: 'ascend',
             render: (_, record) =>
               record.metrics ? (
-                `${(record.metrics.max_drawdown * 100).toFixed(2)}%`
+                `${record.metrics.max_drawdown.toFixed(2)}%`
               ) : (
                 <span style={{ color: '#ccc' }}>--</span>
               ),
@@ -357,7 +389,7 @@ const Products: React.FC = () => {
               institution_id: values.institution_id ?? null,
               product_code: values.product_code ?? null,
               product_type: values.product_type,
-              risk_level: values.risk_level ?? null,
+              risk_level: values.risk_level || null,
               term_days: values.term_days ?? null,
               liquidity_rule: values.liquidity_rule,
               settle_days: values.settle_days,

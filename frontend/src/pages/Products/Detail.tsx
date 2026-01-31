@@ -1,372 +1,128 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, history } from '@umijs/max';
-import { PageContainer, ProCard, StatisticCard, ProTable, ModalForm, ProFormDatePicker, ProFormDigit, ProFormTextArea } from '@ant-design/pro-components';
-import { Line } from '@ant-design/plots';
-import { Radio, Descriptions, Tag, Alert, Empty, Button, Form, Popconfirm, message } from 'antd';
-import { getProductMetrics, listProducts, Product, ProductMetrics } from '@/services/products';
-import { getProductValuations, ProductValuation } from '@/services/valuations';
-import { createLot, listProductLots, Lot, CreateLotReq, patchLot, deleteLot } from '@/services/lots';
-import dayjs from 'dayjs';
+import { PageContainer, ProCard } from '@ant-design/pro-components';
+import { Radio, Descriptions, Tag, Row, Col } from 'antd';
+import { ArrowLeftOutlined } from '@ant-design/icons';
+import { useProductDetail } from './hooks/useProductDetail';
+import ProductChart from './components/ProductChart';
+import MetricsPanel from './components/MetricsPanel';
+import ValuationTable from './components/ValuationTable';
+import TransactionTable from './components/TransactionTable';
+
+const { Item: DescItem } = Descriptions;
 
 const ProductDetail: React.FC = () => {
-  const params = useParams<{ id: string }>();
-  const productId = Number(params.id);
-  
-  const [product, setProduct] = useState<Product | null>(null);
-  const [metrics, setMetrics] = useState<ProductMetrics | null>(null);
-  const [valuations, setValuations] = useState<ProductValuation[]>([]);
-  const [lots, setLots] = useState<Lot[]>([]);
-  const [loading, setLoading] = useState(false);
-  const [window, setWindow] = useState('8w');
-  const [metricsStatus, setMetricsStatus] = useState<string>('ok');
-  const [createLotOpen, setCreateLotOpen] = useState(false);
-  const [editLotOpen, setEditLotOpen] = useState(false);
-  const [editingLot, setEditingLot] = useState<Lot | undefined>(undefined);
-  const [lotForm] = Form.useForm<CreateLotReq>();
+  const { id } = useParams<{ id: string }>();
+  const productId = Number(id);
 
-  // Define functions before use
-  const loadProductInfo = async () => {
-    const resp = await listProducts();
-    const p = resp.items.find(i => i.id === productId);
-    if (p) setProduct(p);
-  };
+  const {
+    product,
+    accounts,
+    window,
+    setWindow,
+    metrics,
+    metricsStatus,
+    metricsDegradedReason,
+    chartData,
+    events,
+    xMin,
+    xMax,
+    yMin,
+    yMax,
+    transactions,
+    valuationDataSource,
+    refresh,
+  } = useProductDetail(productId);
 
-  const loadLots = async () => {
-    try {
-      const resp = await listProductLots(productId);
-      setLots(resp.items);
-    } catch (e) {
-      console.error('Failed to load lots:', e);
-    }
-  };
+  // 估值表格本地状态
+  const [valuationData, setValuationData] = useState<readonly any[]>([]);
 
-  const loadData = async () => {
-    setLoading(true);
-    try {
-      // 1. Metrics
-      const mResp = await getProductMetrics(productId, window);
-      setMetrics(mResp.metrics);
-      setMetricsStatus(mResp.status);
-
-      // 2. Valuations (for chart)
-      let start = dayjs();
-      if (window === '4w') start = start.subtract(4, 'week');
-      else if (window === '8w') start = start.subtract(8, 'week');
-      else if (window === '12w') start = start.subtract(12, 'week');
-      else if (window === '24w') start = start.subtract(24, 'week');
-      else if (window === '1y') start = start.subtract(1, 'year');
-      else if (window === 'ytd') start = dayjs().startOf('year');
-      
-      const vResp = await getProductValuations(
-          productId, 
-          start.format('YYYY-MM-DD'), 
-          dayjs().format('YYYY-MM-DD')
-      );
-      setValuations(vResp.points);
-      
-    } catch (e) {
-      console.error(e);
-    } finally {
-      setLoading(false);
-    }
-  };
-
+  // 同步估值数据到本地状态
   useEffect(() => {
-    loadProductInfo();
-    loadLots();
-  }, [productId]);
-
-  useEffect(() => {
-    if (productId) {
-      loadData();
-    }
-  }, [productId, window]);
-
-  const config = {
-    data: valuations,
-    xField: 'date',
-    yField: 'market_value',
-    point: {
-      size: 2,
-      shape: 'circle',
-    },
-    tooltip: {
-        formatter: (datum: any) => {
-            return { name: '市值', value: Number(datum.market_value).toFixed(4) };
-        },
-    },
-    xAxis: {
-        tickCount: 5,
-    }
-  };
+    setValuationData(valuationDataSource);
+  }, [valuationDataSource]);
 
   return (
     <PageContainer
       header={{
         title: product?.name || '产品详情',
-        subTitle: product?.product_code,
-        extra: [
-            <Button key="back" onClick={() => history.back()}>
-                返回
-            </Button>,
-            <Radio.Group key="window" value={window} onChange={e => setWindow(e.target.value)} buttonStyle="solid">
-                <Radio.Button value="4w">近1月</Radio.Button>
-                <Radio.Button value="8w">近2月</Radio.Button>
-                <Radio.Button value="12w">近3月</Radio.Button>
-                <Radio.Button value="24w">近半年</Radio.Button>
-                <Radio.Button value="1y">近1年</Radio.Button>
-            </Radio.Group>
-        ]
+        subTitle: product?.institution_id ? undefined : '无机构',
+        tags: product?.risk_level ? <Tag color="blue">{product.risk_level}</Tag> : undefined,
+        backIcon: <ArrowLeftOutlined />,
+        onBack: () => history.push('/master/products'),
       }}
     >
-      <ProCard direction="column" ghost gutter={[0, 16]}>
-        
-        {/* 基本信息 */}
-        <ProCard title="基本信息" bordered>
-            <Descriptions column={3}>
-                <Descriptions.Item label="机构">{product?.institution_id}</Descriptions.Item>
-                <Descriptions.Item label="类型"><Tag>{product?.product_type}</Tag></Descriptions.Item>
-                <Descriptions.Item label="风险等级">{product?.risk_level}</Descriptions.Item>
-                <Descriptions.Item label="流动性">{product?.liquidity_rule}</Descriptions.Item>
-                <Descriptions.Item label="期限">{product?.term_days}天</Descriptions.Item>
-                <Descriptions.Item label="赎回到账">T+{product?.settle_days}</Descriptions.Item>
-            </Descriptions>
-        </ProCard>
-
-        {/* 指标卡片 */}
-        <ProCard bordered loading={loading}>
-            {metricsStatus === 'insufficient_data' ? (
-                <Alert message="数据不足（少于 2 周），暂不支持对比" type="warning" showIcon />
-            ) : (
-                <StatisticCard.Group>
-                    <StatisticCard 
-                        statistic={{ 
-                            title: '年化收益率', 
-                            value: metrics?.annualized ? (metrics.annualized * 100).toFixed(2) : '--',
-                            suffix: '%',
-                            precision: 2
-                        }} 
-                    />
-                    <StatisticCard 
-                        statistic={{ 
-                            title: '最大回撤', 
-                            value: metrics?.max_drawdown ? (metrics.max_drawdown * 100).toFixed(2) : '--',
-                            suffix: '%',
-                            precision: 2,
-                            valueStyle: { color: 'green' }
-                        }} 
-                    />
-                    <StatisticCard 
-                        statistic={{ 
-                            title: 'TWR (区间累计)', 
-                            value: metrics?.twr ? (metrics.twr * 100).toFixed(2) : '--',
-                            suffix: '%',
-                            precision: 2
-                        }} 
-                    />
-                    <StatisticCard 
-                        statistic={{ 
-                            title: '回撤修复天数', 
-                            value: metrics?.drawdown_recovery_days ?? '--',
-                            suffix: '天'
-                        }} 
-                    />
-                </StatisticCard.Group>
-            )}
-        </ProCard>
-
-        {/* 估值曲线 */}
-        <ProCard title="估值走势" bordered loading={loading}>
-            {valuations.length > 0 ? (
-                <Line {...config} />
-            ) : (
-                <Empty description="暂无估值数据" />
-            )}
-        </ProCard>
-
-        {/* 持仓批次 */}
-        <ProCard 
-          title="持仓批次" 
-          bordered
-          extra={
-            <Button type="primary" onClick={() => {
-              lotForm.resetFields();
-              setCreateLotOpen(true);
-            }}>
-              新增批次
-            </Button>
-          }
-        >
-          <ProTable<Lot>
-            rowKey="id"
-            search={false}
-            pagination={false}
-            dataSource={lots}
-            columns={[
-              {
-                title: '买入日',
-                dataIndex: 'open_date',
-                width: '25%',
-                valueType: 'date',
-                fieldProps: {
-                  format: 'YYYY-MM-DD',
-                },
-              },
-              {
-                title: '本金',
-                dataIndex: 'principal',
-                width: '25%',
-                valueType: 'money',
-              },
-              {
-                title: '状态',
-                dataIndex: 'status',
-                width: '15%',
-                valueEnum: {
-                  holding: { text: '持有中' },
-                  redeeming: { text: '赎回中' },
-                  settled: { text: '已到账' },
-                },
-              },
-              {
-                title: '备注',
-                dataIndex: 'note',
-                width: '20%',
-                ellipsis: true,
-              },
-              {
-                title: '操作',
-                valueType: 'option',
-                width: '15%',
-                render: (_, record) => [
-                  <a
-                    key="edit"
-                    onClick={() => {
-                      setEditingLot(record);
-                      lotForm.setFieldsValue({
-                        open_date: record.open_date,
-                        principal: record.principal,
-                        note: record.note,
-                      });
-                      setEditLotOpen(true);
-                    }}
-                  >
-                    编辑
-                  </a>,
-                  <Popconfirm
-                    key="delete"
-                    title="确定删除此批次吗？"
-                    onConfirm={async () => {
-                      try {
-                        await deleteLot(record.id);
-                        message.success('删除成功');
-                        loadLots();
-                      } catch (e) {
-                        console.error('Delete failed:', e);
-                        message.error('删除失败');
-                      }
-                    }}
-                  >
-                    <a style={{ color: 'red', marginLeft: 8 }}>删除</a>
-                  </Popconfirm>,
-                ],
-              },
-            ]}
-          />
-        </ProCard>
-      
+      {/* 产品规则区 */}
+      <ProCard title="产品规则" headerBordered style={{ marginBottom: 16 }}>
+        <Descriptions column={4}>
+          <DescItem label="产品类型">{product?.product_type}</DescItem>
+          <DescItem label="期限">{product?.term_days ? `${product.term_days}天` : '-'}</DescItem>
+          <DescItem label="赎回到账">T+{product?.settle_days || 1}</DescItem>
+          <DescItem label="流动性">{product?.liquidity_rule === 'open' ? '开放' : product?.liquidity_rule === 'closed' ? '封闭' : '定开'}</DescItem>
+        </Descriptions>
       </ProCard>
 
-      {/* 新增批次表单 */}
-      <ModalForm<CreateLotReq>
-        form={lotForm}
-        title="新增批次"
-        open={createLotOpen}
-        onOpenChange={(v) => setCreateLotOpen(v)}
-        modalProps={{ destroyOnClose: true }}
-        onFinish={async (values) => {
-          try {
-            const payload: CreateLotReq = {
-              product_id: productId,
-              open_date: values.open_date,
-              principal: values.principal,
-              note: values.note,
-            };
-            await createLot(payload);
-            message.success('创建成功');
-            loadLots();
-            return true;
-          } catch (e) {
-            message.error('创建失败');
-            return false;
-          }
-        }}
+      {/* 走势展示区 */}
+      <ProCard
+        title="市值走势"
+        headerBordered
+        style={{ marginBottom: 16 }}
+        extra={
+          <Radio.Group value={window} onChange={e => setWindow(e.target.value)}>
+            <Radio.Button value="4w">4周</Radio.Button>
+            <Radio.Button value="8w">8周</Radio.Button>
+            <Radio.Button value="12w">12周</Radio.Button>
+            <Radio.Button value="24w">24周</Radio.Button>
+            <Radio.Button value="1y">1年</Radio.Button>
+            <Radio.Button value="ytd">YTD</Radio.Button>
+          </Radio.Group>
+        }
       >
-        <ProFormDatePicker name="open_date" label="买入日" rules={[{ required: true }]} />
-        <ProFormDigit 
-          name="principal" 
-          label="本金" 
-          rules={[
-            { required: true },
-            {
-              validator: (_: any, value: number) => {
-                if (value && value <= 0) {
-                  return Promise.reject(new Error('本金必须大于0'));
-                }
-                return Promise.resolve();
-              },
-            },
-          ]} 
-          fieldProps={{ precision: 2 }} 
-        />
-        <ProFormTextArea name="note" label="备注" />
-      </ModalForm>
+        <Row gutter={8}>
+          <Col span={17}>
+            <ProductChart
+              chartData={chartData}
+              events={events}
+              xMin={xMin}
+              xMax={xMax}
+              yMin={yMin}
+              yMax={yMax}
+            />
+          </Col>
+          <Col span={4}>
+            <MetricsPanel
+              metrics={metrics}
+              metricsStatus={metricsStatus}
+              metricsDegradedReason={metricsDegradedReason}
+              hasEvents={events.length > 0}
+            />
+          </Col>
+          <Col span={3}>
+            {/* 右侧留白或放置其他内容 */}
+          </Col>
+        </Row>
+      </ProCard>
 
-      {/* 编辑批次表单 */}
-      <ModalForm<CreateLotReq>
-        form={lotForm}
-        title="编辑批次"
-        open={editLotOpen}
-        onOpenChange={(v) => {
-          setEditLotOpen(v);
-          if (!v) setEditingLot(undefined);
-        }}
-        modalProps={{ destroyOnClose: true }}
-        onFinish={async (values) => {
-          if (!editingLot) return false;
-          try {
-            await patchLot(editingLot.id, {
-              principal: values.principal,
-              note: values.note,
-            });
-            message.success('保存成功');
-            loadLots();
-            return true;
-          } catch (e) {
-            message.error('保存失败');
-            return false;
-          }
-        }}
-      >
-        <ProFormDatePicker name="open_date" label="买入日" disabled />
-        <ProFormDigit 
-          name="principal" 
-          label="本金" 
-          rules={[
-            { required: true },
-            {
-              validator: (_: any, value: number) => {
-                if (value && value <= 0) {
-                  return Promise.reject(new Error('本金必须大于0'));
-                }
-                return Promise.resolve();
-              },
-            },
-          ]} 
-          fieldProps={{ precision: 2 }} 
-        />
-        <ProFormTextArea name="note" label="备注" />
-      </ModalForm>
+      {/* 记录区 */}
+      <ProCard split="vertical">
+        <ProCard title="估值录入" colSpan="50%" headerBordered>
+          <ValuationTable
+            productId={productId}
+            dataSource={valuationData as any[]}
+            onChange={setValuationData}
+            onRefresh={refresh}
+          />
+        </ProCard>
+
+        <ProCard title="交易记录" colSpan="50%" headerBordered>
+          <TransactionTable
+            productId={productId}
+            accounts={accounts}
+            dataSource={transactions}
+            onRefresh={refresh}
+          />
+        </ProCard>
+      </ProCard>
     </PageContainer>
   );
 };

@@ -1,11 +1,14 @@
 from flask import jsonify, request
+from sqlmodel import select
 
 from database import get_session
-from models.product import ProductType, LiquidityRule
-from services.product_service import create_product, list_products, patch_product, delete_product
+from models.product import ProductType, LiquidityRule, ValuationMode
+from models.transaction import Transaction
+from services.product_service import create_product, list_products, list_products_with_holdings, patch_product, delete_product
 from services.valuation_service import get_valuation_series
 from services.analytics_service import calculate_metrics
-from utils.response import ok, err
+from utils.response import ok, err, ErrorCode
+from utils.logger import log_error
 from datetime import date, timedelta
 
 from . import bp
@@ -13,33 +16,47 @@ from . import bp
 
 @bp.route('/products', methods=['GET'])
 def get_products():
+    """获取产品列表"""
     include_metrics = request.args.get('include_metrics') == 'true'
-    window = request.args.get('window', '8w')
     
     session = get_session()
     try:
-        items = list_products(session)
+        items = list_products_with_holdings(session)
         result = []
         
-        # Prepare date range for metrics if needed
         today = date.today()
-        start_date = today - timedelta(weeks=8) # Default 8w
-        if window == '4w': start_date = today - timedelta(weeks=4)
-        elif window == '12w': start_date = today - timedelta(weeks=12)
-        elif window == '24w': start_date = today - timedelta(weeks=24)
-        elif window == '1y': start_date = today - timedelta(days=365)
-        elif window == 'ytd': start_date = date(today.year, 1, 1)
-
+        
+        # 定义所有窗口
+        windows = ['4w', '8w', '12w', '24w', '1y']
+        
         for p in items:
-            p_dict = p.model_dump()
             if include_metrics:
-                # Calculate metrics
-                series = get_valuation_series(session, p.id, start_date, today, interpolate=True)
-                metrics = None
-                if series and len(series) >= 14:
-                    metrics = calculate_metrics(series)
-                p_dict['metrics'] = metrics
-            result.append(p_dict)
+                # 为每个窗口计算指标
+                p['metrics_by_window'] = {}
+                for w in windows:
+                    # 计算窗口开始日期
+                    if w == '4w':
+                        start_date = today - timedelta(weeks=4)
+                    elif w == '8w':
+                        start_date = today - timedelta(weeks=8)
+                    elif w == '12w':
+                        start_date = today - timedelta(weeks=12)
+                    elif w == '24w':
+                        start_date = today - timedelta(weeks=24)
+                    elif w == '1y':
+                        start_date = today - timedelta(days=365)
+                    else:
+                        start_date = today - timedelta(weeks=8)
+                    
+                    series = get_valuation_series(session, p['id'], start_date, today, interpolate=True)
+                    metrics = None
+                    if series and len(series) >= 14:
+                        metrics = calculate_metrics(series)
+                    p['metrics_by_window'][w] = metrics
+                
+                # 保留默认metrics（兼容旧代码）
+                p['metrics'] = p['metrics_by_window'].get('8w')
+            result.append(p)
             
         return jsonify(ok({"items": result}))
     finally:
@@ -48,6 +65,7 @@ def get_products():
 
 @bp.route('/products', methods=['POST'])
 def post_products():
+    """创建产品"""
     payload = request.get_json(silent=True) or {}
 
     name = payload.get('name')
@@ -78,6 +96,12 @@ def post_products():
     term_days = payload.get('term_days')
     settle_days = payload.get('settle_days', 1)
     note = payload.get('note')
+    valuation_mode_raw = payload.get('valuation_mode', 'product_value')
+
+    try:
+        valuation_mode = ValuationMode(valuation_mode_raw)
+    except Exception:
+        valuation_mode = ValuationMode.PRODUCT_VALUE
 
     session = get_session()
     try:
@@ -92,6 +116,7 @@ def post_products():
             liquidity_rule=liquidity_rule,
             settle_days=settle_days,
             note=note,
+            valuation_mode=valuation_mode,
         )
         return jsonify(ok(product))
     finally:
@@ -100,6 +125,7 @@ def post_products():
 
 @bp.route('/products/<int:product_id>', methods=['PATCH'])
 def patch_products(product_id: int):
+    """更新产品"""
     payload = request.get_json(silent=True) or {}
 
     product_type = None
@@ -107,14 +133,21 @@ def patch_products(product_id: int):
         try:
             product_type = ProductType(payload.get('product_type'))
         except Exception:
-            return jsonify(err('invalid product_type', code=400)), 400
+            return jsonify(err(error_code=ErrorCode.BAD_REQUEST)), 400
 
     liquidity_rule = None
     if 'liquidity_rule' in payload:
         try:
             liquidity_rule = LiquidityRule(payload.get('liquidity_rule'))
         except Exception:
-            return jsonify(err('invalid liquidity_rule', code=400)), 400
+            return jsonify(err(error_code=ErrorCode.BAD_REQUEST)), 400
+
+    valuation_mode = None
+    if 'valuation_mode' in payload:
+        try:
+            valuation_mode = ValuationMode(payload.get('valuation_mode'))
+        except Exception:
+            return jsonify(err(error_code=ErrorCode.BAD_REQUEST)), 400
 
     session = get_session()
     try:
@@ -131,9 +164,19 @@ def patch_products(product_id: int):
                 liquidity_rule=liquidity_rule,
                 settle_days=payload.get('settle_days'),
                 note=payload.get('note'),
+                valuation_mode=valuation_mode,
             )
         except ValueError as e:
-            return jsonify(err(str(e), code=404)), 404
+            log_error(
+                "更新产品失败",
+                error=e,
+                extra={
+                    "endpoint": f"PATCH /products/{product_id}",
+                    "product_id": product_id,
+                    "payload": payload
+                }
+            )
+            return jsonify(err(error_code=ErrorCode.NOT_FOUND)), 404
 
         return jsonify(ok(updated))
     finally:
@@ -142,67 +185,151 @@ def patch_products(product_id: int):
 
 @bp.route('/products/<int:product_id>', methods=['DELETE'])
 def delete_products(product_id: int):
+    """删除产品"""
     session = get_session()
     try:
         try:
             delete_product(session, product_id)
         except ValueError as e:
-            return jsonify(err(str(e), code=404)), 404
+            log_error(
+                "删除产品失败",
+                error=e,
+                extra={
+                    "endpoint": f"DELETE /products/{product_id}",
+                    "product_id": product_id
+                }
+            )
+            return jsonify(err(error_code=ErrorCode.NOT_FOUND)), 404
         return jsonify(ok({'message': 'deleted'}))
+    finally:
+        session.close()
+
+
+@bp.route('/products/<int:product_id>/chart', methods=['GET'])
+def get_product_chart(product_id: int):
+    """
+    获取产品市值走势
+    返回 manual 和 interpolated 点
+    """
+    from models.product import Product
+    
+    window = request.args.get('window', '8w')
+    
+    today = date.today()
+    start_date = today - timedelta(weeks=8)
+    if window == '4w': start_date = today - timedelta(weeks=4)
+    elif window == '12w': start_date = today - timedelta(weeks=12)
+    elif window == '24w': start_date = today - timedelta(weeks=24)
+    elif window == '1y': start_date = today - timedelta(days=365)
+    elif window == 'ytd': start_date = date(today.year, 1, 1)
+    
+    session = get_session()
+    try:
+        product = session.get(Product, product_id)
+        if not product:
+            return jsonify(err("product not found", code=404)), 404
+        
+        # 获取估值序列（包含 source 标记）
+        series = get_valuation_series(session, product_id, start_date, today, interpolate=True)
+        
+        # 转换为前端格式
+        points = [
+            {
+                "date": p["date"].isoformat() if isinstance(p["date"], date) else p["date"],
+                "market_value": p["value"],
+                "source": p["source"]
+            }
+            for p in series
+        ]
+        
+        return jsonify(ok({
+            "product_id": product_id,
+            "valuation_mode": product.valuation_mode.value,
+            "points": points
+        }))
     finally:
         session.close()
 
 
 @bp.route('/products/<int:product_id>/metrics', methods=['GET'])
 def get_product_metrics(product_id: int):
+    """
+    获取产品收益指标
+    检测现金流事件，返回参考收益率或严格收益率
+    """
+    from models.product import Product
+    
     window = request.args.get('window', '8w')
     
-    # 解析窗口
     today = date.today()
     start_date = today
-    
-    if window == '4w':
-        start_date = today - timedelta(weeks=4)
-    elif window == '8w':
-        start_date = today - timedelta(weeks=8)
-    elif window == '12w':
-        start_date = today - timedelta(weeks=12)
-    elif window == '24w':
-        start_date = today - timedelta(weeks=24)
-    elif window == '1y':
-        start_date = today - timedelta(days=365)
-    elif window == 'ytd':
-        start_date = date(today.year, 1, 1)
+    if window == '4w': start_date = today - timedelta(weeks=4)
+    elif window == '8w': start_date = today - timedelta(weeks=8)
+    elif window == '12w': start_date = today - timedelta(weeks=12)
+    elif window == '24w': start_date = today - timedelta(weeks=24)
+    elif window == '1y': start_date = today - timedelta(days=365)
+    elif window == 'ytd': start_date = date(today.year, 1, 1)
     else:
-        # 默认 8w
         start_date = today - timedelta(weeks=8)
         
     session = get_session()
     try:
-        # 获取插值后的序列
+        product = session.get(Product, product_id)
+        if not product:
+            return jsonify(err("product not found", code=404)), 404
+        
+        # 获取估值序列
         series = get_valuation_series(session, product_id, start_date, today, interpolate=True)
         
-        # 检查数据是否足够 (至少2周数据)
-        if not series or len(series) < 14:
-             return jsonify(ok({
+        # 检查有效估值点（manual + interpolated）≥ 2 周
+        if len(series) < 14:
+            return jsonify(ok({
                 "product_id": product_id,
+                "valuation_mode": product.valuation_mode.value,
+                "window": window,
+                "status": "insufficient_data",
+                "metrics": None,
+                "reason": "估值点不足2周"
+            }))
+        
+        # 检测窗口内是否有现金流事件（Transaction）
+        transactions = session.exec(
+            select(Transaction).where(
+                Transaction.product_id == product_id,
+                Transaction.trade_date >= start_date,
+                Transaction.trade_date <= today
+            )
+        ).all()
+        
+        has_cashflow = len(transactions) > 0
+        
+        # 计算指标
+        metrics = calculate_metrics(series)
+        
+        if not metrics:
+            return jsonify(ok({
+                "product_id": product_id,
+                "valuation_mode": product.valuation_mode.value,
                 "window": window,
                 "status": "insufficient_data",
                 "metrics": None
             }))
-            
-        metrics = calculate_metrics(series)
         
-        if not metrics:
-             return jsonify(ok({
+        # 如果有现金流事件，标记为参考值
+        if has_cashflow:
+            return jsonify(ok({
                 "product_id": product_id,
+                "valuation_mode": product.valuation_mode.value,
                 "window": window,
-                "status": "insufficient_data",
-                "metrics": None
+                "status": "degraded",
+                "metrics": metrics,
+                "degraded_reason": "窗口期内发生资金流动，收益指标为参考值",
+                "degraded_fields": ["twr", "annualized"]
             }))
             
         return jsonify(ok({
             "product_id": product_id,
+            "valuation_mode": product.valuation_mode.value,
             "window": window,
             "status": "ok",
             "metrics": metrics
