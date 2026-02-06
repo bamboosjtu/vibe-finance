@@ -3,6 +3,8 @@ from datetime import date
 
 from database import get_session
 from services.snapshot_service import list_snapshots
+from services.cash_service import get_cash_summary, calculate_available_cash
+from services.redeem_service import calculate_pending_redeems, summarize_future_cash_flow
 from models.snapshot import Snapshot
 from sqlmodel import select
 from utils.response import ok, err
@@ -48,7 +50,7 @@ def get_latest_snapshot_date():
 
 @bp.route('/dashboard/summary', methods=['GET'])
 def get_dashboard_summary():
-    """获取指定日期的资产汇总"""
+    """获取指定日期的资产汇总（Sprint 4 增强版）"""
     date_str = request.args.get('date')
     
     if not date_str:
@@ -95,16 +97,84 @@ def get_dashboard_summary():
             if snapshot.account and snapshot.account.type == 'credit':
                 liabilities += balance
         
-        # 可用现金 = 流动资产 - 负债
-        available_cash = liquid_assets + liabilities
+        # 基础可用现金 = 流动资产 - 负债
+        base_available_cash = liquid_assets + liabilities
+        
+        # Sprint 4: 计算实际可用现金（扣除在途赎回）
+        cash_summary = get_cash_summary(session, target_date)
         
         return jsonify(ok({
             "date": target_date.isoformat(),
             "total_assets": total_assets,
             "liquid_assets": liquid_assets,
             "liabilities": liabilities,
-            "available_cash": available_cash,
+            "available_cash": base_available_cash,           # 基础可用现金（兼容旧版）
+            "real_available_cash": cash_summary["real_available"],  # 实际可用现金（扣除在途）
+            "pending_redeems": cash_summary["pending_redeems"],     # 在途赎回金额
+            "future_7d": cash_summary["future_7d"],                 # 未来7天预计到账
+            "future_30d": cash_summary["future_30d"],               # 未来30天预计到账
             "by_type": by_type
         }))
+    finally:
+        session.close()
+
+
+@bp.route('/dashboard/pending_redeems', methods=['GET'])
+def get_pending_redeems():
+    """
+    获取在途赎回资金明细
+    
+    Query Params:
+        product_id: 可选，指定产品ID
+    """
+    product_id = request.args.get('product_id', type=int)
+    
+    session = get_session()
+    try:
+        result = calculate_pending_redeems(session, product_id)
+        return jsonify(ok(result))
+    finally:
+        session.close()
+
+
+@bp.route('/dashboard/future_cash_flow', methods=['GET'])
+def get_future_cash_flow():
+    """
+    获取未来现金流预测
+    
+    Query Params:
+        days: 预测天数，默认30天
+    """
+    days = request.args.get('days', default=30, type=int)
+    
+    session = get_session()
+    try:
+        result = summarize_future_cash_flow(session, days_7=7, days_30=days)
+        return jsonify(ok(result))
+    finally:
+        session.close()
+
+
+@bp.route('/dashboard/cash_detail', methods=['GET'])
+def get_cash_detail():
+    """
+    获取现金详情（包含账户明细和在途明细）
+    
+    Query Params:
+        date: 目标日期，默认为最新快照日期
+    """
+    date_str = request.args.get('date')
+    target_date = None
+    
+    if date_str:
+        try:
+            target_date = date.fromisoformat(date_str)
+        except ValueError:
+            return jsonify(err('invalid date format', code=400)), 400
+    
+    session = get_session()
+    try:
+        result = calculate_available_cash(session, target_date)
+        return jsonify(ok(result))
     finally:
         session.close()

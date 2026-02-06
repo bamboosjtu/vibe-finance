@@ -253,7 +253,19 @@ components:
           description: 负债 = type=credit 的账户 balance 之和（负数）
         available_cash:
           type: number
-          description: 可用现金 = liquid_assets + liabilities（流动资产扣除信用卡欠款后的净流动资产）
+          description: 基础可用现金 = liquid_assets + liabilities（流动资产扣除信用卡欠款后的净流动资产）
+        real_available_cash:
+          type: number
+          description: Sprint 4 - 实际可用现金 = available_cash - pending_redeems（扣除在途赎回后的真实可动用现金）
+        pending_redeems:
+          type: number
+          description: Sprint 4 - 在途赎回金额（已发起赎回但尚未到账的资金）
+        future_7d:
+          type: number
+          description: Sprint 4 - 未来7天预计到账金额（基于T+N规则推算）
+        future_30d:
+          type: number
+          description: Sprint 4 - 未来30天预计到账金额（基于T+N规则推算）
         by_type:
           type: object
           description: 按账户类型分组的余额
@@ -274,6 +286,10 @@ components:
       - liquid_assets
       - liabilities
       - available_cash
+      - real_available_cash
+      - pending_redeems
+      - future_7d
+      - future_30d
       - by_type
     ProductMetrics:
       type: object
@@ -362,6 +378,224 @@ paths:
                           $ref: '#/components/schemas/Institution'
                     required:
                     - items
+                  message:
+                    type: string
+                required:
+                - code
+                - data
+                - message
+  /api/dashboard/pending_redeems:
+    get:
+      summary: Sprint 4 - 获取在途赎回资金明细
+      parameters:
+      - name: product_id
+        in: query
+        required: false
+        schema:
+          type: integer
+        description: 可选，指定产品ID查询特定产品的在途赎回
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                  data:
+                    type: object
+                    properties:
+                      total_pending:
+                        type: number
+                        description: 在途赎回总额
+                      items:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            product_id:
+                              type: integer
+                            product_name:
+                              type: string
+                            pending_amount:
+                              type: number
+                            latest_request_date:
+                              type: string
+                              format: date
+                              nullable: true
+                            estimated_settle_date:
+                              type: string
+                              format: date
+                              nullable: true
+                  message:
+                    type: string
+                required:
+                - code
+                - data
+                - message
+  /api/dashboard/future_cash_flow:
+    get:
+      summary: Sprint 4 - 获取未来现金流预测
+      parameters:
+      - name: days
+        in: query
+        required: false
+        schema:
+          type: integer
+          default: 30
+        description: 预测天数，默认30天
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                  data:
+                    type: object
+                    properties:
+                      items:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            date:
+                              type: string
+                              format: date
+                            amount:
+                              type: number
+                            source:
+                              type: string
+                              enum: [redeem, maturity]
+                            description:
+                              type: string
+                            product_id:
+                              type: integer
+                      total_7d:
+                        type: number
+                        description: 未来7天预计到账总额
+                      total_30d:
+                        type: number
+                        description: 未来30天预计到账总额
+                      by_date:
+                        type: object
+                        description: 按日期分组的现金流
+                        additionalProperties:
+                          type: array
+                          items:
+                            type: object
+                  message:
+                    type: string
+                required:
+                - code
+                - data
+                - message
+  /api/dashboard/cash_detail:
+    get:
+      summary: Sprint 4 - 获取现金详情（包含账户明细和在途明细）
+      parameters:
+      - name: date
+        in: query
+        required: false
+        schema:
+          type: string
+          format: date
+        description: 目标日期，默认为最新快照日期
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                  data:
+                    type: object
+                    properties:
+                      date:
+                        type: string
+                        format: date
+                      base_available:
+                        type: number
+                        description: 基础可用现金
+                      pending_redeems:
+                        type: number
+                        description: 在途赎回金额
+                      real_available:
+                        type: number
+                        description: 实际可用现金
+                      details:
+                        type: object
+                        properties:
+                          liquid_accounts:
+                            type: array
+                            items:
+                              type: object
+                              properties:
+                                account_id:
+                                  type: integer
+                                account_name:
+                                  type: string
+                                account_type:
+                                  type: string
+                                balance:
+                                  type: number
+                          pending_details:
+                            type: array
+                            items:
+                              type: object
+                  message:
+                    type: string
+                required:
+                - code
+                - data
+                - message
+  /api/products/{product_id}/pending_redeem:
+    get:
+      summary: Sprint 4 - 获取单个产品的在途赎回信息
+      parameters:
+      - name: product_id
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                  data:
+                    type: object
+                    properties:
+                      product_id:
+                        type: integer
+                      product_name:
+                        type: string
+                      pending_amount:
+                        type: number
+                      latest_request_date:
+                        type: string
+                        format: date
+                        nullable: true
+                      estimated_settle_date:
+                        type: string
+                        format: date
+                        nullable: true
+                      settle_days:
+                        type: integer
+                        description: 产品赎回到账天数(T+N)
                   message:
                     type: string
                 required:

@@ -7,6 +7,7 @@ from models.transaction import Transaction
 from services.product_service import create_product, list_products, list_products_with_holdings, patch_product, delete_product
 from services.valuation_service import get_valuation_series
 from services.analytics_service import calculate_metrics
+from services.redeem_service import get_product_pending_redeem
 from utils.response import ok, err, ErrorCode
 from utils.logger import log_error
 from datetime import date, timedelta
@@ -334,5 +335,37 @@ def get_product_metrics(product_id: int):
             "status": "ok",
             "metrics": metrics
         }))
+    finally:
+        session.close()
+
+
+@bp.route('/products/<int:product_id>/pending_redeem', methods=['GET'])
+def get_product_pending_redeem_info(product_id: int):
+    """
+    获取单个产品的在途赎回信息（Sprint 4）
+    
+    Returns:
+        {
+            "product_id": int,
+            "pending_amount": float,        # 在途金额
+            "latest_request_date": str,     # 最近申请日
+            "estimated_settle_date": str    # 预计到账日
+        }
+    """
+    from models.product import Product
+    
+    session = get_session()
+    try:
+        product = session.get(Product, product_id)
+        if not product:
+            return jsonify(err("product not found", code=404)), 404
+        
+        result = get_product_pending_redeem(session, product_id)
+        
+        # 补充产品信息
+        result["product_name"] = product.name
+        result["settle_days"] = product.settle_days
+        
+        return jsonify(ok(result))
     finally:
         session.close()

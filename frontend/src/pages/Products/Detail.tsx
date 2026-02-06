@@ -1,13 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, history } from '@umijs/max';
 import { PageContainer, ProCard } from '@ant-design/pro-components';
-import { Radio, Descriptions, Tag, Row, Col } from 'antd';
-import { ArrowLeftOutlined } from '@ant-design/icons';
+import { Radio, Descriptions, Tag, Row, Col, Alert, Statistic } from 'antd';
+import { ArrowLeftOutlined, ClockCircleOutlined } from '@ant-design/icons';
 import { useProductDetail } from './hooks/useProductDetail';
 import ProductChart from './components/ProductChart';
 import MetricsPanel from './components/MetricsPanel';
 import ValuationTable from './components/ValuationTable';
 import TransactionTable from './components/TransactionTable';
+import { getProductPendingRedeem, ProductPendingRedeemResp } from '@/services/products';
 
 const { Item: DescItem } = Descriptions;
 
@@ -37,10 +38,34 @@ const ProductDetail: React.FC = () => {
   // 估值表格本地状态
   const [valuationData, setValuationData] = useState<readonly any[]>([]);
 
+  // Sprint 4: 在途赎回状态
+  const [pendingRedeem, setPendingRedeem] = useState<ProductPendingRedeemResp | null>(null);
+  const [pendingRedeemLoading, setPendingRedeemLoading] = useState(false);
+
   // 同步估值数据到本地状态
   useEffect(() => {
     setValuationData(valuationDataSource);
   }, [valuationDataSource]);
+
+  // Sprint 4: 加载在途赎回信息
+  useEffect(() => {
+    const loadPendingRedeem = async () => {
+      setPendingRedeemLoading(true);
+      try {
+        const resp = await getProductPendingRedeem(productId);
+        setPendingRedeem(resp);
+      } catch (e) {
+        console.error('Failed to load pending redeem:', e);
+        setPendingRedeem(null);
+      } finally {
+        setPendingRedeemLoading(false);
+      }
+    };
+
+    if (productId) {
+      loadPendingRedeem();
+    }
+  }, [productId, transactions]); // 交易记录变化时重新加载
 
   return (
     <PageContainer
@@ -61,6 +86,44 @@ const ProductDetail: React.FC = () => {
           <DescItem label="流动性">{product?.liquidity_rule === 'open' ? '开放' : product?.liquidity_rule === 'closed' ? '封闭' : '定开'}</DescItem>
         </Descriptions>
       </ProCard>
+
+      {/* Sprint 4: 在途赎回信息区（仅在有时显示） */}
+      {pendingRedeem && pendingRedeem.pending_amount > 0 && (
+        <Alert
+          message={
+            <Row gutter={24} align="middle">
+              <Col>
+                <Statistic
+                  title="赎回在途金额"
+                  value={pendingRedeem.pending_amount}
+                  precision={2}
+                  prefix="￥"
+                  valueStyle={{ color: '#faad14', fontWeight: 'bold' }}
+                />
+              </Col>
+              <Col>
+                <div style={{ fontSize: 14 }}>
+                  <ClockCircleOutlined style={{ marginRight: 8 }} />
+                  最近申请: {pendingRedeem.latest_request_date || '-'}
+                </div>
+              </Col>
+              <Col>
+                <div style={{ fontSize: 14 }}>
+                  <ClockCircleOutlined style={{ marginRight: 8 }} />
+                  预计到账: {pendingRedeem.estimated_settle_date ? (
+                    <Tag color="blue">{pendingRedeem.estimated_settle_date}</Tag>
+                  ) : (
+                    <Tag>T+{product?.settle_days || 1} 推算</Tag>
+                  )}
+                </div>
+              </Col>
+            </Row>
+          }
+          type="warning"
+          showIcon
+          style={{ marginBottom: 16 }}
+        />
+      )}
 
       {/* 走势展示区 */}
       <ProCard

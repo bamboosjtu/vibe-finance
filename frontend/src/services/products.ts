@@ -116,3 +116,17 @@ export async function getProductChart(productId: number, window: string = '8w') 
 export async function deleteProduct(id: number) {
   return apiDelete<{ message: string }>(`/api/products/${id}`);
 }
+
+// Sprint 4: 产品在途赎回信息
+export interface ProductPendingRedeemResp {
+  product_id: number;
+  product_name: string;
+  pending_amount: number;
+  latest_request_date: string | null;
+  estimated_settle_date: string | null;
+  settle_days: number;
+}
+
+export async function getProductPendingRedeem(productId: number) {
+  return apiGet<ProductPendingRedeemResp>(`/api/products/${productId}/pending_redeem`);
+}
