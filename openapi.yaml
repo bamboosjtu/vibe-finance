@@ -105,7 +105,6 @@ components:
           type: string
           enum:
           - product_value
-          - lot_value
           default: product_value
       required:
       - id
@@ -114,35 +113,6 @@ components:
       - liquidity_rule
       - settle_days
       - valuation_mode
-    Lot:
-      type: object
-      properties:
-        id:
-          type: integer
-        product_id:
-          type: integer
-        open_date:
-          type: string
-          format: date
-        principal:
-          type: number
-        shares:
-          type: number
-          nullable: true
-        status:
-          type: string
-          enum:
-          - holding
-          - closed
-        note:
-          type: string
-          nullable: true
-      required:
-      - id
-      - product_id
-      - open_date
-      - principal
-      - status
     ValuationPoint:
       type: object
       properties:
@@ -155,20 +125,6 @@ components:
           type: number
       required:
       - product_id
-      - date
-      - market_value
-    LotValuationPoint:
-      type: object
-      properties:
-        lot_id:
-          type: integer
-        date:
-          type: string
-          format: date
-        market_value:
-          type: number
-      required:
-      - lot_id
       - date
       - market_value
     Transaction:
@@ -266,6 +222,9 @@ components:
         future_30d:
           type: number
           description: Sprint 4 - 未来30天预计到账金额（基于T+N规则推算）
+        future_90d:
+          type: number
+          description: Sprint 5 - 未来90天预计到账金额（基于T+N规则推算）
         by_type:
           type: object
           description: 按账户类型分组的余额
@@ -290,6 +249,7 @@ components:
       - pending_redeems
       - future_7d
       - future_30d
+      - future_90d
       - by_type
     ProductMetrics:
       type: object
@@ -384,6 +344,45 @@ paths:
                 - code
                 - data
                 - message
+    post:
+      summary: Create institution
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                  data:
+                    $ref: '#/components/schemas/Institution'
+                  message:
+                    type: string
+                required:
+                - code
+                - data
+                - message
+              example:
+                code: 200
+                data:
+                  id: 1
+                  name: 长沙银行
+                message: ok
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+              required:
+              - name
+            example:
+              name: 长沙银行
   /api/dashboard/pending_redeems:
     get:
       summary: Sprint 4 - 获取在途赎回资金明细
@@ -476,6 +475,10 @@ paths:
                               type: string
                             product_id:
                               type: integer
+                            note:
+                              type: string
+                              description: 规则推算备注（如"规则推算，仅供参考"）
+                              nullable: true
                       total_7d:
                         type: number
                         description: 未来7天预计到账总额
@@ -489,6 +492,23 @@ paths:
                           type: array
                           items:
                             type: object
+                            properties:
+                              date:
+                                type: string
+                                format: date
+                              amount:
+                                type: number
+                              source:
+                                type: string
+                                enum: [redeem, maturity]
+                              description:
+                                type: string
+                              product_id:
+                                type: integer
+                              note:
+                                type: string
+                                description: 规则推算备注
+                                nullable: true
                   message:
                     type: string
                 required:
@@ -557,6 +577,93 @@ paths:
                 - code
                 - data
                 - message
+  /api/dashboard/cash_timeline:
+    get:
+      summary: Sprint 5 - 获取资金时间轴视图
+      description: |
+        展示从当前时间点开始的资金流动性变化：
+        - 当前：可用现金、在途赎回、锁定资金
+        - 未来里程碑：+7d、+30d、+90d 的预计可用现金
+      parameters:
+      - name: milestones
+        in: query
+        required: false
+        schema:
+          type: string
+          default: "7,30,90"
+        description: 里程碑天数，逗号分隔，默认 "7,30,90"
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                  data:
+                    type: object
+                    properties:
+                      current:
+                        type: object
+                        properties:
+                          date:
+                            type: string
+                            format: date
+                          available_cash:
+                            type: number
+                            description: 当前可用现金
+                          pending_redeems:
+                            type: number
+                            description: 在途赎回金额
+                          locked_in_products:
+                            type: number
+                            description: 锁定在产品中的资金
+                      milestones:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            date:
+                              type: string
+                              format: date
+                            label:
+                              type: string
+                              description: 里程碑标签，如 "+7天"
+                            days_from_now:
+                              type: integer
+                            projected_available_cash:
+                              type: number
+                              description: 预计可用现金
+                            accumulated_inflow:
+                              type: number
+                              description: 累计预计到账
+                            changes:
+                              type: array
+                              items:
+                                type: object
+                                properties:
+                                  date:
+                                    type: string
+                                    format: date
+                                  amount:
+                                    type: number
+                                  source:
+                                    type: string
+                                    enum: [redeem, maturity]
+                                  description:
+                                    type: string
+                                  product_id:
+                                    type: integer
+                                  note:
+                                    type: string
+                  message:
+                    type: string
+                required:
+                - code
+                - data
+                - message
   /api/products/{product_id}/pending_redeem:
     get:
       summary: Sprint 4 - 获取单个产品的在途赎回信息
@@ -605,12 +712,27 @@ paths:
               example:
                 code: 200
                 data:
-                  items:
-                  - id: 1
-                    name: 长沙银行
+                  product_id: 1
+                  product_name: 测试产品
+                  pending_amount: 50000
+                  latest_request_date: '2024-01-15'
+                  estimated_settle_date: '2024-01-17'
+                  settle_days: 2
                 message: ok
-    post:
-      summary: Create institution
+  /api/products/{product_id}/liquidity_status:
+    get:
+      summary: Sprint 5 - 获取产品流动性状态
+      description: |
+        展示产品的时间维度流动性信息：
+        - 是否处于锁定期
+        - 锁定期结束日
+        - 最近可变现日期
+      parameters:
+      - name: product_id
+        in: path
+        required: true
+        schema:
+          type: integer
       responses:
         '200':
           description: OK
@@ -622,7 +744,35 @@ paths:
                   code:
                     type: integer
                   data:
-                    $ref: '#/components/schemas/Institution'
+                    type: object
+                    properties:
+                      product_id:
+                        type: integer
+                      product_name:
+                        type: string
+                      is_locked:
+                        type: boolean
+                        description: 是否处于锁定期
+                      lock_end_date:
+                        type: string
+                        format: date
+                        nullable: true
+                        description: 锁定期结束日
+                      next_liquid_date:
+                        type: string
+                        format: date
+                        nullable: true
+                        description: 最近可变现日期
+                      liquidity_type:
+                        type: string
+                        enum: [open, closed, periodic_open]
+                      term_days:
+                        type: integer
+                      settle_days:
+                        type: integer
+                      note:
+                        type: string
+                        description: 提示说明
                   message:
                     type: string
                 required:
@@ -632,9 +782,287 @@ paths:
               example:
                 code: 200
                 data:
-                  id: 1
-                  name: 长沙银行
+                  product_id: 1
+                  product_name: 某某定期理财
+                  is_locked: true
+                  lock_end_date: '2024-04-15'
+                  next_liquid_date: '2024-04-15'
+                  liquidity_type: closed
+                  term_days: 90
+                  settle_days: 1
+                  note: 封闭式产品，预计 2024-04-15 后可变现
                 message: ok
+  /api/reconciliation/warnings:
+    get:
+      summary: Sprint 6 - 获取所有对账警告（聚合接口）
+      parameters:
+      - name: date
+        in: query
+        required: false
+        schema:
+          type: string
+          format: date
+        description: 检查日期，默认今天
+      - name: account_threshold
+        in: query
+        required: false
+        schema:
+          type: number
+          default: 1.0
+        description: 账户差异阈值
+      - name: gap_days
+        in: query
+        required: false
+        schema:
+          type: integer
+          default: 14
+        description: 估值断档阈值天数
+      - name: redeem_buffer
+        in: query
+        required: false
+        schema:
+          type: integer
+          default: 3
+        description: 赎回缓冲天数
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                  data:
+                    type: object
+                    properties:
+                      items:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            id:
+                              type: string
+                            level:
+                              type: string
+                              enum: [warn, info]
+                            type:
+                              type: string
+                              enum: [account_diff, redeem_anomaly, valuation_gap]
+                            title:
+                              type: string
+                            description:
+                              type: string
+                            object_type:
+                              type: string
+                              enum: [account, product]
+                            object_id:
+                              type: integer
+                            object_name:
+                              type: string
+                            date:
+                              type: string
+                              format: date
+                              nullable: true
+                            diff_value:
+                              type: number
+                              nullable: true
+                            suggested_action:
+                              type: string
+                            link_to:
+                              type: string
+                            status:
+                              type: string
+                              enum: [open, acknowledged, muted]
+                              description: Sprint 6 (S6-5) 警告状态
+                            mute_reason:
+                              type: string
+                              nullable: true
+                              description: Sprint 6 (S6-5) 静音原因
+                      summary:
+                        type: object
+                        properties:
+                          total:
+                            type: integer
+                          warn:
+                            type: integer
+                          info:
+                            type: integer
+                  message:
+                    type: string
+  /api/reconciliation/account_diffs:
+    get:
+      summary: Sprint 6 - 获取账户对账差异
+      parameters:
+      - name: date
+        in: query
+        required: false
+        schema:
+          type: string
+          format: date
+      - name: threshold
+        in: query
+        required: false
+        schema:
+          type: number
+          default: 1.0
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                  data:
+                    type: object
+                    properties:
+                      items:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            account_id:
+                              type: integer
+                            account_name:
+                              type: string
+                            check_date:
+                              type: string
+                              format: date
+                            snapshot_balance:
+                              type: number
+                            derived_balance:
+                              type: number
+                            diff:
+                              type: number
+                            severity:
+                              type: string
+                              enum: [info, warn]
+                            hint:
+                              type: string
+                  message:
+                    type: string
+  /api/reconciliation/redeem_check:
+    get:
+      summary: Sprint 6 - 获取赎回在途一致性检查
+      parameters:
+      - name: buffer_days
+        in: query
+        required: false
+        schema:
+          type: integer
+          default: 3
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                  data:
+                    type: object
+                    properties:
+                      items:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            product_id:
+                              type: integer
+                            product_name:
+                              type: string
+                            pending_amount:
+                              type: number
+                            status:
+                              type: string
+                              enum: [normal, negative, overdue]
+                            latest_request_date:
+                              type: string
+                              format: date
+                              nullable: true
+                            expected_settle_date:
+                              type: string
+                              format: date
+                              nullable: true
+                            days_pending:
+                              type: integer
+                              nullable: true
+                            hint:
+                              type: string
+                  message:
+                    type: string
+  /api/reconciliation/valuation_gaps:
+    get:
+      summary: Sprint 6 - 获取估值断档产品列表
+      parameters:
+      - name: gap_days
+        in: query
+        required: false
+        schema:
+          type: integer
+          default: 14
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                  data:
+                    type: object
+                    properties:
+                      items:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            product_id:
+                              type: integer
+                            product_name:
+                              type: string
+                            last_valuation_date:
+                              type: string
+                              format: date
+                              nullable: true
+                            days_since:
+                              type: integer
+                            has_recent_trade:
+                              type: boolean
+                            severity:
+                              type: string
+                              enum: [info, warn]
+                            hint:
+                              type: string
+                            last_trade_date:
+                              type: string
+                              format: date
+                              nullable: true
+                              description: Sprint 6 可选：最近一次交易日期
+                            days_since_trade:
+                              type: integer
+                              nullable: true
+                              description: Sprint 6 可选：距离上次交易的天数
+                  message:
+                    type: string
+  /api/reconciliation/warnings/{warning_id}/status:
+    put:
+      summary: Sprint 6 (S6-5) - 更新警告状态
+      parameters:
+      - name: warning_id
+        in: path
+        required: true
+        schema:
+          type: string
+        description: 警告唯一标识
       requestBody:
         required: true
         content:
@@ -642,12 +1070,90 @@ paths:
             schema:
               type: object
               properties:
-                name:
+                status:
                   type: string
+                  enum: [open, acknowledged, muted]
+                  description: 新状态
+                mute_reason:
+                  type: string
+                  nullable: true
+                  description: 静音原因（当 status=muted 时可选）
               required:
-              - name
-            example:
-              name: 长沙银行
+              - status
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: integer
+                      warning_id:
+                        type: string
+                      status:
+                        type: string
+                        enum: [open, acknowledged, muted]
+                      mute_reason:
+                        type: string
+                        nullable: true
+                      updated_at:
+                        type: string
+                        format: date-time
+                  message:
+                    type: string
+  /api/reconciliation/warnings/{warning_id}/restore:
+    post:
+      summary: Sprint 6 (S6-5) - 将警告恢复为 open 状态
+      parameters:
+      - name: warning_id
+        in: path
+        required: true
+        schema:
+          type: string
+        description: 警告唯一标识
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: integer
+                      warning_id:
+                        type: string
+                      status:
+                        type: string
+                        enum: [open, acknowledged, muted]
+                      updated_at:
+                        type: string
+                        format: date-time
+                  message:
+                    type: string
+        '404':
+          description: Warning not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                  message:
+                    type: string
   /api/accounts:
     get:
       summary: List accounts
@@ -1124,7 +1630,6 @@ paths:
                   type: string
                   enum:
                   - product_value
-                  - lot_value
                   default: product_value
               required:
               - name
@@ -1226,7 +1731,6 @@ paths:
                   type: string
                   enum:
                   - product_value
-                  - lot_value
             example:
               note: 更新备注
     delete:

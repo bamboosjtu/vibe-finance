@@ -3,7 +3,7 @@ from datetime import date
 
 from database import get_session
 from services.snapshot_service import list_snapshots
-from services.cash_service import get_cash_summary, calculate_available_cash
+from services.cash_service import get_cash_summary, calculate_available_cash, calculate_cash_timeline
 from services.redeem_service import calculate_pending_redeems, summarize_future_cash_flow
 from models.snapshot import Snapshot
 from sqlmodel import select
@@ -113,6 +113,7 @@ def get_dashboard_summary():
             "pending_redeems": cash_summary["pending_redeems"],     # 在途赎回金额
             "future_7d": cash_summary["future_7d"],                 # 未来7天预计到账
             "future_30d": cash_summary["future_30d"],               # 未来30天预计到账
+            "future_90d": cash_summary["future_90d"],               # 未来90天预计到账（Sprint 5）
             "by_type": by_type
         }))
     finally:
@@ -175,6 +176,53 @@ def get_cash_detail():
     session = get_session()
     try:
         result = calculate_available_cash(session, target_date)
+        return jsonify(ok(result))
+    finally:
+        session.close()
+
+
+@bp.route('/dashboard/cash_timeline', methods=['GET'])
+def get_cash_timeline():
+    """
+    获取资金时间轴视图（Sprint 5）
+    
+    展示从当前时间点开始的资金流动性变化：
+    - 当前：可用现金、在途赎回、锁定资金
+    - 未来里程碑：+7d、+30d、+90d 的预计可用现金
+    
+    Query Params:
+        milestones: 里程碑天数，逗号分隔，默认 "7,30,90"
+        
+    Response:
+        {
+            "current": {
+                "date": "2024-01-15",
+                "available_cash": 50000,
+                "pending_redeems": 30000,
+                "locked_in_products": 200000
+            },
+            "milestones": [
+                {
+                    "date": "2024-01-22",
+                    "label": "+7天",
+                    "days_from_now": 7,
+                    "projected_available_cash": 65000,
+                    "accumulated_inflow": 15000,
+                    "changes": [...]
+                }
+            ]
+        }
+    """
+    milestones_str = request.args.get('milestones', '7,30,90')
+    
+    try:
+        milestones = [int(x.strip()) for x in milestones_str.split(',')]
+    except ValueError:
+        return jsonify(err('invalid milestones format, expected comma-separated integers', code=400)), 400
+    
+    session = get_session()
+    try:
+        result = calculate_cash_timeline(session, milestones)
         return jsonify(ok(result))
     finally:
         session.close()

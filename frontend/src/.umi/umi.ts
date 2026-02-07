@@ -3,7 +3,7 @@
 // DO NOT CHANGE IT MANUALLY!
 import './core/polyfill';
 import 'antd/dist/reset.css';
-import { renderClient } from 'C:/Users/bambo/Documents/Projects/vibe-test/frontend/node_modules/@umijs/renderer-react';
+import { renderClient } from 'C:/Users/bambo/Documents/Projects/vibe-finance/frontend/node_modules/@umijs/renderer-react';
 import { getRoutes } from './core/route';
 import { createPluginManager } from './core/plugin';
 import { createHistory } from './core/history';

@@ -1,9 +1,156 @@
-from datetime import date
-from typing import Dict, Any, Optional
+from datetime import date, timedelta
+from typing import Dict, Any, Optional, List
 from sqlmodel import Session, select
 from models.snapshot import Snapshot
 from models.account import Account
-from services.redeem_service import calculate_pending_redeems, summarize_future_cash_flow
+from models.product import Product
+from models.transaction import Transaction, TransactionCategory
+from services.redeem_service import calculate_pending_redeems, summarize_future_cash_flow, calculate_future_cash_flow
+
+
+def calculate_locked_in_products(session: Session) -> Dict[str, Any]:
+    """
+    计算锁定在产品中的资金总额
+    
+    Sprint 5：用于时间轴视图，展示"被锁定的资金"
+    计算逻辑：所有产品的最新市值总和（简化处理，不精确到 Lot）
+    
+    Returns:
+        {
+            "total_locked": float,
+            "by_product": [...]
+        }
+    """
+    from models.valuation import ProductValuation
+    
+    # 查询每个产品的最新估值
+    stmt = (
+        select(Product, ProductValuation.market_value)
+        .join(
+            ProductValuation,
+            Product.id == ProductValuation.product_id
+        )
+        .where(
+            ProductValuation.date == (
+                select(ProductValuation.date)
+                .where(ProductValuation.product_id == Product.id)
+                .order_by(ProductValuation.date.desc())
+                .limit(1)
+            )
+        )
+    )
+    
+    # 简化处理：查询所有产品和最新估值
+    products = session.exec(select(Product)).all()
+    
+    total_locked = 0.0
+    by_product = []
+    
+    for product in products:
+        # 获取产品最新估值
+        latest_valuation = session.exec(
+            select(ProductValuation)
+            .where(ProductValuation.product_id == product.id)
+            .order_by(ProductValuation.date.desc())
+            .limit(1)
+        ).first()
+        
+        if latest_valuation and latest_valuation.market_value:
+            total_locked += latest_valuation.market_value
+            by_product.append({
+                "product_id": product.id,
+                "product_name": product.name,
+                "market_value": latest_valuation.market_value,
+                "liquidity_rule": product.liquidity_rule.value,
+                "term_days": product.term_days
+            })
+    
+    return {
+        "total_locked": total_locked,
+        "by_product": by_product
+    }
+
+
+def calculate_cash_timeline(
+    session: Session,
+    milestones: Optional[List[int]] = None
+) -> Dict[str, Any]:
+    """
+    计算资金时间轴视图（Sprint 5 核心功能）
+    
+    展示从当前时间点开始的资金流动性变化：
+    - 当前：可用现金、在途赎回、锁定资金
+    - 未来里程碑：+7d、+30d、+90d 的预计可用现金
+    
+    Args:
+        session: 数据库会话
+        milestones: 里程碑天数列表，默认 [7, 30, 90]
+        
+    Returns:
+        {
+            "current": {
+                "available_cash": float,
+                "pending_redeems": float,
+                "locked_in_products": float
+            },
+            "milestones": [...]
+        }
+    """
+    if milestones is None:
+        milestones = [7, 30, 90]
+    
+    today = date.today()
+    
+    # 1. 计算当前状态
+    cash_summary = get_cash_summary(session)
+    locked = calculate_locked_in_products(session)
+    
+    current = {
+        "date": today.isoformat(),
+        "available_cash": cash_summary["real_available"],
+        "pending_redeems": cash_summary["pending_redeems"],
+        "locked_in_products": locked["total_locked"]
+    }
+    
+    # 2. 计算未来现金流（最长到最大里程碑）
+    max_days = max(milestones)
+    future_flows = calculate_future_cash_flow(session, start_date=today, days=max_days)
+    
+    # 3. 构建里程碑视图
+    milestone_list = []
+    
+    for days in milestones:
+        milestone_date = today + timedelta(days=days)
+        
+        # 统计到这个里程碑日期为止的预计到账
+        accumulated = sum(
+            flow["amount"] 
+            for flow in future_flows 
+            if date.fromisoformat(flow["date"]) <= milestone_date
+        )
+        
+        # 预计可用现金 = 当前可用 + 累计到账
+        projected_available = cash_summary["real_available"] + accumulated
+        
+        # 这个里程碑期间的变化
+        changes = [
+            flow for flow in future_flows
+            if today < date.fromisoformat(flow["date"]) <= milestone_date
+        ]
+        
+        milestone_list.append({
+            "date": milestone_date.isoformat(),
+            "label": f"+{days}天",
+            "days_from_now": days,
+            "projected_available_cash": projected_available,
+            "accumulated_inflow": accumulated,
+            "changes": changes
+        })
+    
+    return {
+        "current": current,
+        "milestones": milestone_list
+    }
 
 
 def calculate_available_cash(
@@ -100,19 +247,35 @@ def get_cash_summary(
             "real_available": float,      # 实际可用现金
             "future_7d": float,           # 未来7天预计到账
             "future_30d": float,          # 未来30天预计到账
+            "future_90d": float,          # 未来90天预计到账（Sprint 5 新增）
         }
     """
     # 计算可用现金
     available_cash = calculate_available_cash(session, target_date)
     
-    # 计算未来现金流
-    future_cash = summarize_future_cash_flow(session)
+    # 计算未来现金流（统一计算 7/30/90 天）
+    today = date.today()
+    future_flows_90d = calculate_future_cash_flow(session, start_date=today, days=90)
+    
+    date_7d = today + timedelta(days=7)
+    date_30d = today + timedelta(days=30)
+    
+    total_7d = sum(
+        flow["amount"] for flow in future_flows_90d 
+        if date.fromisoformat(flow["date"]) <= date_7d
+    )
+    total_30d = sum(
+        flow["amount"] for flow in future_flows_90d 
+        if date.fromisoformat(flow["date"]) <= date_30d
+    )
+    total_90d = sum(flow["amount"] for flow in future_flows_90d)
     
     return {
         "date": available_cash["date"],
         "base_available": available_cash["base_available"],
         "pending_redeems": available_cash["pending_redeems"],
         "real_available": available_cash["real_available"],
-        "future_7d": future_cash["total_7d"],
-        "future_30d": future_cash["total_30d"],
+        "future_7d": total_7d,
+        "future_30d": total_30d,
+        "future_90d": total_90d,
     }

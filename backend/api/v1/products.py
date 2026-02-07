@@ -369,3 +369,97 @@ def get_product_pending_redeem_info(product_id: int):
         return jsonify(ok(result))
     finally:
         session.close()
+
+
+@bp.route('/products/<int:product_id>/liquidity_status', methods=['GET'])
+def get_product_liquidity_status(product_id: int):
+    """
+    获取产品流动性状态（Sprint 5）
+    
+    展示产品的时间维度流动性信息：
+    - 是否处于锁定期
+    - 锁定期结束日
+    - 最近可变现日期
+    
+    Returns:
+        {
+            "product_id": int,
+            "product_name": str,
+            "is_locked": bool,              # 是否处于锁定期
+            "lock_end_date": str | null,    # 锁定期结束日
+            "next_liquid_date": str | null, # 最近可变现日期
+            "liquidity_type": str,          # "open" | "closed" | "periodic_open"
+            "term_days": int,
+            "settle_days": int,
+            "note": str                     # 提示说明
+        }
+    """
+    from datetime import date, timedelta
+    from models.product import Product
+    from models.transaction import Transaction, TransactionCategory
+    from sqlmodel import select
+    
+    session = get_session()
+    try:
+        product = session.get(Product, product_id)
+        if not product:
+            return jsonify(err("product not found", code=404)), 404
+        
+        today = date.today()
+        
+        # 确定流动性类型
+        liquidity_type = product.liquidity_rule.value
+        
+        # 查询最近一笔买入
+        latest_buy = session.exec(
+            select(Transaction)
+            .where(Transaction.product_id == product_id)
+            .where(Transaction.category == TransactionCategory.BUY)
+            .order_by(Transaction.trade_date.desc())
+            .limit(1)
+        ).first()
+        
+        is_locked = False
+        lock_end_date = None
+        next_liquid_date = None
+        note = ""
+        
+        if product.liquidity_rule.value == 'open':
+            # 开放式产品，随时可变现
+            is_locked = False
+            next_liquid_date = today.isoformat()
+            note = "开放式产品，随时可赎回"
+            
+        elif product.liquidity_rule.value == 'closed':
+            # 封闭式产品，基于最近买入 + term_days 计算锁定期
+            if latest_buy and product.term_days:
+                lock_end_date = latest_buy.trade_date + timedelta(days=product.term_days)
+                is_locked = today < lock_end_date
+                next_liquid_date = lock_end_date.isoformat()
+                note = f"封闭式产品，预计 {lock_end_date.isoformat()} 后可变现"
+            else:
+                note = "封闭式产品，锁定期信息不完整"
+                
+        elif product.liquidity_rule.value == 'periodic_open':
+            # 定期开放产品
+            if latest_buy and product.term_days:
+                lock_end_date = latest_buy.trade_date + timedelta(days=product.term_days)
+                is_locked = today < lock_end_date
+                next_liquid_date = lock_end_date.isoformat()
+                note = f"定期开放产品，预计 {lock_end_date.isoformat()} 后进入开放期"
+            else:
+                note = "定期开放产品，开放期信息不完整"
+        
+        return jsonify(ok({
+            "product_id": product_id,
+            "product_name": product.name,
+            "is_locked": is_locked,
+            "lock_end_date": lock_end_date.isoformat() if lock_end_date else None,
+            "next_liquid_date": next_liquid_date,
+            "liquidity_type": liquidity_type,
+            "term_days": product.term_days,
+            "settle_days": product.settle_days,
+            "note": note
+        }))
+    finally:
+        session.close()

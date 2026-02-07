@@ -3,7 +3,7 @@
 // DO NOT CHANGE IT MANUALLY!
 import React, { useEffect, useState } from 'react';
 import { ApplyPluginsType } from 'umi';
-import { renderClient, RenderClientOpts } from 'C:/Users/bambo/Documents/Projects/vibe-test/frontend/node_modules/@umijs/renderer-react';
+import { renderClient, RenderClientOpts } from 'C:/Users/bambo/Documents/Projects/vibe-finance/frontend/node_modules/@umijs/renderer-react';
 import { createHistory } from './core/history';
 import { createPluginManager } from './core/plugin';
 import { getRoutes } from './core/route';

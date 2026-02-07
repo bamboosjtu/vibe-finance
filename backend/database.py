@@ -5,8 +5,7 @@ from models.institution import Institution
 from models.account import Account
 from models.product import Product
 from models.valuation import ProductValuation
-from models.lot import Lot
-from models.lot_valuation import LotValuation
+from models.warning import ReconciliationWarningRecord  # Sprint 6 (S6-5): 对账警告状态表
 
 
 def init_db():

@@ -2,13 +2,19 @@ import React, { useState, useEffect } from 'react';
 import { useParams, history } from '@umijs/max';
 import { PageContainer, ProCard } from '@ant-design/pro-components';
 import { Radio, Descriptions, Tag, Row, Col, Alert, Statistic } from 'antd';
-import { ArrowLeftOutlined, ClockCircleOutlined } from '@ant-design/icons';
+import { ArrowLeftOutlined, ClockCircleOutlined, LockOutlined, UnlockOutlined, WarningOutlined, LineChartOutlined } from '@ant-design/icons';
 import { useProductDetail } from './hooks/useProductDetail';
 import ProductChart from './components/ProductChart';
 import MetricsPanel from './components/MetricsPanel';
 import ValuationTable from './components/ValuationTable';
 import TransactionTable from './components/TransactionTable';
-import { getProductPendingRedeem, ProductPendingRedeemResp } from '@/services/products';
+import { 
+  getProductPendingRedeem, 
+  ProductPendingRedeemResp,
+  getProductLiquidityStatus,
+  ProductLiquidityStatusResp
+} from '@/services/products';
+import { getRedeemCheck, getValuationGaps, RedeemCheckItem, ValuationGapItem } from '@/services/reconciliation';
 
 const { Item: DescItem } = Descriptions;
 
@@ -42,6 +48,18 @@ const ProductDetail: React.FC = () => {
   const [pendingRedeem, setPendingRedeem] = useState<ProductPendingRedeemResp | null>(null);
   const [pendingRedeemLoading, setPendingRedeemLoading] = useState(false);
 
+  // Sprint 5: 流动性状态
+  const [liquidityStatus, setLiquidityStatus] = useState<ProductLiquidityStatusResp | null>(null);
+  const [liquidityLoading, setLiquidityLoading] = useState(false);
+
+  // Sprint 6: 赎回异常检查
+  const [redeemCheck, setRedeemCheck] = useState<RedeemCheckItem | null>(null);
+  const [redeemCheckLoading, setRedeemCheckLoading] = useState(false);
+
+  // Sprint 6: 估值断档检查
+  const [valuationGap, setValuationGap] = useState<ValuationGapItem | null>(null);
+  const [valuationGapLoading, setValuationGapLoading] = useState(false);
+
   // 同步估值数据到本地状态
   useEffect(() => {
     setValuationData(valuationDataSource);
@@ -67,6 +85,88 @@ const ProductDetail: React.FC = () => {
     }
   }, [productId, transactions]); // 交易记录变化时重新加载
 
+  // Sprint 5: 加载流动性状态
+  useEffect(() => {
+    const loadLiquidityStatus = async () => {
+      setLiquidityLoading(true);
+      try {
+        const resp = await getProductLiquidityStatus(productId);
+        setLiquidityStatus(resp);
+      } catch (e) {
+        console.error('Failed to load liquidity status:', e);
+        // 即使 API 失败，也尝试从 product 基本信息构建一个默认状态
+        if (product) {
+          setLiquidityStatus({
+            product_id: productId,
+            product_name: product.name,
+            is_locked: false,
+            lock_end_date: null,
+            next_liquid_date: null,
+            liquidity_type: product.liquidity_rule === 'open' ? 'open' : 
+                           product.liquidity_rule === 'closed' ? 'closed' : 'periodic_open',
+            term_days: product.term_days || 0,
+            settle_days: product.settle_days || 1,
+            note: product.liquidity_rule === 'open' ? '开放式产品，可随时赎回' :
+                  product.liquidity_rule === 'closed' ? '封闭式产品，请查看到期日' :
+                  '定期开放产品，请关注开放期'
+          });
+        } else {
+          setLiquidityStatus(null);
+        }
+      } finally {
+        setLiquidityLoading(false);
+      }
+    };
+
+    if (productId) {
+      loadLiquidityStatus();
+    }
+  }, [productId, product]);
+
+  // Sprint 6: 加载赎回异常检查
+  useEffect(() => {
+    const loadRedeemCheck = async () => {
+      setRedeemCheckLoading(true);
+      try {
+        const resp = await getRedeemCheck();
+        // 找到当前产品的检查结果
+        const productCheck = resp.items.find(item => item.product_id === productId);
+        setRedeemCheck(productCheck || null);
+      } catch (e) {
+        console.error('Failed to load redeem check:', e);
+        setRedeemCheck(null);
+      } finally {
+        setRedeemCheckLoading(false);
+      }
+    };
+
+    if (productId) {
+      loadRedeemCheck();
+    }
+  }, [productId, transactions]);
+
+  // Sprint 6: 加载估值断档检查
+  useEffect(() => {
+    const loadValuationGap = async () => {
+      setValuationGapLoading(true);
+      try {
+        const resp = await getValuationGaps();
+        // 找到当前产品的断档信息
+        const productGap = resp.items.find(item => item.product_id === productId);
+        setValuationGap(productGap || null);
+      } catch (e) {
+        console.error('Failed to load valuation gap:', e);
+        setValuationGap(null);
+      } finally {
+        setValuationGapLoading(false);
+      }
+    };
+
+    if (productId) {
+      loadValuationGap();
+    }
+  }, [productId, valuationDataSource]);
+
   return (
     <PageContainer
       header={{
@@ -86,6 +186,54 @@ const ProductDetail: React.FC = () => {
           <DescItem label="流动性">{product?.liquidity_rule === 'open' ? '开放' : product?.liquidity_rule === 'closed' ? '封闭' : '定开'}</DescItem>
         </Descriptions>
       </ProCard>
+
+      {/* Sprint 5: 流动性状态提示 */}
+      {liquidityStatus && (
+        <Alert
+          message={
+            <Row gutter={24} align="middle">
+              <Col>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                  {liquidityStatus.is_locked ? (
+                    <LockOutlined style={{ color: '#ff4d4f', fontSize: 18 }} />
+                  ) : (
+                    <UnlockOutlined style={{ color: '#52c41a', fontSize: 18 }} />
+                  )}
+                  <span style={{ fontWeight: 'bold' }}>
+                    {liquidityStatus.is_locked ? '锁定期中' : 
+                     liquidityStatus.liquidity_type === 'open' ? '开放式' : 
+                     liquidityStatus.liquidity_type === 'closed' ? '封闭式' : '定期开放'}
+                  </span>
+                </div>
+              </Col>
+              {liquidityStatus.is_locked && liquidityStatus.lock_end_date && (
+                <Col>
+                  <div style={{ fontSize: 14 }}>
+                    <ClockCircleOutlined style={{ marginRight: 8 }} />
+                    锁定期至: <Tag color="red">{liquidityStatus.lock_end_date}</Tag>
+                  </div>
+                </Col>
+              )}
+              {!liquidityStatus.is_locked && liquidityStatus.next_liquid_date && (
+                <Col>
+                  <div style={{ fontSize: 14 }}>
+                    <ClockCircleOutlined style={{ marginRight: 8 }} />
+                    最近可变现: <Tag color="blue">{liquidityStatus.next_liquid_date}</Tag>
+                  </div>
+                </Col>
+              )}
+              <Col>
+                <div style={{ fontSize: 14, color: '#666' }}>
+                  {liquidityStatus.note}
+                </div>
+              </Col>
+            </Row>
+          }
+          type={liquidityStatus.is_locked ? 'error' : 'success'}
+          showIcon
+          style={{ marginBottom: 16 }}
+        />
+      )}
 
       {/* Sprint 4: 在途赎回信息区（仅在有时显示） */}
       {pendingRedeem && pendingRedeem.pending_amount > 0 && (
@@ -120,6 +268,81 @@ const ProductDetail: React.FC = () => {
             </Row>
           }
           type="warning"
+          showIcon
+          style={{ marginBottom: 16 }}
+        />
+      )}
+
+      {/* Sprint 6: 赎回异常提示 */}
+      {redeemCheck && (redeemCheck.status === 'negative' || redeemCheck.status === 'overdue') && (
+        <Alert
+          message={
+            <Row gutter={24} align="middle">
+              <Col>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                  <WarningOutlined style={{ color: '#ff4d4f', fontSize: 18 }} />
+                  <span style={{ fontWeight: 'bold' }}>
+                    {redeemCheck.status === 'negative' ? '赎回金额异常' : '赎回到账逾期'}
+                  </span>
+                </div>
+              </Col>
+              <Col>
+                <div style={{ fontSize: 14, color: '#666' }}>
+                  {redeemCheck.hint}
+                </div>
+              </Col>
+              {redeemCheck.days_pending && (
+                <Col>
+                  <Tag color="red">已逾期 {redeemCheck.days_pending} 天</Tag>
+                </Col>
+              )}
+            </Row>
+          }
+          type="error"
+          showIcon
+          style={{ marginBottom: 16 }}
+        />
+      )}
+
+      {/* Sprint 6: 估值断档提示 */}
+      {valuationGap && (
+        <Alert
+          message={
+            <Row gutter={24} align="middle">
+              <Col>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                  <LineChartOutlined style={{ color: valuationGap.severity === 'warn' ? '#ff4d4f' : '#faad14', fontSize: 18 }} />
+                  <span style={{ fontWeight: 'bold' }}>
+                    估值断档
+                  </span>
+                </div>
+              </Col>
+              <Col>
+                <div style={{ fontSize: 14, color: '#666' }}>
+                  {valuationGap.hint}
+                </div>
+              </Col>
+              <Col>
+                <Tag color={valuationGap.severity === 'warn' ? 'red' : 'orange'}>
+                  {valuationGap.days_since > 999 ? '从未录入' : `${valuationGap.days_since} 天未更新`}
+                </Tag>
+              </Col>
+              {valuationGap.has_recent_trade && (
+                <Col>
+                  <Tag color="blue">期间有交易</Tag>
+                </Col>
+              )}
+              {/* Sprint 6 可选：显示最近一次交易日期 */}
+              {valuationGap.last_trade_date && (
+                <Col>
+                  <Tag color="cyan">
+                    最近交易: {valuationGap.days_since_trade} 天前
+                  </Tag>
+                </Col>
+              )}
+            </Row>
+          }
+          type={valuationGap.severity === 'warn' ? 'error' : 'warning'}
           showIcon
           style={{ marginBottom: 16 }}
         />

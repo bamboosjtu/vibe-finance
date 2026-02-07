@@ -221,8 +221,54 @@ def calculate_future_cash_flow(
             })
     
     # 2. 查询定期产品到期（简化处理：基于最近买入 + term_days）
-    # 注意：这里简化处理，实际应该跟踪每个批次的到期日
-    # Sprint 4 不做 Lot，所以这里只给出一个基于规则的提醒
+    # Sprint 4 不做 Lot，使用规则性汇总：最近买入日期 + term_days 作为预计到期日
+    # 仅针对有明确期限的定期产品（term_days > 0 且 liquidity_rule != open）
+    maturity_stmt = select(Transaction, Product).join(
+        Product, Transaction.product_id == Product.id
+    ).where(
+        Transaction.category == TransactionCategory.BUY
+    ).where(
+        Product.term_days > 0
+    ).where(
+        Product.liquidity_rule != 'open'  # 非开放式产品（定期存款、封闭式理财等）
+    )
+    maturity_records = session.exec(maturity_stmt).all()
+    
+    # 按产品分组，取最近一笔买入
+    latest_buy_by_product: Dict[int, Dict[str, Any]] = {}
+    for transaction, product in maturity_records:
+        product_id = product.id
+        if product_id not in latest_buy_by_product:
+            latest_buy_by_product[product_id] = {
+                "product": product,
+                "latest_trade_date": transaction.trade_date,
+                "total_amount": 0.0
+            }
+        # 累计买入金额（简化处理，不追踪具体批次）
+        latest_buy_by_product[product_id]["total_amount"] += transaction.amount
+        # 更新最近买入日期
+        if transaction.trade_date > latest_buy_by_product[product_id]["latest_trade_date"]:
+            latest_buy_by_product[product_id]["latest_trade_date"] = transaction.trade_date
+    
+    # 计算每个定期产品的预计到期日
+    for product_id, data in latest_buy_by_product.items():
+        product = data["product"]
+        latest_buy_date = data["latest_trade_date"]
+        total_amount = data["total_amount"]
+        
+        # 计算预计到期日：最近买入日期 + term_days
+        estimated_maturity_date = latest_buy_date + timedelta(days=product.term_days)
+        
+        # 只保留在预测范围内的
+        if start_date <= estimated_maturity_date <= end_date:
+            cash_flows.append({
+                "date": estimated_maturity_date.isoformat(),
+                "amount": total_amount,
+                "source": "maturity",
+                "description": f"{product.name} 产品到期（基于最近买入+期限推算）",
+                "product_id": product_id,
+                "note": "规则推算，仅供参考"
+            })
     
     # 按日期聚合
     cash_flows.sort(key=lambda x: x["date"])

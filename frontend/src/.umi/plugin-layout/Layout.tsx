@@ -11,7 +11,7 @@ import {
 import React, { useMemo } from 'react';
 import {
   ProLayout,
-} from "C:/Users/bambo/Documents/Projects/vibe-test/frontend/node_modules/@ant-design/pro-components";
+} from "C:/Users/bambo/Documents/Projects/vibe-finance/frontend/node_modules/@ant-design/pro-components";
 import './Layout.css';
 import Logo from './Logo';
 import Exception from './Exception';

@@ -4,8 +4,6 @@ from sqlmodel import Session, select, delete, func, asc
 from models.product import Product, ProductType, LiquidityRule, ValuationMode
 from models.institution import Institution
 from models.valuation import ProductValuation
-from models.lot import Lot, LotStatus
-from datetime import date as DateType
 
 
 def create_product(
@@ -58,19 +56,6 @@ def list_products(session: Session) -> List[Product]:
         .order_by(Product.institution_id.asc(), Product.term_days.desc())
     )
     return list(session.exec(statement).all())
-
-def calculate_product_holding_amounts(session: Session) -> Dict[int, float]:
-    """
-    计算每个产品的持有中批次金额总和
-    """
-    statement = (
-        select(Lot.product_id, func.sum(Lot.principal))
-        .where(Lot.status == LotStatus.HOLDING)
-        .group_by(Lot.product_id)
-    )
-    results = session.exec(statement).all()
-    return {product_id: amount or 0.0 for product_id, amount in results}
-
 
 def get_latest_valuations(session: Session) -> Dict[int, float]:
     """
@@ -160,33 +145,3 @@ def patch_product(
     session.commit()
     session.refresh(product)
     return product
-
-
-def close_lot(
-    session: Session,
-    lot_id: int,
-    close_date: DateType,
-    note: Optional[str] = None,
-) -> Lot:
-    """
-    关闭/卖出批次
-    """
-    lot = session.get(Lot, lot_id)
-    if not lot:
-        raise ValueError("lot not found")
-    
-    if lot.status == LotStatus.CLOSED:
-        raise ValueError("lot already closed")
-    
-    if close_date < lot.open_date:
-        raise ValueError("close_date cannot be earlier than open_date")
-    
-    lot.status = LotStatus.CLOSED
-    lot.close_date = close_date
-    if note is not None:
-        lot.note = note
-    
-    session.add(lot)
-    session.commit()
-    session.refresh(lot)
-    return lot

@@ -52,7 +52,7 @@ const SnapshotEntry: React.FC = () => {
           id: acc.id,
           account_id: acc.id,
           account_name: acc.name,
-          institution_name: institutionMap.get(acc.institution_id) || '-',
+          institution_name: acc.institution_id ? institutionMap.get(acc.institution_id) ?? '-' : '-',
           type: acc.type,
           // 如果后端返回了该日的快照，balance 应该是一个数字
           // 如果没有，balance 是 null。

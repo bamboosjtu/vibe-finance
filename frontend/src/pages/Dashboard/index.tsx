@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { PageContainer, ProCard, StatisticCard } from '@ant-design/pro-components';
-import { DatePicker, Row, Col, Empty, Spin, Alert, Typography, Table, Tag, Tooltip } from 'antd';
+import { DatePicker, Row, Col, Empty, Spin, Alert, Typography, Table, Tag, Tooltip, Button, Badge } from 'antd';
 import { Pie } from '@ant-design/plots';
+import { history } from '@umijs/max';
 import { 
   getDashboardSummary, 
   getLatestSnapshotDate, 
@@ -9,10 +10,13 @@ import {
   DashboardSummary,
   getPendingRedeems,
   getFutureCashFlow,
+  getCashTimeline,
   PendingRedeemItem,
-  FutureCashFlowItem
+  FutureCashFlowItem,
+  CashTimelineResp
 } from '@/services/dashboard';
-import { getReconciliationWarnings } from '@/services/reconciliation';
+import { getReconciliationWarnings, ReconciliationSummary } from '@/services/reconciliation';
+import CashTimelineView from './components/CashTimeline';
 import dayjs, { Dayjs } from 'dayjs';
 
 const { Text, Title } = Typography;
@@ -23,12 +27,16 @@ const Dashboard: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [hasData, setHasData] = useState(false);
   const [availableDates, setAvailableDates] = useState<string[]>([]);
-  const [reconciliationNote, setReconciliationNote] = useState<string | undefined>(undefined);
+  const [reconciliationSummary, setReconciliationSummary] = useState<ReconciliationSummary | null>(null);
   
   // Sprint 4: 新增状态
   const [pendingRedeems, setPendingRedeems] = useState<PendingRedeemItem[]>([]);
   const [futureCashFlow, setFutureCashFlow] = useState<FutureCashFlowItem[]>([]);
   const [cashFlowLoading, setCashFlowLoading] = useState(false);
+  
+  // Sprint 5: 新增状态
+  const [cashTimeline, setCashTimeline] = useState<CashTimelineResp | null>(null);
+  const [timelineLoading, setTimelineLoading] = useState(false);
 
   const loadSummary = async (targetDate: Dayjs) => {
     setLoading(true);
@@ -75,10 +83,10 @@ const Dashboard: React.FC = () => {
   const loadReconciliationWarnings = async () => {
     try {
       const resp = await getReconciliationWarnings();
-      setReconciliationNote(resp.note);
+      setReconciliationSummary(resp.summary);
     } catch (e) {
       console.error('Failed to load reconciliation warnings:', e);
-      setReconciliationNote(undefined);
+      setReconciliationSummary(null);
     }
   };
 
@@ -107,12 +115,28 @@ const Dashboard: React.FC = () => {
     }
   };
 
+  // Sprint 5: 加载资金时间轴
+  const loadCashTimeline = async () => {
+    setTimelineLoading(true);
+    try {
+      const resp = await getCashTimeline('7,30,90');
+      setCashTimeline(resp);
+      // 90天预测现在统一从 DashboardSummary 获取，不再从时间轴计算
+    } catch (e) {
+      console.error('Failed to load cash timeline:', e);
+      setCashTimeline(null);
+    } finally {
+      setTimelineLoading(false);
+    }
+  };
+
   useEffect(() => {
     loadLatestDate();
     loadAvailableDates();
     loadReconciliationWarnings();
     loadPendingRedeems();
     loadFutureCashFlow();
+    loadCashTimeline();
   }, []);
 
   const handleDateChange = async (newDate: Dayjs | null) => {
@@ -222,6 +246,14 @@ const Dashboard: React.FC = () => {
       dataIndex: 'description',
       key: 'description',
       ellipsis: true,
+    },
+    {
+      title: '备注',
+      dataIndex: 'note',
+      key: 'note',
+      render: (note: string | undefined) => note ? (
+        <Text type="secondary" style={{ fontSize: 12 }}>{note}</Text>
+      ) : null,
     },
   ];
 
@@ -356,6 +388,37 @@ const Dashboard: React.FC = () => {
                 </Col>
               </Row>
 
+              {/* Sprint 5: 第三行 - 扩展预测区间 */}
+              <Row gutter={16} style={{ marginTop: 16 }}>
+                <Col span={6}>
+                  <Tooltip title="未来90天内预计到账的资金（规则推算）">
+                    <StatisticCard
+                      statistic={{
+                        title: '未来90天预计到账',
+                        value: summary?.future_90d || 0,
+                        precision: 2,
+                        suffix: '元',
+                        valueStyle: { color: '#722ed1' },
+                      }}
+                    />
+                  </Tooltip>
+                </Col>
+                <Col span={18}>
+                  <Alert
+                    message="资金预测说明"
+                    description="未来资金到账基于已录入的赎回申请和产品到期日规则推算，实际到账时间可能因节假日、银行处理等因素有所偏差。"
+                    type="info"
+                    showIcon
+                  />
+                </Col>
+              </Row>
+
+              {/* Sprint 5: 资金时间轴视图 */}
+              <CashTimelineView 
+                data={cashTimeline} 
+                loading={timelineLoading} 
+              />
+
               {/* 资产结构图表 */}
               <ProCard title="资产结构" bordered style={{ marginTop: 16 }}>
                 {pieData.length > 0 ? (
@@ -412,11 +475,42 @@ const Dashboard: React.FC = () => {
                 )}
               </Spin>
 
-              {reconciliationNote && (
-                <ProCard bordered style={{ marginTop: 16 }}>
-                  <Text type="secondary" style={{ fontSize: 12 }}>
-                    ℹ️ {reconciliationNote}
-                  </Text>
+              {/* Sprint 6: 对账提醒入口 */}
+              {reconciliationSummary && reconciliationSummary.total > 0 && (
+                <ProCard 
+                  title={
+                    <span>
+                      对账提醒
+                      <Badge 
+                        count={reconciliationSummary.warn} 
+                        style={{ marginLeft: 8, backgroundColor: '#ff4d4f' }}
+                      />
+                    </span>
+                  }
+                  bordered 
+                  style={{ marginTop: 16 }}
+                  extra={
+                    <Button 
+                      type="primary" 
+                      size="small"
+                      onClick={() => history.push('/reconciliation')}
+                    >
+                      查看全部
+                    </Button>
+                  }
+                >
+                  <Row gutter={16}>
+                    <Col>
+                      <Text type="danger" strong>
+                        {reconciliationSummary.warn} 个警告
+                      </Text>
+                    </Col>
+                    <Col>
+                      <Text type="secondary">
+                        {reconciliationSummary.info} 个提示
+                      </Text>
+                    </Col>
+                  </Row>
                 </ProCard>
               )}
             </>

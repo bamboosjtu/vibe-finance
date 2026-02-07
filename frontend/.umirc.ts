@@ -69,6 +69,12 @@ export default defineConfig({
       component: './Products/Detail',
       hideInMenu: true,
     },
+    {
+      name: '对账中心',
+      path: '/reconciliation',
+      component: './Reconciliation',
+      icon: 'audit',
+    },
   ],
   npmClient: 'npm',
 });

@@ -57,6 +57,16 @@ export function apiPatch<T>(url: string, body?: unknown) {
   });
 }
 
+export function apiPut<T>(url: string, body?: unknown) {
+  return apiRequest<T>(url, {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    data: body,
+  });
+}
+
 export function apiDelete<T>(url: string, params?: Record<string, unknown>) {
   return apiRequest<T>(url, {
     method: 'DELETE',

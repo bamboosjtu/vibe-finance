@@ -24,7 +24,6 @@ class LiquidityRule(str, Enum):
 class ValuationMode(str, Enum):
     """估值模式枚举"""
     PRODUCT_VALUE = "product_value"    # 产品级别估值
-    LOT_VALUE = "lot_value"            # 批次级别估值
 
 
 class Product(BaseModel, table=True):
@@ -45,7 +44,6 @@ class Product(BaseModel, table=True):
     # 关系
     institution: Optional["Institution"] = Relationship(back_populates="products")
     valuations: List["ProductValuation"] = Relationship(back_populates="product")
-    lots: List["Lot"] = Relationship(back_populates="product")
     transactions: List["Transaction"] = Relationship(back_populates="product")
     
     class Config:
@@ -61,6 +59,6 @@ class Product(BaseModel, table=True):
                 "liquidity_rule": "closed",
                 "settle_days": 1,
                 "note": "到期赎回",
-                "valuation_mode": "lot_value"
+                "valuation_mode": "product_value"
             }
         }

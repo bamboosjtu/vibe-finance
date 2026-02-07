@@ -11,6 +11,8 @@ export interface DashboardSummary {
   pending_redeems: number;      // 在途赎回金额
   future_7d: number;            // 未来7天预计到账
   future_30d: number;           // 未来30天预计到账
+  // Sprint 5 新增字段
+  future_90d: number;           // 未来90天预计到账
   by_type: {
     cash: number;
     debit: number;
@@ -49,6 +51,7 @@ export interface FutureCashFlowItem {
   source: 'redeem' | 'maturity';
   description: string;
   product_id?: number;
+  note?: string;  // 规则推算备注
 }
 
 export interface FutureCashFlowResp {
@@ -107,5 +110,42 @@ export async function getFutureCashFlow(days?: number) {
 export async function getCashDetail(date?: string) {
   return apiGet<CashDetailResp>('/api/dashboard/cash_detail', 
     date ? { date } : undefined
+  );
+}
+
+// Sprint 5: 资金时间轴
+export interface TimelineChange {
+  date: string;
+  amount: number;
+  source: 'redeem' | 'maturity';
+  description: string;
+  product_id?: number;
+  note?: string;
+}
+
+export interface TimelineMilestone {
+  date: string;
+  label: string;
+  days_from_now: number;
+  projected_available_cash: number;
+  accumulated_inflow: number;
+  changes: TimelineChange[];
+}
+
+export interface TimelineCurrent {
+  date: string;
+  available_cash: number;
+  pending_redeems: number;
+  locked_in_products: number;
+}
+
+export interface CashTimelineResp {
+  current: TimelineCurrent;
+  milestones: TimelineMilestone[];
+}
+
+export async function getCashTimeline(milestones?: string) {
+  return apiGet<CashTimelineResp>('/api/dashboard/cash_timeline', 
+    milestones ? { milestones } : undefined
   );
 }

@@ -10,7 +10,7 @@ export type ProductType =
 
 export type LiquidityRule = 'open' | 'closed' | 'periodic_open';
 
-export type ValuationMode = 'product_value' | 'lot_value';
+export type ValuationMode = 'product_value';
 
 export interface Product {
   id: number;
@@ -129,4 +129,21 @@ export interface ProductPendingRedeemResp {
 
 export async function getProductPendingRedeem(productId: number) {
   return apiGet<ProductPendingRedeemResp>(`/api/products/${productId}/pending_redeem`);
+}
+
+// Sprint 5: 产品流动性状态
+export interface ProductLiquidityStatusResp {
+  product_id: number;
+  product_name: string;
+  is_locked: boolean;
+  lock_end_date: string | null;
+  next_liquid_date: string | null;
+  liquidity_type: 'open' | 'closed' | 'periodic_open';
+  term_days: number;
+  settle_days: number;
+  note: string;
+}
+
+export async function getProductLiquidityStatus(productId: number) {
+  return apiGet<ProductLiquidityStatusResp>(`/api/products/${productId}/liquidity_status`);
 }

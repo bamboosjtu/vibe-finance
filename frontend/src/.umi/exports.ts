@@ -5,17 +5,17 @@
 export { defineApp } from './core/defineApp'
 export type { RuntimeConfig } from './core/defineApp'
 // plugins
-export { Provider, useModel } from 'C:/Users/bambo/Documents/Projects/vibe-test/frontend/src/.umi/plugin-model';
-export { useRequest, UseRequestProvider, request, getRequestInstance } from 'C:/Users/bambo/Documents/Projects/vibe-test/frontend/src/.umi/plugin-request';
+export { Provider, useModel } from 'C:/Users/bambo/Documents/Projects/vibe-finance/frontend/src/.umi/plugin-model';
+export { useRequest, UseRequestProvider, request, getRequestInstance } from 'C:/Users/bambo/Documents/Projects/vibe-finance/frontend/src/.umi/plugin-request';
 // plugins types.d.ts
-export * from 'C:/Users/bambo/Documents/Projects/vibe-test/frontend/src/.umi/plugin-antd/types.d';
-export * from 'C:/Users/bambo/Documents/Projects/vibe-test/frontend/src/.umi/plugin-layout/types.d';
-export * from 'C:/Users/bambo/Documents/Projects/vibe-test/frontend/src/.umi/plugin-request/types.d';
+export * from 'C:/Users/bambo/Documents/Projects/vibe-finance/frontend/src/.umi/plugin-antd/types.d';
+export * from 'C:/Users/bambo/Documents/Projects/vibe-finance/frontend/src/.umi/plugin-layout/types.d';
+export * from 'C:/Users/bambo/Documents/Projects/vibe-finance/frontend/src/.umi/plugin-request/types.d';
 // @umijs/renderer-*
-export { createBrowserHistory, createHashHistory, createMemoryHistory, Helmet, HelmetProvider, createSearchParams, generatePath, matchPath, matchRoutes, Navigate, NavLink, Outlet, resolvePath, useLocation, useMatch, useNavigate, useOutlet, useOutletContext, useParams, useResolvedPath, useRoutes, useSearchParams, useAppData, useClientLoaderData, useLoaderData, useRouteProps, useSelectedRoutes, useServerLoaderData, renderClient, __getRoot, Link, useRouteData, __useFetcher, withRouter } from 'C:/Users/bambo/Documents/Projects/vibe-test/frontend/node_modules/@umijs/renderer-react';
-export type { History, ClientLoader } from 'C:/Users/bambo/Documents/Projects/vibe-test/frontend/node_modules/@umijs/renderer-react'
+export { createBrowserHistory, createHashHistory, createMemoryHistory, Helmet, HelmetProvider, createSearchParams, generatePath, matchPath, matchRoutes, Navigate, NavLink, Outlet, resolvePath, useLocation, useMatch, useNavigate, useOutlet, useOutletContext, useParams, useResolvedPath, useRoutes, useSearchParams, useAppData, useClientLoaderData, useLoaderData, useRouteProps, useSelectedRoutes, useServerLoaderData, renderClient, __getRoot, Link, useRouteData, __useFetcher, withRouter } from 'C:/Users/bambo/Documents/Projects/vibe-finance/frontend/node_modules/@umijs/renderer-react';
+export type { History, ClientLoader } from 'C:/Users/bambo/Documents/Projects/vibe-finance/frontend/node_modules/@umijs/renderer-react'
 // umi/client/client/plugin
-export { ApplyPluginsType, PluginManager } from 'C:/Users/bambo/Documents/Projects/vibe-test/frontend/node_modules/umi/client/client/plugin.js';
+export { ApplyPluginsType, PluginManager } from 'C:/Users/bambo/Documents/Projects/vibe-finance/frontend/node_modules/umi/client/client/plugin.js';
 export { history, createHistory } from './core/history';
 export { terminal } from './core/terminal';
 // react ssr
